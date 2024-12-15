@@ -63,10 +63,10 @@ impl FromStr for Time {
 /// ```rust
 /// let time = winnow_iso8601::time("21:56:42").unwrap();
 /// ```
-pub fn time(string: &str) -> Result<Time, String> {
-    if let Ok(parsed) = parsers::parse_time(&mut string.as_bytes()) {
+pub fn time(mut i: &str) -> Result<Time, String> {
+    if let Ok(parsed) = parsers::parse_time(&mut i) {
         Ok(parsed)
     } else {
-        Err(format!("Failed to parse time: {}", string))
+        Err(format!("Failed to parse time: {}", i))
     }
 }

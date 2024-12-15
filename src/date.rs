@@ -52,10 +52,10 @@ impl FromStr for Date {
 /// ```rust
 /// let date = winnow_iso8601::date("2015-11-02").unwrap();
 /// ```
-pub fn date(string: &str) -> Result<Date, String> {
-    if let Ok(parsed) = parsers::parse_date(&mut string.as_bytes()) {
+pub fn date(mut i: &str) -> Result<Date, String> {
+    if let Ok(parsed) = parsers::parse_date(&mut i) {
         Ok(parsed)
     } else {
-        Err(format!("Failed to parse date: {}", string))
+        Err(format!("Failed to parse date: {}", i))
     }
 }

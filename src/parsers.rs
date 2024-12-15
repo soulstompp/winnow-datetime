@@ -31,7 +31,7 @@ pub type Stream<'i> = Partial<&'i [u8]>;
 
 fn take_digits<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -61,7 +61,7 @@ fn take_digits_in_range<'i, Input>(
     range: impl RangeBounds<u32>,
 ) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -85,11 +85,11 @@ where
 
 fn sign<'i, Input>(i: &mut Input) -> PResult<i32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
-    alt((literal(b"-"), literal(b"+")))
+    alt((literal("-"), literal("+")))
         .map(|s: <Input as InputStream>::Slice| match s.as_bstr() {
             b"-" => -1,
             _ => 1,
@@ -102,7 +102,7 @@ where
 // [+/-]YYYY
 fn date_year<'i, Input>(i: &mut Input) -> PResult<i32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -128,7 +128,7 @@ where
 // MM
 fn date_month<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -141,7 +141,7 @@ where
 // DD
 fn date_day<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -154,7 +154,7 @@ where
 // WW
 fn date_week<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -166,7 +166,7 @@ where
 
 fn date_week_day<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -179,7 +179,7 @@ where
 // ordinal DDD
 fn date_ord_day<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -192,16 +192,16 @@ where
 // YYYY-MM-DD
 fn date_ymd<'i, Input>(i: &mut Input) -> PResult<Date>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("date_ymd", move |input: &mut Input| {
         seq!((
         date_year,      // YYYY
-        _: opt(literal(b"-")), // -
+        _: opt(literal("-")), // -
         date_month,     // MM
-        _: opt(literal(b"-")), // -
+        _: opt(literal("-")), // -
         date_day,       //DD
         ))
         .map(|(year, month, day)| Date::YMD { year, month, day })
@@ -213,12 +213,12 @@ where
 // YYYY-DDD
 fn date_ordinal<'i, Input>(i: &mut Input) -> PResult<Date>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("date_ordinal", move |input: &mut Input| {
-        separated_pair(date_year, opt(literal(b"-")), date_ord_day)
+        separated_pair(date_year, opt(literal("-")), date_ord_day)
             .map(|(year, ddd)| Date::Ordinal { year, ddd })
             .parse_next(input)
     })
@@ -228,17 +228,17 @@ where
 // YYYY-"W"WW-D
 fn date_iso_week<'i, Input>(i: &mut Input) -> PResult<Date>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("", move |input: &mut Input| {
         seq!((
-            date_year,                                 // y
-            seq!((opt(literal(b"-")), literal(b"W"))), // [-]W
-            date_week,                                 // w
-            opt(literal(b"-")),                        // [-]
-            date_week_day,                             // d
+            date_year,                               // y
+            seq!((opt(literal("-")), literal("W"))), // [-]W
+            date_week,                               // w
+            opt(literal("-")),                       // [-]
+            date_week_day,                           // d
         ))
         .map(|(year, _, ww, _, d)| Date::Week { year, ww, d })
         .parse_next(input)
@@ -251,7 +251,7 @@ where
 /// See [`date()`][`crate::date()`] for the supported formats.
 pub fn parse_date<'i, Input>(i: &mut Input) -> PResult<Date>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -266,7 +266,7 @@ where
 // HH
 fn time_hour<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -279,7 +279,7 @@ where
 // MM
 fn time_minute<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -292,7 +292,7 @@ where
 // SS
 fn time_second<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -307,7 +307,7 @@ where
 // e.g. "" -> 0, "1" -> 100, "12" -> 120, "123" -> 123, "1234" -> 123
 fn fraction_millisecond<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -339,16 +339,16 @@ where
 // HH:MM:[SS][.(m*)][(Z|+...|-...)]
 pub fn parse_time<'i, Input>(i: &mut Input) -> PResult<Time>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("parse_time", move |input: &mut Input| {
         let t = seq! {Time {
             hour: time_hour,                                         // HH
-            _: opt(literal(b":")),                                    // :
+            _: opt(literal(":")),                                    // :
             minute: time_minute,                                       // MM
-            second: opt(preceded(opt(literal(b":")), time_second)).map(|d| d.unwrap_or(0)),        // [SS]
+            second: opt(preceded(opt(literal(":")), time_second)).map(|d| d.unwrap_or(0)),        // [SS]
             millisecond: opt(preceded(one_of(b",."), fraction_millisecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
             timezone: opt(parse_timezone).map(|tz| tz.unwrap_or(Default::default())),           // [(Z|+...|-...)]
         }}
@@ -364,7 +364,7 @@ where
 // (Z|+...|-...)
 pub fn parse_timezone<'i, Input>(i: &mut Input) -> PResult<Timezone>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -377,7 +377,7 @@ where
 // (+...|-...)
 fn timezone_hour<'i, Input>(i: &mut Input) -> PResult<Timezone>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -385,7 +385,7 @@ where
         seq!((
             sign,
             time_hour,
-            opt(preceded(opt(literal(b":")), time_minute))
+            opt(preceded(opt(literal(":")), time_minute))
         ))
         .map(|(s, h, m)| Timezone {
             offset_hours: s * (h as i32),
@@ -399,12 +399,12 @@ where
 // Z
 fn timezone_utc<'i, Input>(i: &mut Input) -> PResult<Timezone>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("timezone_utc", move |input: &mut Input| {
-        literal(b"Z").map(|_| Timezone::default()).parse_next(input)
+        literal("Z").map(|_| Timezone::default()).parse_next(input)
     })
     .parse_next(i)
 }
@@ -415,12 +415,12 @@ where
 // Full ISO8601 datetime
 pub fn parse_datetime<'i, Input>(i: &mut Input) -> PResult<DateTime>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("parse_datetime", move |input: &mut Input| {
-        separated_pair(parse_date, literal(b"T"), parse_time)
+        separated_pair(parse_date, literal("T"), parse_time)
             .map(|(d, t)| DateTime { date: d, time: t })
             .parse_next(input)
     })
@@ -432,12 +432,12 @@ where
 ///    dur-year          = 1*DIGIT "Y" [dur-month]
 fn duration_year<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("duration_year", move |input: &mut Input| {
-        (terminated(take_digits, literal(b"Y"))).parse_next(input)
+        (terminated(take_digits, literal("Y"))).parse_next(input)
     })
     .parse_next(i)
 }
@@ -445,12 +445,12 @@ where
 ///    dur-month         = 1*DIGIT "M" [dur-day]
 fn duration_month<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("duration_month", move |input: &mut Input| {
-        (terminated(take_digits, literal(b"M"))).parse_next(input)
+        (terminated(take_digits, literal("M"))).parse_next(input)
     })
     .parse_next(i)
 }
@@ -458,13 +458,13 @@ where
 ///    dur-week          = 1*DIGIT "W"
 fn duration_week<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("duration_week", move |input: &mut Input| {
         let d = take_digits(input)?;
-        let _ = literal(b"W").parse_next(input)?;
+        let _ = literal("W").parse_next(input)?;
 
         Ok(d)
     })
@@ -474,12 +474,12 @@ where
 //    dur-day           = 1*DIGIT "D"
 fn duration_day<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("duration_day", move |input: &mut Input| {
-        terminated(take_digits, literal(b"D")).parse_next(input)
+        terminated(take_digits, literal("D")).parse_next(input)
     })
     .parse_next(i)
 }
@@ -488,12 +488,12 @@ where
 ///    dur-time          = "T" (dur-hour / dur-minute / dur-second)
 fn duration_hour<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("duration_hour", move |input: &mut Input| {
-        terminated(take_digits, literal(b"H")).parse_next(input)
+        terminated(take_digits, literal("H")).parse_next(input)
     })
     .parse_next(i)
 }
@@ -501,12 +501,12 @@ where
 ///    dur-minute        = 1*DIGIT "M" [dur-second]
 fn duration_minute<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("", move |input: &mut Input| {
-        terminated(take_digits, literal(b"M")).parse_next(input)
+        terminated(take_digits, literal("M")).parse_next(input)
     })
     .parse_next(i)
 }
@@ -514,12 +514,12 @@ where
 ///    dur-second        = 1*DIGIT "S"
 fn duration_second<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("duration_second", move |input: &mut Input| {
-        terminated(take_digits, literal(b"S")).parse_next(input)
+        terminated(take_digits, literal("S")).parse_next(input)
     })
     .parse_next(i)
 }
@@ -527,7 +527,7 @@ where
 ///    dur-second-ext    = 1*DIGIT (,|.) 1*DIGIT "S"
 fn duration_second_and_millisecond<'i, Input>(i: &mut Input) -> PResult<(u32, u32)>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -540,7 +540,7 @@ where
                 terminated(
                     // with milliseconds
                     separated_pair(take_digits, one_of(b",."), fraction_millisecond),
-                    literal(b"S"),
+                    literal("S"),
                 ),
             ))
             .parse_next(input)
@@ -551,7 +551,7 @@ where
 
 fn duration_time<'i, Input>(i: &mut Input) -> PResult<(u32, u32, u32, u32)>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -573,17 +573,17 @@ where
 
 fn duration_ymdhms<'i, Input>(i: &mut Input) -> PResult<Duration>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("", move |input: &mut Input| {
         seq!((
-            _: literal(b"P"),
+            _: literal("P"),
             opt(duration_year),
             opt(duration_month),
             opt(duration_day),
-            opt(preceded(literal(b"T"), duration_time)),
+            opt(preceded(literal("T"), duration_time)),
         ))
         .verify(|(y, mo, d, time)| {
             if y.is_none() && mo.is_none() && d.is_none() && time.is_none() {
@@ -614,12 +614,12 @@ where
 
 fn duration_weeks<'i, Input>(i: &mut Input) -> PResult<Duration>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("", move |input: &mut Input| {
-        preceded(literal(b"P"), duration_week)
+        preceded(literal("P"), duration_week)
             .map(Duration::Weeks)
             .parse_next(input)
     })
@@ -629,7 +629,7 @@ where
 // YYYY, no sign
 fn duration_datetime_year<'i, Input>(i: &mut Input) -> PResult<u32>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
@@ -641,20 +641,20 @@ where
 
 fn duration_datetime<'i, Input>(i: &mut Input) -> PResult<Duration>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("duration_datetime", move |input: &mut Input| {
         preceded(
-            seq!((literal(b"P"), not(sign))),
+            seq!((literal("P"), not(sign))),
             seq!((
                 duration_datetime_year,
-                opt(literal(b"-")),
+                opt(literal("-")),
                 date_month,
-                opt(literal(b"-")),
+                opt(literal("-")),
                 date_day,
-                literal(b"T"),
+                literal("T"),
                 parse_time,
             )),
         )
@@ -677,7 +677,7 @@ where
 /// See [`duration()`][`crate::duration()`] for supported formats.
 pub fn parse_duration<'i, Input>(i: &mut Input) -> PResult<Duration>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i [u8; 1]>,
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {

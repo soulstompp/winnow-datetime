@@ -14,12 +14,11 @@ This library contains parsers for parsing ISO8601 dates and their various compon
 ### Parsing
 
 #### Complete
-If you have all the data you need, you can just pass along the bytes. Passing in `&mut &str` isn't  yet
-supported but will be supported in the future.
+If you have all the data you need, you can just pass along the input directly.
 
 ```rust,ignore
 let datetime = opt(parse_datetime)
-    .parse_next(&mut "2015-06-26T16:43:23+0200".as_bytes()));
+    .parse_next(&mut "2015-06-26T16:43:23+0200"));
 
 // the above will give you:
 Some(DateTime {
@@ -39,7 +38,7 @@ Some(DateTime {
 ```
 
 #### Partial
-For partial data the only difference is wrapping the &'i [u8] in Partial and handling incomplete errors correctly,
+For partial data the only difference is wrapping input in Partial and handling incomplete errors correctly,
 which is documented in [winnow partial docs](https://docs.rs/winnow/latest/winnow/_topic/partial/index.html).
 ```rust,ignore
 pub type Stream<'i> = Partial<&'i [u8]>;
