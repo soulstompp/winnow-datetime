@@ -41,10 +41,10 @@ impl FromStr for DateTime {
 /// ```rust
 /// let dt = winnow_iso8601::datetime("2015-11-03T21:56").unwrap();
 /// ```
-pub fn datetime(string: &str) -> Result<DateTime, String> {
-    if let Ok(parsed) = parsers::parse_datetime(&mut string.as_bytes()) {
+pub fn datetime(mut i: &str) -> Result<DateTime, String> {
+    if let Ok(parsed) = parsers::parse_datetime(&mut i) {
         Ok(parsed)
     } else {
-        Err(format!("Failed to parse datetime: {}", string))
+        Err(format!("Failed to parse datetime: {}", i))
     }
 }

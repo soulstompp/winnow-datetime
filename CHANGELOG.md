@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 - 2024-12-15
+* Accept &str for all parsers and stop passing bytes for string parser helper functions.
+
 ## 0.2.0 - 2024-11-16
 * Added Timezone struct so offsets are
 * Support for complete values in parsers

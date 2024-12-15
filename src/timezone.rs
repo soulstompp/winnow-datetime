@@ -37,10 +37,10 @@ impl FromStr for Timezone {
 /// ```rust
 /// let dt = winnow_iso8601::timezone("Z").unwrap();
 /// ```
-pub fn timezone(string: &str) -> Result<Timezone, String> {
-    if let Ok(parsed) = crate::parsers::parse_timezone(&mut string.as_bytes()) {
+pub fn timezone(mut i: &str) -> Result<Timezone, String> {
+    if let Ok(parsed) = crate::parsers::parse_timezone(&mut i) {
         Ok(parsed)
     } else {
-        Err(format!("Failed to parse datetime: {}", string))
+        Err(format!("Failed to parse datetime: {}", i))
     }
 }

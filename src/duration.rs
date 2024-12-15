@@ -157,9 +157,9 @@ impl From<Duration> for ::core::time::Duration {
 /// let duration = winnow_iso8601::duration("P1W").unwrap();
 /// let duration = winnow_iso8601::duration("P2015-11-03T21:56").unwrap();
 /// ```
-pub fn duration(string: &str) -> Result<Duration, String> {
-    match parsers::parse_duration(&mut string.as_bytes()) {
+pub fn duration(mut i: &str) -> Result<Duration, String> {
+    match parsers::parse_duration(&mut i) {
         Ok(p) => Ok(p),
-        Err(e) => Err(format!("Failed to parse duration {}: {}", string, e)),
+        Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
     }
 }
