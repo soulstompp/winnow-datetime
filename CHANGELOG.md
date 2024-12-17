@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2024-12-17
+* Conversion traits for time-rs module and moved both time-rs and chrono to convert module.
+* Minor clean-up of date and sign parsers
+* Fixes several inherited issues with parsing durations
+
 ## 0.2.1 - 2024-12-15
 * Accept &str for all parsers and stop passing bytes for string parser helper functions.
 
