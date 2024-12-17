@@ -37,7 +37,7 @@ where
 {
     trace("take_digits", move |input: &mut Input| {
         let digits = take_while(1.., |c: <Input as InputStream>::Token| {
-            c.as_char().is_digit(10)
+            c.is_dec_digit()
         })
         .parse_next(input)?;
 
@@ -197,14 +197,13 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("date_ymd", move |input: &mut Input| {
-        seq!((
-        date_year,      // YYYY
-        _: opt(literal("-")), // -
-        date_month,     // MM
-        _: opt(literal("-")), // -
-        date_day,       //DD
-        ))
-        .map(|(year, month, day)| Date::YMD { year, month, day })
+        seq!(Date::YMD {
+            year: date_year,      // YYYY
+            _: opt(literal("-")), // -
+            month: date_month,     // MM
+            _: opt(literal("-")), // -
+            day: date_day,       //DD
+        })
         .parse_next(input)
     })
     .parse_next(i)
