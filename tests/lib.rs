@@ -958,14 +958,15 @@ fn test_duration_ymdhms() {
     // full YMDHMS
     let dur = duration("P1Y2M3DT4H5M6S").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 1,
-            month: 2,
-            day: 3,
-            hour: 4,
-            minute: 5,
-            second: 6,
-            millisecond: 0,
+        Duration {
+            years: 1,
+            months: 2,
+            weeks: 0,
+            days: 3,
+            hours: 4,
+            minutes: 5,
+            seconds: 6,
+            milliseconds: 0,
         },
         dur
     );
@@ -974,14 +975,15 @@ fn test_duration_ymdhms() {
     // full YMDHMS with milliseconds dot delimiter
     let dur = duration("P1Y2M3DT4H5M6.7S").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 1,
-            month: 2,
-            day: 3,
-            hour: 4,
-            minute: 5,
-            second: 6,
-            millisecond: 700,
+        Duration {
+            years: 1,
+            months: 2,
+            weeks: 0,
+            days: 3,
+            hours: 4,
+            minutes: 5,
+            seconds: 6,
+            milliseconds: 700,
         },
         dur
     );
@@ -993,14 +995,15 @@ fn test_duration_ymdhms() {
     // full YMDHMS with milliseconds comma delimiter
     let dur = duration("P1Y2M3DT4H5M6,7S").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 1,
-            month: 2,
-            day: 3,
-            hour: 4,
-            minute: 5,
-            second: 6,
-            millisecond: 700,
+        Duration {
+            years: 1,
+            months: 2,
+            weeks: 0,
+            days: 3,
+            hours: 4,
+            minutes: 5,
+            seconds: 6,
+            milliseconds: 700,
         },
         dur
     );
@@ -1012,14 +1015,15 @@ fn test_duration_ymdhms() {
     // subset YM-HM-
     let dur = duration("P1Y2MT4H5M").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 1,
-            month: 2,
-            day: 0,
-            hour: 4,
-            minute: 5,
-            second: 0,
-            millisecond: 0,
+        Duration {
+            years: 1,
+            months: 2,
+            weeks: 0,
+            days: 0,
+            hours: 4,
+            minutes: 5,
+            seconds: 0,
+            milliseconds: 0,
         },
         dur
     );
@@ -1028,14 +1032,15 @@ fn test_duration_ymdhms() {
     // subset Y-----
     let dur = duration("P1Y").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 1,
-            month: 0,
-            day: 0,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
+        Duration {
+            years: 1,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
         },
         dur
     );
@@ -1044,14 +1049,15 @@ fn test_duration_ymdhms() {
     // subset ---H--
     let dur = duration("PT4H").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 0,
-            month: 0,
-            day: 0,
-            hour: 4,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
+        Duration {
+            years: 0,
+            months: 0,
+            days: 0,
+            weeks: 0,
+            hours: 4,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
         },
         dur
     );
@@ -1060,14 +1066,15 @@ fn test_duration_ymdhms() {
     // subset -----S with milliseconds dot delimiter
     let dur = duration("PT6.7S").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 0,
-            month: 0,
-            day: 0,
-            hour: 0,
-            minute: 0,
-            second: 6,
-            millisecond: 700,
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 6,
+            milliseconds: 700,
         },
         dur
     );
@@ -1076,14 +1083,15 @@ fn test_duration_ymdhms() {
     // subset -----S with milliseconds comma delimiter
     let dur = duration("PT6,700S").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 0,
-            month: 0,
-            day: 0,
-            hour: 0,
-            minute: 0,
-            second: 6,
-            millisecond: 700,
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 6,
+            milliseconds: 700,
         },
         dur
     );
@@ -1092,14 +1100,15 @@ fn test_duration_ymdhms() {
     // empty duration, using Y
     let dur = duration("P0Y").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 0,
-            month: 0,
-            day: 0,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
         },
         dur
     );
@@ -1108,14 +1117,15 @@ fn test_duration_ymdhms() {
     // empty duration, using S
     let dur = duration("PT0S").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 0,
-            month: 0,
-            day: 0,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
         },
         dur
     );
@@ -1123,61 +1133,65 @@ fn test_duration_ymdhms() {
 
     let dur = duration("PT42M30S").unwrap();
     assert_eq!(
-        Duration::YMDHMS {
-            year: 0,
-            month: 0,
-            day: 0,
-            hour: 0,
-            minute: 42,
-            second: 30,
-            millisecond: 0,
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 42,
+            seconds: 30,
+            milliseconds: 0,
         },
         dur
     );
     assert_eq!(StdDuration::from(dur), StdDuration::new(2550, 0));
 
-    let dur = duration("P0001-02-03T04:05:06").unwrap();
-    assert_eq!(
-        Duration::YMDHMS {
-            year: 1,
-            month: 2,
-            day: 3,
-            hour: 4,
-            minute: 5,
-            second: 6,
-            millisecond: 0,
-        },
-        dur
-    );
-    assert_eq!(StdDuration::from(dur), StdDuration::new(36993906, 0));
-
-    let dur = duration("P2018-04-27T00:00:00").unwrap();
-    assert_eq!(
-        Duration::YMDHMS {
-            year: 2018,
-            month: 4,
-            day: 27,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
-        },
-        dur
-    );
-    assert_eq!(StdDuration::from(dur), StdDuration::new(63652348800, 0));
-}
-
-#[test]
-fn test_duration_weeks() {
-    use core::time::Duration as StdDuration;
-
     let dur = duration("P0W").unwrap();
-    assert_eq!(Duration::Weeks(0), dur);
+    assert_eq!(
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
+        },
+        dur
+    );
     assert_eq!(StdDuration::from(dur), StdDuration::new(0, 0));
+
     let dur = duration("P26W").unwrap();
-    assert_eq!(Duration::Weeks(26), dur);
+    assert_eq!(
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 26,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
+        },
+        dur
+    );
     assert_eq!(StdDuration::from(dur), StdDuration::new(15724800, 0));
+
     let dur = duration("P52W").unwrap();
-    assert_eq!(Duration::Weeks(52), dur);
+    assert_eq!(
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 52,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
+        },
+        dur
+    );
     assert_eq!(StdDuration::from(dur), StdDuration::new(31449600, 0));
 }

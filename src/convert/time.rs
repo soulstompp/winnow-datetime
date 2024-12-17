@@ -4,7 +4,12 @@ impl TryFrom<crate::Time> for time::Time {
     type Error = ();
 
     fn try_from(iso: crate::Time) -> Result<Self, Self::Error> {
-        time::Time::from_hms(iso.hour.try_into().unwrap(), iso.minute.try_into().unwrap(), iso.second.try_into().unwrap()).or(Err(()))
+        time::Time::from_hms(
+            iso.hour.try_into().unwrap(),
+            iso.minute.try_into().unwrap(),
+            iso.second.try_into().unwrap(),
+        )
+        .or(Err(()))
     }
 }
 
@@ -20,27 +25,32 @@ impl TryFrom<crate::Date> for time::Date {
 
     fn try_from(iso: crate::Date) -> Result<Self, Self::Error> {
         match iso {
-            crate::Date::YMD { year, month, day } => {
-                time::Date::from_calendar_date(year, time::Month::try_from(u8::try_from(month).unwrap()).unwrap(), day.try_into().unwrap())
-            },
+            crate::Date::YMD { year, month, day } => time::Date::from_calendar_date(
+                year,
+                time::Month::try_from(u8::try_from(month).unwrap()).unwrap(),
+                day.try_into().unwrap(),
+            ),
 
             crate::Date::Week { year, ww, d } => {
-                 let wd = time::Weekday::from(match d {
-                            1 => time::Weekday::Monday,
-                            2 => time::Weekday::Tuesday,
-                            3 => time::Weekday::Wednesday,
-                            4 => time::Weekday::Thursday,
-                            5 => time::Weekday::Friday,
-                            6 => time::Weekday::Saturday,
-                            7 => time::Weekday::Sunday,
-                            _ => panic!("Invalid day of week"),
-                 });
+                let wd = time::Weekday::from(match d {
+                    1 => time::Weekday::Monday,
+                    2 => time::Weekday::Tuesday,
+                    3 => time::Weekday::Wednesday,
+                    4 => time::Weekday::Thursday,
+                    5 => time::Weekday::Friday,
+                    6 => time::Weekday::Saturday,
+                    7 => time::Weekday::Sunday,
+                    _ => panic!("Invalid day of week"),
+                });
 
                 time::Date::from_iso_week_date(year, ww.try_into().unwrap(), wd)
-            },
+            }
 
-            crate::Date::Ordinal { year, ddd } => time::Date::from_ordinal_date(year, ddd.try_into().unwrap()),
-        }.or(Err(()))
+            crate::Date::Ordinal { year, ddd } => {
+                time::Date::from_ordinal_date(year, ddd.try_into().unwrap())
+            }
+        }
+        .or(Err(()))
     }
 }
 

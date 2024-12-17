@@ -40,100 +40,74 @@ impl Display for DateTime {
 
 impl Display for Duration {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Duration::YMDHMS {
-                year,
-                month,
-                day,
-                hour,
-                minute,
-                second,
-                millisecond,
-            } => {
-                if self.is_zero() {
-                    write!(f, "P0D")?;
-                    return Ok(());
-                }
-
-                write!(f, "P")?;
-
-                if *year > 0 {
-                    write!(f, "{}Y", year)?
-                }
-
-                if *month > 0 {
-                    write!(f, "{}M", month)?
-                }
-
-                if *day > 0 {
-                    write!(f, "{}D", day)?
-                }
-
-                if *hour > 0 || *minute > 0 || *second > 0 || *millisecond > 0 {
-                    write!(f, "T")?
-                }
-                if *hour > 0 {
-                    write!(f, "{}H", hour)?
-                }
-                if *minute > 0 {
-                    write!(f, "{}M", minute)?
-                }
-
-                if *millisecond > 0 {
-                    write!(f, "{}.{}S", second, millisecond)?
-                } else if *second > 0 {
-                    write!(f, "{}S", second)?
-                }
-                Ok(())
-            }
-            Duration::Weeks(w) => write!(f, "P{}W", w),
+        if self.is_zero() {
+            write!(f, "P0D")?;
+            return Ok(());
         }
+
+        write!(f, "P")?;
+
+        if self.years > 0 {
+            write!(f, "{}Y", self.years)?
+        }
+
+        if self.months > 0 {
+            write!(f, "{}M", self.months)?
+        }
+
+        if self.weeks > 0 {
+            write!(f, "P{}W", self.weeks)?
+        }
+
+        if self.days > 0 {
+            write!(f, "{}D", self.days)?
+        }
+
+        if self.has_time() {
+            write!(f, "T")?
+        }
+
+        if self.hours > 0 {
+            write!(f, "{}H", self.hours)?
+        }
+        if self.minutes > 0 {
+            write!(f, "{}M", self.minutes)?
+        }
+
+        if self.milliseconds > 0 {
+            write!(f, "{}.{}S", self.seconds, self.milliseconds)?
+        } else if self.seconds > 0 {
+            write!(f, "{}S", self.seconds)?
+        }
+
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::parsers::{parse_duration, Stream};
+    use crate::parsers::{duration, Stream};
 
     use super::*;
 
-    fn test_duration_reparse(duration: Duration) {
-        let serialized = format!("{}", duration);
-        let reparsed = parse_duration(&mut Stream::new(serialized.as_bytes())).unwrap();
-        assert_eq!(duration, reparsed);
+    fn test_duration_reparse(dur: Duration) {
+        let serialized = format!("{}", dur);
+        let reparsed = duration(&mut Stream::new(serialized.as_bytes())).unwrap();
+        assert_eq!(dur, reparsed);
     }
 
     #[test]
-    fn display_duration_0() {
-        let duration = Duration::YMDHMS {
-            year: 2021,
-            month: 11,
-            day: 16,
-            hour: 23,
-            minute: 26,
-            second: 59,
-            millisecond: 0,
+    fn display_duration() {
+        let duration = Duration {
+            years: 2021,
+            months: 11,
+            weeks: 0,
+            days: 16,
+            hours: 23,
+            minutes: 26,
+            seconds: 59,
+            milliseconds: 123,
         };
-        test_duration_reparse(duration);
-    }
-
-    #[test]
-    fn display_duration_1() {
-        let duration = Duration::YMDHMS {
-            year: 2021,
-            month: 11,
-            day: 16,
-            hour: 23,
-            minute: 26,
-            second: 59,
-            millisecond: 123,
-        };
-        test_duration_reparse(duration);
-    }
-
-    #[test]
-    fn display_duration_2() {
-        let duration = Duration::Weeks(50);
         test_duration_reparse(duration);
     }
 }

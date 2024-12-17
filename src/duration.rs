@@ -25,66 +25,78 @@ use alloc::string::String;
 /// ```
 ///# use std::str::FromStr;
 /// assert_eq!(winnow_iso8601::Duration::from_str("P2021Y11M16DT23H26M59.123S"),
-/// Ok(winnow_iso8601::Duration::YMDHMS{
-///      year: 2021,
-///      month: 11,
-///      day: 16,
-///      hour: 23,
-///      minute: 26,
-///      second: 59,
-///      millisecond: 123
+/// Ok(winnow_iso8601::Duration {
+///      years: 2021,
+///      months: 11,
+///      weeks: 0,
+///      days: 16,
+///      hours: 23,
+///      minutes: 26,
+///      seconds: 59,
+///      milliseconds: 123
 /// }))
 /// ```
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
-pub enum Duration {
-    /// A duration specified by year, month, day, hour, minute and second units
-    YMDHMS {
-        /// Number of calendar years
-        year: u32,
-        /// Number of months
-        month: u32,
-        /// Number of days
-        day: u32,
-        /// Number of hours
-        hour: u32,
-        /// Number of minutes
-        minute: u32,
-        /// Number of seconds
-        second: u32,
-        /// Number of milliseconds
-        millisecond: u32,
-    },
-    /// consists of week units
-    Weeks(u32),
+pub struct Duration {
+    /// Number of calendar years
+    pub years: u32,
+    /// Number of months
+    pub months: u32,
+    /// Number of weeks
+    pub weeks: u32,
+    /// Number of days
+    pub days: u32,
+    /// Number of hours
+    pub hours: u32,
+    /// Number of minutes
+    pub minutes: u32,
+    /// Number of seconds
+    pub seconds: u32,
+    /// Number of milliseconds
+    pub milliseconds: u32,
 }
 
 impl Duration {
     /// Whether this duration represents a zero duration.
     pub fn is_zero(&self) -> bool {
         *self
-            == Duration::YMDHMS {
-                year: 0,
-                month: 0,
-                day: 0,
-                hour: 0,
-                minute: 0,
-                second: 0,
-                millisecond: 0,
+            == Duration {
+                years: 0,
+                months: 0,
+                weeks: 0,
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0,
             }
-            || *self == Duration::Weeks(0)
+    }
+
+    /// Whether this duration has a time component.
+    pub fn has_time(&self) -> bool {
+        [
+            self.days,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            self.milliseconds,
+        ]
+        .iter()
+        .any(|&x| x > 0)
     }
 }
 
 impl Default for Duration {
     fn default() -> Duration {
-        Duration::YMDHMS {
-            year: 0,
-            month: 0,
-            day: 0,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
+        Duration {
+            years: 0,
+            months: 0,
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
         }
     }
 }
@@ -99,30 +111,15 @@ impl FromStr for Duration {
 
 impl From<Duration> for ::core::time::Duration {
     fn from(duration: Duration) -> Self {
-        match duration {
-            Duration::YMDHMS {
-                year,
-                month,
-                day,
-                hour,
-                minute,
-                second,
-                millisecond,
-            } => {
-                let secs = u64::from(year) * 365 * 86_400
-                    + u64::from(month) * 30 * 86_400
-                    + u64::from(day) * 86_400
-                    + u64::from(hour) * 3600
-                    + u64::from(minute) * 60
-                    + u64::from(second);
-                let nanos = millisecond * 1_000_000;
-                Self::new(secs, nanos)
-            }
-            Duration::Weeks(week) => {
-                let secs = u64::from(week) * 7 * 86_400;
-                Self::from_secs(secs)
-            }
-        }
+        let secs = u64::from(duration.years) * 365 * 86_400
+            + u64::from(duration.months) * 30 * 86_400
+            + u64::from(duration.weeks) * 7 * 86_400
+            + u64::from(duration.days) * 86_400
+            + u64::from(duration.hours) * 3600
+            + u64::from(duration.minutes) * 60
+            + u64::from(duration.seconds);
+        let nanos = duration.milliseconds * 1_000_000;
+        Self::new(secs, nanos)
     }
 }
 
@@ -155,10 +152,9 @@ impl From<Duration> for ::core::time::Duration {
 /// ```rust
 /// let duration = winnow_iso8601::duration("P1Y2M3DT4H5M6S").unwrap();
 /// let duration = winnow_iso8601::duration("P1W").unwrap();
-/// let duration = winnow_iso8601::duration("P2015-11-03T21:56").unwrap();
 /// ```
 pub fn duration(mut i: &str) -> Result<Duration, String> {
-    match parsers::parse_duration(&mut i) {
+    match parsers::duration(&mut i) {
         Ok(p) => Ok(p),
         Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
     }

@@ -12,8 +12,8 @@ use crate::{Date, DateTime, Duration, Time, Timezone};
 use core::str;
 use std::ops::RangeBounds;
 use winnow::ascii::digit1;
+use winnow::combinator::opt;
 use winnow::combinator::{alt, trace};
-use winnow::combinator::{not, opt};
 use winnow::combinator::{preceded, separated_pair, terminated};
 use winnow::error::{ContextError, ErrMode};
 use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
@@ -36,10 +36,8 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("take_digits", move |input: &mut Input| {
-        let digits = take_while(1.., |c: <Input as InputStream>::Token| {
-            c.is_dec_digit()
-        })
-        .parse_next(input)?;
+        let digits = take_while(1.., |c: <Input as InputStream>::Token| c.is_dec_digit())
+            .parse_next(input)?;
 
         if digits.as_bstr().is_empty() {
             return Err(ErrMode::Backtrack(ContextError::new()));
@@ -556,11 +554,12 @@ where
 {
     trace("duration_time", move |input: &mut Input| {
         seq!((
+            literal("T"),
             opt(duration_hour),
             opt(duration_minute),
             opt(duration_second_and_millisecond),
         ))
-        .map(|(h, m, s)| {
+        .map(|(_, h, m, s)| {
             let (s, ms) = s.unwrap_or((0, 0));
 
             (h.unwrap_or(0), m.unwrap_or(0), s, ms)
@@ -570,7 +569,7 @@ where
     .parse_next(i)
 }
 
-fn duration_ymdhms<'i, Input>(i: &mut Input) -> PResult<Duration>
+pub(crate) fn duration<'i, Input>(i: &mut Input) -> PResult<Duration>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
@@ -581,107 +580,34 @@ where
             _: literal("P"),
             opt(duration_year),
             opt(duration_month),
+            opt(duration_week),
             opt(duration_day),
-            opt(preceded(literal("T"), duration_time)),
+            opt(duration_time),
         ))
-        .verify(|(y, mo, d, time)| {
-            if y.is_none() && mo.is_none() && d.is_none() && time.is_none() {
+        .verify(|(y, mo, w, d, time)| {
+            if y.is_none() && mo.is_none() && w.is_none() && d.is_none() && time.is_none() {
                 false
             } else {
                 true
             }
         })
-        .map(|(y, mo, d, time)| {
+        .map(|(y, mo, w, d, time)| {
             // at least one element must be present for a valid duration representation
 
             let (h, mi, s, ms) = time.unwrap_or((0, 0, 0, 0));
 
-            Duration::YMDHMS {
-                year: y.unwrap_or(0),
-                month: mo.unwrap_or(0),
-                day: d.unwrap_or(0),
-                hour: h,
-                minute: mi,
-                second: s,
-                millisecond: ms,
+            Duration {
+                years: y.unwrap_or(0),
+                months: mo.unwrap_or(0),
+                weeks: w.unwrap_or(0),
+                days: d.unwrap_or(0),
+                hours: h,
+                minutes: mi,
+                seconds: s,
+                milliseconds: ms,
             }
         })
         .parse_next(input)
-    })
-    .parse_next(i)
-}
-
-fn duration_weeks<'i, Input>(i: &mut Input) -> PResult<Duration>
-where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
-{
-    trace("", move |input: &mut Input| {
-        preceded(literal("P"), duration_week)
-            .map(Duration::Weeks)
-            .parse_next(input)
-    })
-    .parse_next(i)
-}
-
-// YYYY, no sign
-fn duration_datetime_year<'i, Input>(i: &mut Input) -> PResult<u32>
-where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
-{
-    trace("duration_datetime_year", move |input: &mut Input| {
-        take_digits_in_range(input, 4, 1..)
-    })
-    .parse_next(i)
-}
-
-fn duration_datetime<'i, Input>(i: &mut Input) -> PResult<Duration>
-where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
-{
-    trace("duration_datetime", move |input: &mut Input| {
-        preceded(
-            seq!((literal("P"), not(sign))),
-            seq!((
-                duration_datetime_year,
-                opt(literal("-")),
-                date_month,
-                opt(literal("-")),
-                date_day,
-                literal("T"),
-                parse_time,
-            )),
-        )
-        .map(|(year, _, month, _, day, _, t)| Duration::YMDHMS {
-            year,
-            month,
-            day,
-            hour: t.hour,
-            minute: t.minute,
-            second: t.second,
-            millisecond: t.millisecond,
-        })
-        .parse_next(input)
-    })
-    .parse_next(i)
-}
-
-/// Parses a duration string.
-///
-/// See [`duration()`][`crate::duration()`] for supported formats.
-pub fn parse_duration<'i, Input>(i: &mut Input) -> PResult<Duration>
-where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
-{
-    trace("parse_duration", move |input: &mut Input| {
-        alt((duration_ymdhms, duration_weeks, duration_datetime)).parse_next(input)
     })
     .parse_next(i)
 }
