@@ -54,8 +54,8 @@ pub use duration::{duration, Duration};
 mod timezone;
 pub use timezone::{timezone, Timezone};
 
-#[cfg(feature = "chrono")]
-mod chrono;
+#[cfg(any(feature = "time", feature = "chrono"))]
+mod convert;
 
 #[cfg(feature = "serde")]
 mod serde;
