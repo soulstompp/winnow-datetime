@@ -1,0 +1,17 @@
+[package]
+name = "winnow-datetime"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+winnow = "0.6.20"
+chrono = { version = "0.4", default-features = false, optional = true }
+time = { version = "0.3.37", default-features = false, optional = true }
+num-traits = { version = "0.2", optional = true }
+serde = { version = "1.0", optional = true }
+
+[features]
+default = ["std"]
+std = ["winnow/std"]
+chrono = ["dep:chrono", "dep:num-traits"]
+time = ["dep:time", "dep:num-traits"]

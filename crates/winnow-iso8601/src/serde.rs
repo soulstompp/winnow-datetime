@@ -6,9 +6,9 @@ use serde::{
 };
 
 mod date {
-
     use super::*;
-    impl<'de> Deserialize<'de> for crate::Date {
+    use crate::date::Iso8601Date;
+    impl<'de> Deserialize<'de> for Iso8601Date {
         fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
@@ -17,7 +17,7 @@ mod date {
         }
     }
 
-    impl Serialize for crate::Date {
+    impl Serialize for Iso8601Date {
         fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: Serializer,
@@ -28,7 +28,7 @@ mod date {
 
     struct DateVisitor;
     impl<'de> Visitor<'de> for DateVisitor {
-        type Value = crate::Date;
+        type Value = Iso8601Date;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
             write!(formatter, "a string that follows iso8601 date format")
@@ -60,7 +60,7 @@ mod date {
         let date_json = r#""2023-02-10""#;
         let date = crate::date("2023-02-10").unwrap();
 
-        let deserialized_date = serde_json::from_str::<crate::Date>(date_json).unwrap();
+        let deserialized_date = serde_json::from_str::<Iso8601Date>(date_json).unwrap();
 
         assert_eq!(deserialized_date, date);
     }
@@ -68,8 +68,9 @@ mod date {
 
 mod time {
     use super::*;
+    use crate::time::Iso8601Time;
 
-    impl<'de> Deserialize<'de> for crate::Time {
+    impl<'de> Deserialize<'de> for Iso8601Time {
         fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
@@ -78,7 +79,7 @@ mod time {
         }
     }
 
-    impl Serialize for crate::Time {
+    impl Serialize for Iso8601Time {
         fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: Serializer,
@@ -89,7 +90,7 @@ mod time {
 
     struct TimeVisitor;
     impl<'de> Visitor<'de> for TimeVisitor {
-        type Value = crate::Time;
+        type Value = Iso8601Time;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
             write!(formatter, "a string that follows iso8601 time format")
@@ -110,7 +111,7 @@ mod time {
     fn serialize() {
         let time_json = r#""18:12:15.0+00:00""#;
 
-        let deserialized_time = serde_json::from_str::<crate::Time>(time_json).unwrap();
+        let deserialized_time = serde_json::from_str::<Iso8601Time>(time_json).unwrap();
         let serialized_time = serde_json::to_string(&deserialized_time).unwrap();
 
         assert_eq!(serialized_time, time_json);
@@ -121,7 +122,7 @@ mod time {
         let time_json = r#""18:12:15""#;
 
         let expected_time = crate::time("18:12:15").unwrap();
-        let deserialized_time = serde_json::from_str::<crate::Time>(time_json).unwrap();
+        let deserialized_time = serde_json::from_str::<Iso8601Time>(time_json).unwrap();
 
         assert_eq!(deserialized_time, expected_time);
     }
@@ -129,7 +130,8 @@ mod time {
 
 mod datetime {
     use super::*;
-    impl<'de> Deserialize<'de> for crate::DateTime {
+    use crate::datetime::Iso8601DateTime;
+    impl<'de> Deserialize<'de> for Iso8601DateTime {
         fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
@@ -138,7 +140,7 @@ mod datetime {
         }
     }
 
-    impl Serialize for crate::DateTime {
+    impl Serialize for Iso8601DateTime {
         fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: Serializer,
@@ -149,7 +151,7 @@ mod datetime {
 
     struct DateTimeVisitor;
     impl<'de> Visitor<'de> for DateTimeVisitor {
-        type Value = crate::DateTime;
+        type Value = Iso8601DateTime;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
             write!(formatter, "a string that follows iso8601 Datetime format")
@@ -181,7 +183,7 @@ mod datetime {
         let datetime_json = r#""2023-02-10T18:12:15""#;
         let datetime = crate::datetime("2023-02-10T18:12:15").unwrap();
 
-        let deserialized_datetime = serde_json::from_str::<crate::DateTime>(datetime_json).unwrap();
+        let deserialized_datetime = serde_json::from_str::<Iso8601DateTime>(datetime_json).unwrap();
 
         assert_eq!(deserialized_datetime, datetime);
     }
@@ -191,7 +193,7 @@ mod datetime {
         let datetime_json = r#""2023-02-10T18:12""#;
         let datetime = crate::datetime("2023-02-10T18:12").unwrap();
 
-        let deserialized_datetime = serde_json::from_str::<crate::DateTime>(datetime_json).unwrap();
+        let deserialized_datetime = serde_json::from_str::<Iso8601DateTime>(datetime_json).unwrap();
 
         assert_eq!(deserialized_datetime, datetime);
     }

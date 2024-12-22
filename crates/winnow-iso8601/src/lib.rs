@@ -10,9 +10,9 @@
 //!
 //! ```rust
 //! let datetime = winnow_iso8601::datetime("2015-06-26T16:43:23+0200").unwrap();
-//! let time = "16:43:23+0200".parse::<winnow_iso8601::Time>().unwrap();
-//! let date = "2015-02-29".parse::<winnow_iso8601::Date>().unwrap();
-//! let datetime = "2015-06-26T16:43:23+0200".parse::<winnow_iso8601::DateTime>().unwrap();
+//! let time = "16:43:23+0200".parse::<winnow_iso8601::Iso8601Time>().unwrap();
+//! let date = "2015-02-29".parse::<winnow_iso8601::Iso8601Date>().unwrap();
+//! let datetime = "2015-06-26T16:43:23+0200".parse::<winnow_iso8601::Iso8601DateTime>().unwrap();
 //! let duration = "P2021Y11M16DT23H26M59.123S".parse::<winnow_iso8601::Duration>().unwrap();
 //! ```
 
@@ -40,22 +40,21 @@ mod display;
 pub mod parsers;
 
 mod date;
-pub use date::{date, Date};
+pub use date::{date, Iso8601Date};
+
+pub use winnow_datetime::{Date, DateTime, Time, Timezone};
 
 mod time;
-pub use time::{time, Time};
+pub use time::{time, Iso8601Time};
 
 mod datetime;
-pub use datetime::{datetime, DateTime};
+pub use datetime::{datetime, Iso8601DateTime};
 
 mod duration;
 pub use duration::{duration, Duration};
 
 mod timezone;
-pub use timezone::{timezone, Timezone};
-
-#[cfg(any(feature = "time", feature = "chrono"))]
-mod convert;
+pub use timezone::{timezone, Iso8601Timezone};
 
 #[cfg(feature = "serde")]
 mod serde;

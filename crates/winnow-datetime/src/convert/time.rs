@@ -84,7 +84,13 @@ mod date_and_time {
 
     #[test]
     fn time_from_hms() {
-        let iso = crate::time("23:40:00").unwrap();
+        let iso = crate::Time {
+            hour: 23,
+            minute: 40,
+            second: 0,
+            millisecond: 0,
+            timezone: Default::default(),
+        };
         let time = time::Time::try_from(iso).unwrap();
         assert_eq!(time.hour(), 23);
         assert_eq!(time.minute(), 40);
@@ -93,7 +99,12 @@ mod date_and_time {
 
     #[test]
     fn date_from_ymd() {
-        let iso = crate::date("2023-02-08").unwrap();
+        let iso = crate::Date::YMD {
+            year: 2023,
+            month: 2,
+            day: 8,
+        };
+
         let date = time::Date::try_from(iso).unwrap();
         assert_eq!(date.year(), 2023);
         assert_eq!(date.month() as u8, 2);
@@ -102,7 +113,21 @@ mod date_and_time {
 
     #[test]
     fn datetime_from_iso() {
-        let iso = crate::datetime("2023-02-08T23:40:00").unwrap();
+        let iso = crate::DateTime {
+            date: crate::Date::YMD {
+                year: 2023,
+                month: 2,
+                day: 8,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                timezone: Default::default(),
+            },
+        };
+
         let datetime = time::PrimitiveDateTime::try_from(iso).unwrap();
         assert_eq!(datetime.year(), 2023);
         assert_eq!(datetime.month() as u8, 2);

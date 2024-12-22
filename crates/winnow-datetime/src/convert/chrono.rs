@@ -31,12 +31,17 @@ impl crate::Date {
 
 #[cfg(test)]
 mod test_date {
+    use crate::Date;
     use chrono::Datelike;
     use core::convert::TryFrom;
 
     #[test]
     fn naivedate_from_ymd() {
-        let iso = crate::date("2023-02-08").unwrap();
+        let iso = crate::Date::YMD {
+            year: 2023,
+            month: 2,
+            day: 8,
+        };
         let naive = chrono::NaiveDate::try_from(iso).unwrap();
         assert_eq!(naive.year(), 2023);
         assert_eq!(naive.month(), 2);
@@ -45,7 +50,11 @@ mod test_date {
 
     #[test]
     fn naivedate_from_ywd() {
-        let iso = crate::date("2023-W06-2").unwrap();
+        let iso = Date::Week {
+            year: 2023,
+            ww: 6,
+            d: 2,
+        };
         let naive = chrono::NaiveDate::try_from(iso).unwrap();
         assert_eq!(naive.year(), 2023);
         assert_eq!(naive.month(), 2);
@@ -54,7 +63,10 @@ mod test_date {
 
     #[test]
     fn naivedate_from_ordinal() {
-        let iso = crate::date("2023-039").unwrap();
+        let iso = crate::Date::Ordinal {
+            year: 2023,
+            ddd: 39,
+        };
         let naive = chrono::NaiveDate::try_from(iso).unwrap();
         assert_eq!(naive.year(), 2023);
         assert_eq!(naive.month(), 2);
@@ -114,7 +126,23 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ymd_offset() {
-        let iso = crate::datetime("2023-02-08T23:40:00+01:23").unwrap();
+        let iso = crate::DateTime {
+            date: crate::Date::YMD {
+                year: 2023,
+                month: 2,
+                day: 8,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                timezone: crate::Timezone {
+                    offset_hours: 1,
+                    offset_minutes: 23,
+                },
+            },
+        };
         let datetime = chrono::DateTime::try_from(iso).unwrap();
 
         assert_eq!(datetime.year(), 2023);
@@ -128,7 +156,23 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ymd_utc() {
-        let iso = crate::datetime("2023-02-08T23:40:00Z").unwrap();
+        let iso = crate::DateTime {
+            date: crate::Date::YMD {
+                year: 2023,
+                month: 2,
+                day: 8,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                timezone: crate::Timezone {
+                    offset_hours: 0,
+                    offset_minutes: 0,
+                },
+            },
+        };
         let datetime = chrono::DateTime::try_from(iso).unwrap();
 
         assert_eq!(datetime.year(), 2023);
@@ -142,7 +186,23 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ymd_no_offset() {
-        let iso = crate::datetime("2023-02-08T23:40:00").unwrap();
+        let iso = crate::DateTime {
+            date: crate::Date::YMD {
+                year: 2023,
+                month: 2,
+                day: 8,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                timezone: crate::Timezone {
+                    offset_hours: 0,
+                    offset_minutes: 0,
+                },
+            },
+        };
         let datetime = chrono::DateTime::try_from(iso).unwrap();
 
         assert_eq!(datetime.year(), 2023);
@@ -156,7 +216,23 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ywd() {
-        let iso = crate::datetime("2023-W06-2T23:40:00+01:23").unwrap();
+        let iso = crate::DateTime {
+            date: crate::Date::Week {
+                year: 2023,
+                ww: 6,
+                d: 2,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                timezone: crate::Timezone {
+                    offset_hours: 1,
+                    offset_minutes: 23,
+                },
+            },
+        };
         let datetime = chrono::DateTime::try_from(iso).unwrap();
 
         assert_eq!(datetime.year(), 2023);
