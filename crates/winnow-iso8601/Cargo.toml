@@ -1,6 +1,6 @@
 [package]
 name = "winnow_iso8601"
-version = "0.3.0"
+version = "0.4.0"
 description = "Parsing ISO8601 dates using winnow"
 keywords = [ "iso8601", "date-time", "parser", "winnow" ]
 categories = [ "parser-implementations", "date-and-time" ]
@@ -14,16 +14,20 @@ edition = "2021"
 
 [dependencies]
 winnow = {  version = "0.6.20" }
-winnow-datetime = { path = "../winnow-datetime" }
+winnow_datetime = { path = "../winnow-datetime" }
 chrono = { version = "0.4", default-features = false, optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }
 num-traits = { version = "0.2", optional = true }
 serde = { version = "1.0", optional = true }
+winnow_datetime_assert = { path = "../winnow-datetime-assert", optional = true }
 
 [dev-dependencies ]
 serde_json = "1.0"
+winnow_datetime_assert = { path = "../winnow-datetime-assert" }
+galvanic-test = "0.2.0"
 
 [features]
+testing = ["winnow_datetime_assert"]
 default = ["std"]
 std = ["winnow/std"]
 chrono = ["dep:chrono", "dep:num-traits"]

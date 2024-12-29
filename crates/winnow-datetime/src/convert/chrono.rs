@@ -92,7 +92,10 @@ impl TryFrom<crate::DateTime> for chrono::DateTime<chrono::FixedOffset> {
     type Error = ();
 
     fn try_from(iso: crate::DateTime) -> Result<Self, Self::Error> {
-        let crate::Time { timezone, .. } = iso.time;
+        let timezone = iso.time.timezone.unwrap_or(crate::Timezone {
+            offset_hours: 0,
+            offset_minutes: 0,
+        });
 
         let offset_minutes = timezone.offset_hours * 3600 + timezone.offset_minutes;
         let offset = chrono::FixedOffset::east_opt(offset_minutes).ok_or(())?;
@@ -137,10 +140,10 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                timezone: crate::Timezone {
+                timezone: Some(crate::Timezone {
                     offset_hours: 1,
                     offset_minutes: 23,
-                },
+                }),
             },
         };
         let datetime = chrono::DateTime::try_from(iso).unwrap();
@@ -167,10 +170,10 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                timezone: crate::Timezone {
+                timezone: Some(crate::Timezone {
                     offset_hours: 0,
                     offset_minutes: 0,
-                },
+                }),
             },
         };
         let datetime = chrono::DateTime::try_from(iso).unwrap();
@@ -197,10 +200,10 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                timezone: crate::Timezone {
+                timezone: Some(crate::Timezone {
                     offset_hours: 0,
                     offset_minutes: 0,
-                },
+                }),
             },
         };
         let datetime = chrono::DateTime::try_from(iso).unwrap();
@@ -227,10 +230,10 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                timezone: crate::Timezone {
+                timezone: Some(crate::Timezone {
                     offset_hours: 1,
                     offset_minutes: 23,
-                },
+                }),
             },
         };
         let datetime = chrono::DateTime::try_from(iso).unwrap();

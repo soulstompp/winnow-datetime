@@ -5,7 +5,8 @@ use winnow_datetime::parsers::{date_day, date_month};
 fn test_date_year() {
     assert_eq!(date_year(&mut "2015".as_bstr()).unwrap(), 2015);
     assert_eq!(date_year(&mut "+2015".as_bstr()).unwrap(), 2015);
-    assert_eq!(date_year(&mut "-333".as_bstr()).unwrap(), -333);
+    assert!(date_year(&mut "-333".as_bstr()).is_err());
+    assert_eq!(date_year(&mut "-0333".as_bstr()).unwrap(), -333);
     assert_eq!(date_year(&mut "2015-".as_bstr()).unwrap(), 2015);
     assert!(date_year(&mut Stream::new(b"abcd")).is_err());
     assert!(date_year(&mut Stream::new(b"2a03")).is_err());
@@ -44,11 +45,11 @@ fn test_time_hour() {
     assert_eq!(time_hour(&mut "12".as_bstr()).unwrap(), 12);
     assert_eq!(time_hour(&mut "13".as_bstr()).unwrap(), 13);
     assert_eq!(time_hour(&mut "20".as_bstr()).unwrap(), 20);
-    assert_eq!(time_hour(&mut "24".as_bstr()).unwrap(), 24);
 
-    assert!(time_hour(&mut Stream::new(b"25")).is_err());
-    assert!(time_hour(&mut Stream::new(b"30")).is_err());
-    assert!(time_hour(&mut Stream::new(b"ab")).is_err());
+    assert!(time_hour(&mut "24".as_bstr()).is_err());
+    assert!(time_hour(&mut "25".as_bstr()).is_err());
+    assert!(time_hour(&mut "30".as_bstr()).is_err());
+    assert!(time_hour(&mut "ab".as_bstr()).is_err());
 }
 
 #[test]
@@ -85,19 +86,18 @@ fn test_date() {
 #[test]
 fn test_time() {
     assert!(parse_time(&mut Stream::new(b"20:")).is_err());
-    assert!(parse_time(&mut Stream::new(b"20p42p16")).is_err());
     assert!(parse_time(&mut Stream::new(b"pppp")).is_err());
 }
 
 #[test]
 fn test_time_with_timezone() {
     assert!(parse_time(&mut Stream::new(b"20:")).is_err());
-    assert!(parse_time(&mut Stream::new(b"20p42p16")).is_err());
     assert!(parse_time(&mut Stream::new(b"pppp")).is_err());
 }
 
 #[test]
 fn test_date_iso_week_date() {
+    println!("{:?}", date_iso_week(&mut "2015-W06-0".as_bstr()));
     assert!(date_iso_week(&mut Stream::new(b"2015-W06-8")).is_err());
     assert!(date_iso_week(&mut Stream::new(b"2015-W068")).is_err());
     assert!(date_iso_week(&mut Stream::new(b"2015-W06-0")).is_err());

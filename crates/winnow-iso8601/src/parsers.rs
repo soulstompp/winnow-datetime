@@ -8,7 +8,11 @@
 //! Using the low-level functions provided here allows to recover leftover input
 //! or to combine these parsers with other parser combinators.
 
-use crate::{DateTime, Duration, Time, Timezone};
+use winnow_datetime::parsers::date_day;
+use winnow_datetime::parsers::date_month;
+use winnow_datetime::parsers::date_iso_week;
+use winnow_datetime::{Date, DateTime, Time, Timezone};
+use crate::Duration;
 use core::str;
 use winnow::combinator::opt;
 use winnow::combinator::{alt, trace};
@@ -20,8 +24,7 @@ use winnow::{seq, PResult, Parser, Partial};
 use winnow_datetime::parsers::sign;
 use winnow_datetime::parsers::take_digits;
 use winnow_datetime::parsers::take_digits_in_range;
-use winnow_datetime::parsers::{date_year, fraction_millisecond, time_hour, time_minute};
-use winnow_datetime::parsers::{date_ymd, time_second};
+use winnow_datetime::parsers::{date_ymd, time_second, date_year, fraction_millisecond, time_hour, time_minute};
 
 #[cfg(test)]
 mod tests;
@@ -44,7 +47,7 @@ where
 }
 
 // YYYY-DDD
-fn date_ordinal<'i, Input>(i: &mut Input) -> PResult<winnow_datetime::Date>
+fn date_ordinal<'i, Input>(i: &mut Input) -> PResult<Date>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
@@ -52,76 +55,50 @@ where
 {
     trace("date_ordinal", move |input: &mut Input| {
         separated_pair(date_year, opt(literal("-")), date_ord_day)
-            .map(|(year, ddd)| winnow_datetime::Date::Ordinal { year, ddd })
+            .map(|(year, ddd)| Date::Ordinal { year, ddd })
             .parse_next(input)
     })
     .parse_next(i)
 }
 
-// YYYY-"W"WW-D
-fn date_iso_week<'i, Input>(i: &mut Input) -> PResult<winnow_datetime::Date>
+/// Parses a date string specificed as YYYYMMDD
+pub fn date_ymd_numeric<'i, Input>(i: &mut Input) -> PResult<Date>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
-    trace("", move |input: &mut Input| {
-        seq!((
-            date_year,                               // y
-            seq!((opt(literal("-")), literal("W"))), // [-]W
-            date_week,                               // w
-            opt(literal("-")),                       // [-]
-            date_week_day,                           // d
-        ))
-        .map(|(year, _, ww, _, d)| winnow_datetime::Date::Week { year, ww, d })
-        .parse_next(input)
+    trace("date_ymd_numeric", move |input: &mut Input| {
+        seq!(Date::YMD {
+            year: date_year,      // YYYY
+            month: date_month,     // MM
+            day: date_day,       //DD
+        })
+            .parse_next(input)
     })
-    .parse_next(i)
+        .parse_next(i)
 }
 
 /// Parses a date string.
 ///
 /// See [`date()`][`crate::date()`] for the supported formats.
-pub fn parse_date<'i, Input>(i: &mut Input) -> PResult<winnow_datetime::Date>
+pub fn parse_date<'i, Input>(i: &mut Input) -> PResult<Date>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("parse_date", move |input: &mut Input| {
-        alt((date_ymd, date_iso_week, date_ordinal)).parse_next(input)
-    })
-    .parse_next(i)
-}
-
-// WW
-fn date_week<'i, Input>(i: &mut Input) -> PResult<u32>
-where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
-{
-    trace("date_week", move |input: &mut Input| {
-        take_digits_in_range(input, 2, 1..=52)
-    })
-    .parse_next(i)
-}
-
-fn date_week_day<'i, Input>(i: &mut Input) -> PResult<u32>
-where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
-{
-    trace("date_week_day", move |input: &mut Input| {
-        take_digits_in_range(input, 1, 1..=7)
+        alt((
+            date_iso_week, date_ymd_numeric, date_ordinal, date_ymd
+        )).parse_next(input)
     })
     .parse_next(i)
 }
 
 // TIME
 
-/// Parses a time string.
+/// Parses a time string with an optional preceding 'T'.
 ///
 /// See [`time()`][`crate::time()`] for the supported formats.
 // HH:MM:[SS][.(m*)][(Z|+...|-...)]
@@ -132,18 +109,68 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("parse_time", move |input: &mut Input| {
-        let t = seq! {Time {
-            hour: time_hour,                                         // HH
-            _: opt(literal(":")),                                    // :
-            minute: time_minute,                                       // MM
-            second: opt(preceded(opt(literal(":")), time_second)).map(|d| d.unwrap_or(0)),        // [SS]
-            millisecond: opt(preceded(one_of(b",."), fraction_millisecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
-            timezone: opt(parse_timezone).map(|tz| tz.unwrap_or(Default::default())),           // [(Z|+...|-...)]
-        }}
-        .parse_next(input)?;
-        Ok(t)
+        seq!((
+            _: opt(literal("T")),
+            base_time
+        )).map(|r| r.0).parse_next(input)
     })
     .parse_next(i)
+}
+
+/// Parses a time string.
+///
+/// See [`time()`][`crate::time()`] for the supported formats.
+// HH:MM:[SS][.(m*)][(Z|+...|-...)]
+pub fn base_time<'i, Input>(i: &mut Input) -> PResult<Time>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("base_time", move |input: &mut Input| {
+        let hour = time_hour(input)?;
+
+        let msms = opt(time_minute_second_millisecond).parse_next(input)?; // MM:[SS][.(m*)]
+
+        let timezone = opt(parse_timezone).parse_next(input)?;
+
+        if let Some((minute, second, millisecond)) = msms {
+            return Ok(Time {
+                hour,                                         // HH
+                minute,                                       // MM
+                second: second.unwrap_or(0),        // [SS]
+                millisecond: millisecond.unwrap_or(0), // [.(m*)]
+                timezone,           // [(Z|+...|-...)]
+            });
+        } else {
+            let (minute, second, millisecond) = (0, 0, 0);
+            return Ok(Time {
+                hour,                                         // HH
+                minute,                                       // MM
+                second,        // [SS]
+                millisecond, // [.(m*)]
+                timezone,           // [(Z|+...|-...)]
+            });
+        }
+    })
+        .parse_next(i)
+}
+
+/// Parses secondary portion of a time string.
+fn time_minute_second_millisecond<'i, Input>(i: &mut Input) -> PResult<(u32, Option<u32>, Option<u32>)>
+    where
+        Input: StreamIsPartial + InputStream + Compare<&'i str>,
+        <Input as InputStream>::Slice: AsBStr,
+        <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("time_minute_second_millisecond", move |input: &mut Input| {
+        seq!((
+            preceded(opt(literal(":")), time_minute),
+            opt(preceded(opt(literal(":")), time_second)),
+            opt(preceded(one_of(b",."), fraction_millisecond))
+        ))
+        .parse_next(input)
+    }).parse_next(i)
 }
 
 /// Parses a timezone offset string.
@@ -186,7 +213,7 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("parse_datetime", move |input: &mut Input| {
-        separated_pair(parse_date, literal("T"), parse_time)
+        separated_pair(parse_date, literal("T"), base_time)
             .map(|(d, t)| DateTime { date: d, time: t })
             .parse_next(input)
     })

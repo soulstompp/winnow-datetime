@@ -1,4 +1,4 @@
-use crate::{datetime, parsers};
+use crate::parsers;
 use alloc::string::String;
 use core::fmt;
 use core::fmt::Display;
@@ -47,5 +47,67 @@ pub fn date(mut i: &str) -> Result<Iso8601Date, String> {
         Ok(Iso8601Date(parsed))
     } else {
         Err(format!("Failed to parse date: {}", i))
+    }
+}
+
+#[cfg(feature = "testing")]
+use winnow_datetime_assert::DateCoverage;
+#[cfg(feature = "testing")]
+use winnow_datetime_assert::FormatCoverage;
+
+#[cfg(feature = "testing")]
+/// builds a list of assertions the date parser should pass
+pub fn coverage() -> DateCoverage {
+    DateCoverage {
+        coverage: vec![
+            FormatCoverage {
+                format: "%Y-%M-%D".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%C".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%X".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%Y".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%Y-%M".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%Y-%O".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%V-W%W".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%V-W%W-%w".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%Y%M%D".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%Y%O".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%VW%W".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%VW%W%w".into(),
+                exception: Ok(None),
+            },
+        ]
     }
 }

@@ -1,6 +1,7 @@
 use core::str::FromStr;
 use std::prelude::rust_2015::String;
 use winnow_datetime::Timezone;
+use winnow_datetime_assert::FormatCoverage;
 
 /// Wrapper around a `Timezone` that implements `Display` and `FromStr` correctly for the standard.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -35,5 +36,38 @@ pub fn timezone(mut i: &str) -> Result<Iso8601Timezone, String> {
         Ok(Iso8601Timezone(parsed))
     } else {
         Err(format!("Failed to parse datetime: {}", i))
+    }
+}
+
+#[cfg(feature = "testing")]
+use winnow_datetime_assert::TimezoneCoverage;
+
+#[cfg(feature = "testing")]
+/// builds a list of assertions the date parser should pass
+pub fn coverage() -> TimezoneCoverage {
+    TimezoneCoverage {
+        coverage: vec![
+            FormatCoverage {
+                format: "%Z:%z".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "Z".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "-00:00".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%Z".into(),
+                exception: Ok(None),
+            },
+            FormatCoverage {
+                format: "%Z%z".into(),
+                exception: Ok(None),
+            },
+
+        ],
     }
 }

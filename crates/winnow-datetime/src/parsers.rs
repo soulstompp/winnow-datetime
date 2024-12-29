@@ -7,8 +7,7 @@ use crate::Date;
 use core::str;
 use std::ops::RangeBounds;
 use winnow::ascii::digit1;
-use winnow::combinator::opt;
-use winnow::combinator::{alt, trace};
+use winnow::combinator::{alt, opt, trace};
 use winnow::error::{ContextError, ErrMode};
 use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
 use winnow::token::{literal, take_while};
@@ -84,6 +83,100 @@ where
 
 // DATE
 
+// WW
+pub fn date_week<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("date_week", move |input: &mut Input| {
+        take_digits_in_range(input, 2, 1..=52)
+    })
+        .parse_next(i)
+}
+
+pub fn unverified_date_week_day<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("unverified_date_week_day", move |input: &mut Input| {
+        take_digits_in_range(input, 1, 0..=9)
+    })
+        .parse_next(i)
+}
+
+pub fn date_week_day<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("date_week_day", move |input: &mut Input| {
+        unverified_date_week_day(input)
+    })
+        .verify(|d| *d > 0 && *d <= 7)
+        .parse_next(i)
+}
+
+// YYYY-"W"WW-D
+pub fn date_iso_week<'i, Input>(i: &mut Input) -> PResult<crate::Date>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("", move |input: &mut Input| {
+        seq!((
+            date_year,                               // y
+            seq!((opt(literal("-")), literal("W"))), // [-]W
+            date_week,                               // w
+            opt(unverified_date_iso_week_day)
+        ))
+            .verify(|(_, _, _, d)| d.is_none() || d.unwrap() > 0 && d.unwrap() <= 7)
+            .map(|(year, _, ww, d)| Date::Week { year, ww, d: d.unwrap_or(0) })
+            .parse_next(input)
+    })
+        .parse_next(i)
+}
+
+// [-]D - unverified
+pub fn unverified_date_iso_week_day<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+   trace("", move |input: &mut Input| {
+        seq!((
+            _: opt(literal("-")),                       // [-]
+            unverified_date_week_day,                           // d
+        )).map(|d| d.0)
+        .parse_next(input)
+    })
+    .parse_next(i)
+}
+
+// [-]D
+pub fn date_iso_week_day<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+   trace("", move |input: &mut Input| {
+        seq!((
+            _: opt(literal("-")),                       // [-]
+            date_week_day,                           // d
+        )).map(|d| d.0)
+        .verify(|d| *d > 0 && *d <= 7)
+        .parse_next(input)
+    })
+        .parse_next(i)
+}
+
 // [+/-]YYYY
 pub fn date_year<'i, Input>(i: &mut Input) -> PResult<i32>
 where
@@ -95,7 +188,7 @@ where
         // The sign is optional, but defaults to `+`
         let sign = opt(sign).parse_next(input)?.unwrap_or(1);
 
-        let y = take_while(3..=4, |c: <Input as InputStream>::Token| {
+        let y = take_while(4, |c: <Input as InputStream>::Token| {
             c.as_char().is_digit(10)
         })
         .parse_next(input)?;
@@ -149,7 +242,7 @@ where
             _: opt(literal("-")), // -
             month: date_month,     // MM
             _: opt(literal("-")), // -
-            day: date_day,       //DD
+            day: opt(date_day).map(|d| d.unwrap_or(1)),       //DD
         })
         .parse_next(input)
     })
@@ -166,7 +259,7 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("time_hour", move |input: &mut Input| {
-        take_digits_in_range(input, 2, 0..=24)
+        take_digits_in_range(input, 2, 0..=23)
     })
     .parse_next(i)
 }

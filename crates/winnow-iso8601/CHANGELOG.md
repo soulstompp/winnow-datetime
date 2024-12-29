@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 - 2014-12-29
+* Moved Date, Time, and DateTime, Timezone to the `winnow-datetime` so that upcoming format crates
+  can re-use them. This crate will no longer export these directly, since this caused several type
+  misinterpretations by the compiler.
+* Moved several base parsers to the `winnow-datetime` crate. Duration and Period parsers are still
+  here, since not many other formats cover these concepts.
+* Addition of the `Datetime::Century` and `Datetime::Decade` variants, which are new additions to 
+  ISO 8601-1:2019.
+* Fixes to some situations where year-week dates were not being parsed correctly.
+* Test generation methods and improved testing from the workspace's new crate
+  `winnow-datetime-assert`
+* Added support for 'T' preceding the time in the time parser.
+* Using new test builder from the new winnow-datetime-assert crate in this workspace. Old tests
+  should be almost entirely redundant but currently remain to protect against regression as these
+  tests are made less verbose in the near future.
+
+ 
 ## 0.3.0 - 2024-12-17
 * Conversion traits for time-rs module and moved both time-rs and chrono to convert module.
 * Minor clean-up of date and sign parsers

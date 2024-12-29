@@ -65,7 +65,7 @@ pub struct Time {
     /// everything after a `.`
     pub millisecond: u32,
     /// the hour part of the timezone offset from UTC
-    pub timezone: Timezone,
+    pub timezone: Option<Timezone>,
 }
 
 impl Time {
@@ -76,10 +76,10 @@ impl Time {
     /// * `tzo` - A tuple of `(hours, minutes)` specifying the timezone offset from UTC.
     pub fn set_tz(&self, tzo: (i32, i32)) -> Time {
         let mut t = *self;
-        t.timezone = Timezone {
+        t.timezone = Some(Timezone {
             offset_hours: tzo.0,
             offset_minutes: tzo.1,
-        };
+        });
         t
     }
 }

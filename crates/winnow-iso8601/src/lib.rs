@@ -39,21 +39,24 @@ extern crate alloc;
 mod display;
 pub mod parsers;
 
-mod date;
+/// date mod
+pub mod date;
 pub use date::{date, Iso8601Date};
 
-pub use winnow_datetime::{Date, DateTime, Time, Timezone};
-
-mod time;
+/// time mod
+pub mod time;
 pub use time::{time, Iso8601Time};
 
-mod datetime;
+/// datetime mod
+pub mod datetime;
 pub use datetime::{datetime, Iso8601DateTime};
 
-mod duration;
+/// duration mod
+pub mod duration;
 pub use duration::{duration, Duration};
 
-mod timezone;
+/// timezone mod
+pub mod timezone;
 pub use timezone::{timezone, Iso8601Timezone};
 
 #[cfg(feature = "serde")]
