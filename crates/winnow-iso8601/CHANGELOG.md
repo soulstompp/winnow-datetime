@@ -15,6 +15,12 @@
 * Using new test builder from the new winnow-datetime-assert crate in this workspace. Old tests
   should be almost entirely redundant but currently remain to protect against regression as these
   tests are made less verbose in the near future.
+* Timezone/timezone parsers were renamed to offset, since upcoming versions will have named timezones
+  and offsets is what is used in the specs.
+* timezone_utc parser renamed offset_zulu
+* the helper methods for getting these objects from an str are now called parser_(year|date|time|offset)
+  and the corresponding parsers no longer have the parser_ suffix so that they are uniform with the rest of
+  the parser names.
 
  
 ## 0.3.0 - 2024-12-17

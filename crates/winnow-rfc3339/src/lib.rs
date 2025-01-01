@@ -9,7 +9,7 @@
 //! # Example
 //!
 //! ```rust
-//! let datetime = winnow_iso8601::parse_datetime("2015-06-26T16:43:23+0200").unwrap();
+//! let datetime = winnow_rfc3339::parse_datetime("2015-06-26T16:43:23+02:00").unwrap();
 //! ```
 
 #![allow(clippy::uninlined_format_args)]
@@ -32,7 +32,6 @@ extern crate std;
 #[macro_use]
 extern crate alloc;
 
-mod display;
 pub mod parsers;
 
 /// date mod
@@ -47,11 +46,6 @@ pub use time::parse_time;
 pub mod datetime;
 pub use datetime::parse_datetime;
 
-//TODO: move Duration to winnow-datetime
-/// duration mod
-pub mod duration;
-pub use duration::{parse_duration, Duration};
-
-/// offset mod
+/// timezone mod
 pub mod offset;
 pub use offset::parse_offset;

@@ -8,6 +8,5 @@ winnow_datetime = { path = "../winnow-datetime" }
 galvanic-test = "0.2.0"
 winnow = "0.6.20"
 paste = "1.0.15"
-winnow_iso8601 = "0.3.0"
 
 [dev-dependencies]

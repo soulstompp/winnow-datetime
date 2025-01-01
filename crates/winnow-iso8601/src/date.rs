@@ -1,33 +1,6 @@
 use crate::parsers;
 use alloc::string::String;
-use core::fmt;
-use core::fmt::Display;
-use core::str::FromStr;
 use winnow_datetime::Date;
-
-/// Wrapper around a `Date` that implements `Display` and `FromStr` correctly for the standard.
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub struct Iso8601Date(pub Date);
-
-impl Display for Iso8601Date {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.0 {
-            // like `2015-11-02`
-            Date::YMD { year, month, day } => write!(f, "{:04}-{:02}-{:02}", year, month, day),
-            // like `2015-W45-01`
-            Date::Week { year, ww, d } => write!(f, "{:04}-{:02}-{:02}", year, ww, d),
-            // like `2015-306`
-            Date::Ordinal { year, ddd } => write!(f, "{:04}-{:03}", year, ddd),
-        }
-    }
-}
-
-impl FromStr for Iso8601Date {
-    type Err = String;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        date(s)
-    }
-}
 
 /// Parses a date string.
 ///
@@ -40,11 +13,11 @@ impl FromStr for Iso8601Date {
 /// ## Example
 ///
 /// ```rust
-/// let date = winnow_iso8601::date("2015-11-02").unwrap();
+/// let date = winnow_iso8601::parse_date("2015-11-02").unwrap();
 /// ```
-pub fn date(mut i: &str) -> Result<Iso8601Date, String> {
-    if let Ok(parsed) = parsers::parse_date(&mut i) {
-        Ok(Iso8601Date(parsed))
+pub fn parse_date(mut i: &str) -> Result<Date, String> {
+    if let Ok(parsed) = parsers::date(&mut i) {
+        Ok(parsed)
     } else {
         Err(format!("Failed to parse date: {}", i))
     }
@@ -63,51 +36,63 @@ pub fn coverage() -> DateCoverage {
             FormatCoverage {
                 format: "%Y-%M-%D".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%C".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%X".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%Y".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%Y-%M".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%Y-%O".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%V-W%W".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%V-W%W-%w".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%Y%M%D".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%Y%O".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%VW%W".into(),
                 exception: Ok(None),
+                complete: true,
             },
             FormatCoverage {
                 format: "%VW%W%w".into(),
                 exception: Ok(None),
+                complete: true,
             },
-        ]
+        ],
     }
 }

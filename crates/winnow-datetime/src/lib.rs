@@ -7,5 +7,5 @@ pub mod types;
 
 pub use types::Date;
 pub use types::DateTime;
+pub use types::Offset;
 pub use types::Time;
-pub use types::Timezone;

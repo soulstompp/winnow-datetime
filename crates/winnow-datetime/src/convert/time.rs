@@ -89,7 +89,7 @@ mod date_and_time {
             minute: 40,
             second: 0,
             millisecond: 0,
-            timezone: Default::default(),
+            offset: Default::default(),
         };
         let time = time::Time::try_from(iso).unwrap();
         assert_eq!(time.hour(), 23);
@@ -124,7 +124,7 @@ mod date_and_time {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                timezone: Default::default(),
+                offset: Default::default(),
             },
         };
 

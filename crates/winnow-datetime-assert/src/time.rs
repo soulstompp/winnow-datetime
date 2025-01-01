@@ -1,11 +1,11 @@
-use winnow_datetime::Time;
+use crate::offset::OffsetAssertion;
 use crate::{FormatAssertion, FormatAssertionBuilder};
-use crate::timezone::TimezoneAssertion;
+use winnow_datetime::Time;
 
 #[derive(Debug)]
 pub struct TimeAssertion {
     assertions: Vec<FormatAssertion<Time>>,
-    timezone_assertions: TimezoneAssertion
+    offset_assertions: OffsetAssertion,
 }
 
 impl FormatAssertionBuilder<Time> for TimeAssertion {
@@ -19,12 +19,15 @@ impl FormatAssertionBuilder<Time> for TimeAssertion {
         acc.append(&mut self.base_assertions());
 
         for t in self.base_assertions() {
-            for tz in self.timezone_assertions.assertions().iter() {
+            for tz in self.offset_assertions.assertions().iter() {
                 let format = format!("{}{}", t.format, tz.format);
                 let input = format!("{}{}", t.input, tz.input);
 
                 let expected = match (t.expected.clone(), tz.expected.clone()) {
-                    (Ok(t), Ok(tz)) => Ok(t.set_tz((tz.offset_hours, tz.offset_minutes))),
+                    (Ok(t), Ok(Some(tz))) => {
+                        Ok(t.set_tz(Some((tz.offset_hours, tz.offset_minutes))))
+                    }
+                    (Ok(t), Ok(None)) => Ok(t.set_tz(None)),
                     (Err(e), _) => Err(e),
                     (_, Err(e)) => Err(e),
                 };
@@ -32,7 +35,7 @@ impl FormatAssertionBuilder<Time> for TimeAssertion {
                 acc.push(FormatAssertion {
                     format,
                     input,
-                    expected
+                    expected,
                 });
             }
         }
@@ -52,7 +55,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%.1s                    | 07:42:55.8
@@ -64,7 +67,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 800,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%.2s                    | 07:42:55.87
@@ -76,7 +79,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%,3s                    | 07:42:55,870
@@ -88,7 +91,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%.3s                    | 07:42:55.870
@@ -100,7 +103,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%s,%u                   | 07:42:55,870479
@@ -112,7 +115,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%s.%u                   | 07:42:55.870479
@@ -124,7 +127,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h                           | T07
@@ -136,7 +139,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 0,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m                        | T07:42
@@ -148,7 +151,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%,1m                      | T07:42,9
@@ -160,7 +163,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 900,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%.1m                      | T07:42.9
@@ -172,7 +175,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 900,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%s                     | T07:42:55
@@ -184,7 +187,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%.1s                   | T07:42:55.8
@@ -196,7 +199,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 800,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%.2s                   | T07:42:55.87
@@ -208,7 +211,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%,3s                   | T07:42:55,870
@@ -220,7 +223,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%.3s                   | T07:42:55.870
@@ -232,7 +235,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%s,%u                  | T07:42:55,870479
@@ -244,7 +247,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%s.%u                  | T07:42:55.870479
@@ -256,7 +259,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m                          | 0742
@@ -268,7 +271,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%s                        | 074255
@@ -280,7 +283,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%.1s                      | 074255.8
@@ -292,7 +295,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 800,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%.2s                      | 074255.87
@@ -304,7 +307,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%,3s                      | 074255,870
@@ -316,7 +319,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%.3s                      | 074255.870
@@ -328,7 +331,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%s,%u                     | 074255,870479
@@ -340,7 +343,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%s.%u                     | 074255.870479
@@ -352,7 +355,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m                         | T0742
@@ -364,7 +367,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%,1m                       | T0742,9
@@ -376,7 +379,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 900,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%.1m                       | T0742.9
@@ -388,7 +391,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 900,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m%s                       | T074255
@@ -400,7 +403,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m%.1s                     | T074255.8
@@ -412,7 +415,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 800,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m%.2s                     | T074255.87
@@ -424,7 +427,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m%,3s                     | T074255,870
@@ -436,7 +439,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m%.3s                     | T074255.870
@@ -448,7 +451,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m%s,%u                    | T074255,870479
@@ -460,7 +463,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h%m%s.%u                    | T074255.870479
@@ -472,7 +475,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h                            | 07
@@ -484,7 +487,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 0,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m                         | 07:42
@@ -496,7 +499,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%.1m                       | 07:42.9
@@ -508,7 +511,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 900,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%s                      | 07:42:55
@@ -520,7 +523,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%.1s                    | 07:42:55.8
@@ -532,7 +535,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 800,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%.2s                    | 07:42:55.87
@@ -544,7 +547,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%,3s                    | 07:42:55,870
@@ -556,7 +559,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%.3s                    | 07:42:55.870
@@ -568,7 +571,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%s,%u                   | 07:42:55,870479
@@ -580,7 +583,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h:%m:%s.%u                   | 07:42:55.870479
@@ -592,7 +595,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h                           | T07
@@ -604,7 +607,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 0,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m                        | T07:42
@@ -616,7 +619,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%,1m                      | T07:42,9
@@ -628,7 +631,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 900,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%.1m                      | T07:42.9
@@ -640,7 +643,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 900,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%s                     | T07:42:55
@@ -652,7 +655,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%.1s                   | T07:42:55.8
@@ -664,7 +667,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 800,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%.2s                   | T07:42:55.87
@@ -676,7 +679,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%,3s                   | T07:42:55,870
@@ -688,7 +691,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%.3s                   | T07:42:55.870
@@ -700,7 +703,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%s,%u                  | T07:42:55,870479
@@ -712,7 +715,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //T%h:%m:%s.%u                  | T07:42:55.870479
@@ -724,7 +727,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m                          | 0742
@@ -736,7 +739,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 0,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%s                        | 074255
@@ -748,7 +751,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 0,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%.1s                      | 074255.8
@@ -760,7 +763,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 800,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%.2s                      | 074255.87
@@ -772,7 +775,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%,3s                      | 074255,870
@@ -784,7 +787,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%.3s                      | 074255.870
@@ -796,7 +799,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%s,%u                     | 074255,870479
@@ -808,7 +811,7 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
             //%h%m%s.%u                     | 074255.870479
@@ -820,11 +823,10 @@ pub fn assertions() -> TimeAssertion {
                     minute: 42,
                     second: 55,
                     millisecond: 870,
-                    timezone: None,
+                    offset: None,
                 }),
             },
-
         ],
-        timezone_assertions: crate::timezone::assertions(),
+        offset_assertions: crate::offset::assertions(),
     }
 }

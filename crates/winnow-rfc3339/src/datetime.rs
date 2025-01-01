@@ -11,10 +11,10 @@ use winnow_datetime::DateTime;
 /// ## Example
 ///
 /// ```rust
-/// let dt = winnow_iso8601::parse_datetime("2015-11-03T21:56").unwrap();
+/// let dt = winnow_rfc3339::parse_datetime("2015-11-03T21:56:00Z").unwrap();
 /// ```
 pub fn parse_datetime(mut i: &str) -> Result<DateTime, String> {
-    if let Ok(parsed) = parsers::datetime(&mut i) {
+    if let Ok(parsed) = parsers::parse_datetime(&mut i) {
         Ok(parsed)
     } else {
         Err(format!("Failed to parse datetime: {}", i))

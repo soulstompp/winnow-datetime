@@ -1,6 +1,6 @@
 use core::fmt::{self, Display};
 
-use super::Duration;
+use crate::duration::Duration;
 
 impl Display for Duration {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

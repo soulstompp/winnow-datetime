@@ -1,8 +1,8 @@
 [package]
-name = "winnow_iso8601"
-version = "0.4.0"
-description = "Parsing ISO8601 dates using winnow"
-keywords = [ "iso8601", "date-time", "parser", "winnow" ]
+name = "winnow_rfc3339"
+version = "0.1.0"
+description = "Parsing RFC 3339 dates using winnow"
+keywords = [ "rfc3339", "date-time", "parser", "winnow" ]
 categories = [ "parser-implementations", "date-and-time" ]
 
 repository = "https://github.com/soulstompp/winnow-iso8601"

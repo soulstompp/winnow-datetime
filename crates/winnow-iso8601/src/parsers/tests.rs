@@ -78,26 +78,25 @@ fn test_time_second() {
 
 #[test]
 fn test_date() {
-    assert!(parse_date(&mut Stream::new(b"201")).is_err());
-    assert!(parse_date(&mut Stream::new(b"2015p00p00")).is_err());
-    assert!(parse_date(&mut Stream::new(b"pppp")).is_err());
+    assert!(date(&mut Stream::new(b"201")).is_err());
+    assert!(date(&mut Stream::new(b"2015p00p00")).is_err());
+    assert!(date(&mut Stream::new(b"pppp")).is_err());
 }
 
 #[test]
 fn test_time() {
-    assert!(parse_time(&mut Stream::new(b"20:")).is_err());
-    assert!(parse_time(&mut Stream::new(b"pppp")).is_err());
+    assert!(time(&mut Stream::new(b"20:")).is_err());
+    assert!(time(&mut Stream::new(b"pppp")).is_err());
 }
 
 #[test]
 fn test_time_with_timezone() {
-    assert!(parse_time(&mut Stream::new(b"20:")).is_err());
-    assert!(parse_time(&mut Stream::new(b"pppp")).is_err());
+    assert!(time(&mut Stream::new(b"20:")).is_err());
+    assert!(time(&mut Stream::new(b"pppp")).is_err());
 }
 
 #[test]
 fn test_date_iso_week_date() {
-    println!("{:?}", date_iso_week(&mut "2015-W06-0".as_bstr()));
     assert!(date_iso_week(&mut Stream::new(b"2015-W06-8")).is_err());
     assert!(date_iso_week(&mut Stream::new(b"2015-W068")).is_err());
     assert!(date_iso_week(&mut Stream::new(b"2015-W06-0")).is_err());
@@ -115,32 +114,32 @@ fn test_date_ordinal_date() {
 #[test]
 fn format_equivalence() {
     assert_eq!(
-        parse_datetime(&mut Stream::new(b"2001-02-03T04:05:06+07:00")),
-        parse_datetime(&mut Stream::new(b"20010203T040506+0700"))
+        datetime(&mut Stream::new(b"2001-02-03T04:05:06+07:00")),
+        datetime(&mut Stream::new(b"20010203T040506+0700"))
     );
     assert_eq!(
-        parse_datetime(&mut Stream::new(b"2001-02-03T04:05:06+07:00")),
-        parse_datetime(&mut Stream::new(b"20010203T04:05:06+0700"))
+        datetime(&mut Stream::new(b"2001-02-03T04:05:06+07:00")),
+        datetime(&mut Stream::new(b"20010203T04:05:06+0700"))
     );
     assert_eq!(
-        parse_datetime(&mut Stream::new(b"2001-02-03T04:05:00+07:00")),
-        parse_datetime(&mut Stream::new(b"20010203T0405+0700"))
+        datetime(&mut Stream::new(b"2001-02-03T04:05:00+07:00")),
+        datetime(&mut Stream::new(b"20010203T0405+0700"))
     );
     assert_eq!(
-        parse_datetime(&mut Stream::new(b"20010203T0405+0700")),
-        parse_datetime(&mut Stream::new(b"2001-02-03T0405+0700"))
+        datetime(&mut Stream::new(b"20010203T0405+0700")),
+        datetime(&mut Stream::new(b"2001-02-03T0405+0700"))
     );
     assert_eq!(
-        parse_datetime(&mut Stream::new(b"20010203T040506+0700")),
-        parse_datetime(&mut Stream::new(b"2001-02-03T040506+0700"))
+        datetime(&mut Stream::new(b"20010203T040506+0700")),
+        datetime(&mut Stream::new(b"2001-02-03T040506+0700"))
     );
     assert_eq!(
-        parse_datetime(&mut Stream::new(b"20010203T040506+0000")),
-        parse_datetime(&mut Stream::new(b"20010203T040506Z"))
+        datetime(&mut Stream::new(b"20010203T040506+0000")),
+        datetime(&mut Stream::new(b"20010203T040506Z"))
     );
     assert_eq!(
-        parse_datetime(&mut Stream::new(b"2015W056T04:05:06+07:00")),
-        parse_datetime(&mut Stream::new(b"2015-W05-6T04:05:06+07:00"))
+        datetime(&mut Stream::new(b"2015W056T04:05:06+07:00")),
+        datetime(&mut Stream::new(b"2015-W05-6T04:05:06+07:00"))
     );
 }
 
@@ -149,16 +148,16 @@ fn test_datetime_error() {
     let test_datetimes = vec!["ppp", "dumd-di-duTmd:iu:m"];
 
     for iso_string in test_datetimes {
-        let res = parse_datetime(&mut Stream::new(iso_string.as_bytes()));
+        let res = datetime(&mut Stream::new(iso_string.as_bytes()));
         assert!(res.is_err());
     }
 }
 
 #[test]
 fn disallows_notallowed() {
-    assert!(parse_time(&mut Stream::new(b"30:90:90")).is_err());
-    assert!(parse_date(&mut Stream::new(b"0000-20-40")).is_err());
-    assert!(parse_datetime(&mut Stream::new(b"2001-w05-6t04:05:06.123z")).is_err());
+    assert!(time(&mut Stream::new(b"30:90:90")).is_err());
+    assert!(date(&mut Stream::new(b"0000-20-40")).is_err());
+    assert!(datetime(&mut Stream::new(b"2001-w05-6t04:05:06.123z")).is_err());
 }
 
 #[test]

@@ -1,5 +1,5 @@
-use winnow_datetime::Date;
 use crate::{FormatAssertion, FormatAssertionBuilder};
+use winnow_datetime::Date;
 
 pub struct DateAssertion {
     assertions: Vec<FormatAssertion<Date>>,
@@ -118,4 +118,3 @@ pub fn assertions() -> DateAssertion {
         ],
     }
 }
-

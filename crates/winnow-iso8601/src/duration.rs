@@ -23,8 +23,7 @@ use alloc::string::String;
 ///
 /// ## Examples
 /// ```
-///# use std::str::FromStr;
-/// assert_eq!(winnow_iso8601::Duration::from_str("P2021Y11M16DT23H26M59.123S"),
+/// assert_eq!(winnow_iso8601::parse_duration("P2021Y11M16DT23H26M59.123S"),
 /// Ok(winnow_iso8601::Duration {
 ///      years: 2021,
 ///      months: 11,
@@ -105,7 +104,7 @@ impl FromStr for Duration {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        duration(s)
+        parse_duration(s)
     }
 }
 
@@ -150,10 +149,10 @@ impl From<Duration> for ::core::time::Duration {
 /// ## Examples
 ///
 /// ```rust
-/// let duration = winnow_iso8601::duration("P1Y2M3DT4H5M6S").unwrap();
-/// let duration = winnow_iso8601::duration("P1W").unwrap();
+/// let duration = winnow_iso8601::parse_duration("P1Y2M3DT4H5M6S").unwrap();
+/// let duration = winnow_iso8601::parse_duration("P1W").unwrap();
 /// ```
-pub fn duration(mut i: &str) -> Result<Duration, String> {
+pub fn parse_duration(mut i: &str) -> Result<Duration, String> {
     match parsers::duration(&mut i) {
         Ok(p) => Ok(p),
         Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),

@@ -7,7 +7,7 @@
 ///     winnow_datetime::DateTime::from_str("2023-02-18T17:08:08.793Z"),
 ///     Ok(winnow_datetime::DateTime {
 ///         date: winnow_datetime::Date::YMD{ year: 2023, month: 2, day: 18},
-///         time: winnow_datetime::Time{ hour: 17, minute: 8, second: 8, millisecond: 793, timezone: Timezone { offset_hours: 0, offset_minutes: 00 }}
+///         time: winnow_datetime::Time{ hour: 17, minute: 8, second: 8, millisecond: 793, offset: Offset { offset_hours: 0, offset_minutes: 00 }}
 ///     })
 /// )
 /// */
@@ -22,7 +22,7 @@ pub struct DateTime {
 
 use core::fmt;
 
-pub trait TimezoneFormat: Sized {
+pub trait OffsetFormat: Sized {
     type Err;
 
     // Format the date
@@ -64,31 +64,58 @@ pub struct Time {
     pub second: u32,
     /// everything after a `.`
     pub millisecond: u32,
-    /// the hour part of the timezone offset from UTC
-    pub timezone: Option<Timezone>,
+    /// the hour part of the offset offset from UTC
+    pub offset: Option<Offset>,
 }
 
 impl Time {
-    /// Change this time's timezone offset.
+    /// Change this time's offset offset.
     ///
     /// # Arguments
     ///
-    /// * `tzo` - A tuple of `(hours, minutes)` specifying the timezone offset from UTC.
-    pub fn set_tz(&self, tzo: (i32, i32)) -> Time {
+    /// * `tzo` - A tuple of `(hours, minutes)` specifying the offset offset from UTC.
+    pub fn set_tz(&self, tzo: Option<(i32, i32)>) -> Time {
         let mut t = *self;
-        t.timezone = Some(Timezone {
-            offset_hours: tzo.0,
-            offset_minutes: tzo.1,
-        });
+
+        if let Some(tzo) = tzo {
+            t.offset = Some(Offset {
+                offset_hours: tzo.0,
+                offset_minutes: tzo.1,
+            });
+        } else {
+            t.offset = None;
+        }
+
         t
     }
 }
 
-/// Struct holding timezone offsets
+/// Struct holding offset offsets
 #[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
-pub struct Timezone {
-    /// hour timezone offset
+pub struct Offset {
+    /// hour offset offset
     pub offset_hours: i32,
-    /// minute timezone offset
+    /// minute offset offset
     pub offset_minutes: i32,
+}
+
+#[macro_export]
+macro_rules! year_ymd_parser {
+    (
+        $year:expr,        // Fully qualified year parser
+        $month:expr,       // Fully qualified month parser
+        $day:expr,         // Fully qualified day parser
+        $separator:expr    // Separator parser (e.g., `literal("-")` or `opt(literal("-"))`)
+    ) => {
+        $crate::combinator::trace(stringify!($date), move |input: &mut _| {
+            $crate::seq!($date {
+                year: $year,
+                _: $separator,
+                month: $month,
+                _: $separator,
+                day: $day,
+            })
+            .parse_next(input)
+        })
+    };
 }
