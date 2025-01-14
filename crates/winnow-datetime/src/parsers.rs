@@ -179,20 +179,3 @@ where
     })
     .parse_next(i)
 }
-
-#[macro_export]
-macro_rules! define_date_parser {
-    ($name:ident, $($parser:expr),+) => {
-        pub fn $name<'i, Input>(input: &mut Input) -> PResult<Date>
-        where
-            Input: StreamIsPartial + InputStream + Compare<&'i str>,
-            <Input as InputStream>::Slice: AsBStr,
-            <Input as InputStream>::Token: AsChar + Clone,
-        {
-            trace(stringify!($name), |input| {
-                alt(($($parser),+)).parse_next(input)
-            })
-            .parse_next(input)
-        }
-    };
-}

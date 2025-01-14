@@ -13,7 +13,7 @@ readme = "README.md"
 edition = "2021"
 
 [dependencies]
-winnow = {  version = "0.6.20" }
+winnow = {  version = "0.6.20"}
 winnow_datetime = { path = "../winnow-datetime" }
 chrono = { version = "0.4", default-features = false, optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }

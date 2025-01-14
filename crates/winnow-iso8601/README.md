@@ -63,30 +63,6 @@ Some(DateTime {
 });
 ```
 
-### Serializing
-
-If you have a datetime string handy you can use the helper methods such as datetime to get a DateTime object. This can
-be serialized into a chrono date object if the `serde` feature is enabled.
-
-```rust,ignore
-let datetime = winnow_iso8601::datetime("2015-06-26T16:43:23+0200").unwrap();
-
-// the above will give you:
-DateTime {
-    date: Date::YMD {
-        year: 2015,
-        month: 6,
-        day: 26,
-    },
-    time: Time {
-        hour: 16,
-        minute: 43,
-        second: 23,
-        tz_offset_hours: 2,
-        tz_offset_minutes: 0,
-    },
-};
-```
 # Contributors
 
 winnow-iso8601 is the fruit of the work of many contributors over the years, many

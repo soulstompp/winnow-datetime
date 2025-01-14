@@ -1,6 +1,6 @@
-use crate::duration::Duration;
 use winnow::combinator::{eof, terminated};
 use winnow::Parser;
+use winnow_datetime::types::Duration;
 use winnow_datetime::Date;
 use winnow_datetime::DateTime;
 use winnow_datetime::Offset;
@@ -132,8 +132,8 @@ fn test_millisecond() {
         Ok(DateTime {
             date: Date::Week {
                 year: 2001,
-                ww: 5,
-                d: 6
+                week: 5,
+                day: 6
             },
             time: Time {
                 hour: 4,
@@ -497,8 +497,8 @@ fn test_iso_week_date() {
     assert_eq!(
         Ok(Date::Week {
             year: 2015,
-            ww: 5,
-            d: 7,
+            week: 5,
+            day: 7,
         }),
         parse_date("2015-W05-7")
     );
@@ -506,8 +506,8 @@ fn test_iso_week_date() {
     assert_eq!(
         Ok(Date::Week {
             year: 2015,
-            ww: 6,
-            d: 6,
+            week: 6,
+            day: 6,
         }),
         parse_date("2015-W06-6")
     );
@@ -515,8 +515,8 @@ fn test_iso_week_date() {
     assert_eq!(
         Ok(Date::Week {
             year: 2015,
-            ww: 6,
-            d: 6,
+            week: 6,
+            day: 6,
         }),
         parse_date("2015-W066")
     );
@@ -524,8 +524,8 @@ fn test_iso_week_date() {
     assert_eq!(
         Ok(Date::Week {
             year: 2015,
-            ww: 6,
-            d: 6,
+            week: 6,
+            day: 6,
         }),
         parse_date("2015W066")
     );
@@ -533,8 +533,8 @@ fn test_iso_week_date() {
     assert_eq!(
         Ok(Date::Week {
             year: 2015,
-            ww: 43,
-            d: 6,
+            week: 43,
+            day: 6,
         }),
         parse_date("2015-W43-6")
     );
@@ -552,7 +552,7 @@ fn test_ordinal_parse_date() {
     assert_eq!(
         Ok(Date::Ordinal {
             year: 2015,
-            ddd: 057,
+            day: 057,
         }),
         parse_date("2015-057")
     );
@@ -560,20 +560,20 @@ fn test_ordinal_parse_date() {
     assert_eq!(
         Ok(Date::Ordinal {
             year: 2015,
-            ddd: 358,
+            day: 358,
         }),
         parse_date("2015-358")
     );
     assert_eq!(
         Ok(Date::Ordinal {
             year: 2015,
-            ddd: 366,
+            day: 366,
         }),
         parse_date("2015-366")
     );
 
     assert_eq!(
-        Ok(Date::Ordinal { year: 2015, ddd: 1 }),
+        Ok(Date::Ordinal { year: 2015, day: 1 }),
         parse_date("2015-001")
     );
 
@@ -824,8 +824,8 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Week {
                 year: 2015,
-                ww: 5,
-                d: 6
+                week: 5,
+                day: 6
             },
             time: Time {
                 hour: 4,
@@ -844,8 +844,8 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Week {
                 year: 2015,
-                ww: 5,
-                d: 6
+                week: 5,
+                day: 6
             },
             time: Time {
                 hour: 4,
@@ -865,7 +865,7 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Ordinal {
                 year: 2015,
-                ddd: 56
+                day: 56
             },
             time: Time {
                 hour: 4,
@@ -885,7 +885,7 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Ordinal {
                 year: 2015,
-                ddd: 56
+                day: 56
             },
             time: Time {
                 hour: 4,
@@ -905,7 +905,7 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Ordinal {
                 year: 2015,
-                ddd: 297
+                day: 297
             },
             time: Time {
                 hour: 16,
@@ -925,8 +925,8 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Week {
                 year: 2015,
-                ww: 43,
-                d: 6
+                week: 43,
+                day: 6
             },
             time: Time {
                 hour: 16,
@@ -946,8 +946,8 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Week {
                 year: 2001,
-                ww: 5,
-                d: 6
+                week: 5,
+                day: 6
             },
             time: Time {
                 hour: 4,
@@ -967,8 +967,8 @@ fn test_datetime_correct() {
         Ok(DateTime {
             date: Date::Week {
                 year: 2001,
-                ww: 5,
-                d: 6
+                week: 5,
+                day: 6
             },
             time: Time {
                 hour: 4,
@@ -1034,7 +1034,7 @@ fn test_duration_ymdhms() {
             hours: 4,
             minutes: 5,
             seconds: 6,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1051,7 +1051,7 @@ fn test_duration_ymdhms() {
             hours: 4,
             minutes: 5,
             seconds: 6,
-            milliseconds: 700,
+            milliseconds: Some(0.7),
         },
         dur
     );
@@ -1071,7 +1071,7 @@ fn test_duration_ymdhms() {
             hours: 4,
             minutes: 5,
             seconds: 6,
-            milliseconds: 700,
+            milliseconds: Some(0.7),
         },
         dur
     );
@@ -1091,7 +1091,7 @@ fn test_duration_ymdhms() {
             hours: 4,
             minutes: 5,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1108,7 +1108,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1125,7 +1125,7 @@ fn test_duration_ymdhms() {
             hours: 4,
             minutes: 0,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1142,7 +1142,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 6,
-            milliseconds: 700,
+            milliseconds: Some(0.7),
         },
         dur
     );
@@ -1159,7 +1159,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 6,
-            milliseconds: 700,
+            milliseconds: Some(0.7),
         },
         dur
     );
@@ -1176,7 +1176,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1193,7 +1193,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1209,7 +1209,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 42,
             seconds: 30,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1225,7 +1225,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1241,7 +1241,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );
@@ -1257,7 +1257,7 @@ fn test_duration_ymdhms() {
             hours: 0,
             minutes: 0,
             seconds: 0,
-            milliseconds: 0,
+            milliseconds: None,
         },
         dur
     );

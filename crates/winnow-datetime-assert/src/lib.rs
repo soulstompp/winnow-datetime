@@ -1,10 +1,19 @@
-use winnow_datetime::{Date, Offset, Time};
+use winnow_datetime::{Date, Duration, Offset, Time};
 
 pub mod date;
+
 pub mod offset;
 pub mod time;
 
+#[path = "../../winnow-datetime/src/clippy.rs"]
+mod clippy;
+pub mod duration;
+pub mod interval;
+pub mod fractional_duration;
+
 use winnow::error::{ContextError, ErrMode};
+use winnow_datetime::types::Interval;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct FormatAssertion<T> {
     pub format: String,
@@ -40,6 +49,36 @@ impl FormatCoverageBuilder<Date> for DateCoverage {
     }
 
     fn coverage(&self) -> Vec<FormatCoverage<Date>> {
+        vec![]
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct DurationCoverage {
+    pub coverage: Vec<FormatCoverage<Duration>>,
+}
+
+impl FormatCoverageBuilder<Duration> for crate::DurationCoverage {
+    fn base_coverage(&self) -> Vec<FormatCoverage<Duration>> {
+        self.coverage.clone()
+    }
+
+    fn coverage(&self) -> Vec<FormatCoverage<Duration>> {
+        vec![]
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct IntervalCoverage {
+    pub coverage: Vec<FormatCoverage<Interval>>,
+}
+
+impl FormatCoverageBuilder<Interval> for crate::IntervalCoverage {
+    fn base_coverage(&self) -> Vec<FormatCoverage<Interval>> {
+        self.coverage.clone()
+    }
+
+    fn coverage(&self) -> Vec<FormatCoverage<Interval>> {
         vec![]
     }
 }

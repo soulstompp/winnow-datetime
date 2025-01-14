@@ -1,40 +1,21 @@
 use crate::parsers;
 use alloc::string::String;
+use winnow_datetime::FractionalDuration;
 use winnow_datetime::types::Duration;
 use winnow_datetime_assert::{DurationCoverage, FormatCoverage};
 
-/// Parses a duration string.
-///
-/// A string starts with `P` and can have one of the following formats:
-///
-/// * Fully-specified duration: `P1Y2M3DT4H5M6S`
-/// * Duration in weekly intervals: `P1W`
-/// * Fully-specified duration in [`DateTime`](`crate::DateTime`) format: `P<datetime>`
-///
-/// Both fully-specified formats get parsed into the YMDHMS Duration variant.
-/// The weekly interval format gets parsed into the Weeks Duration variant.
-///
-/// The ranges for each of the individual units are not expected to exceed
-/// the next largest unit.
-///
-/// These ranges (inclusive) are as follows:
-///
-/// * Year (any valid u32)
-/// * Month 0 - 12
-/// * Week 0 - 52
-/// * Day 0 - 31
-/// * Hour 0 - 24
-/// * Minute 0 - 60
-/// * Second 0 - 60
-///
-/// ## Examples
-///
-/// ```rust
-/// let duration = winnow_iso8601::parse_duration("P1Y2M3DT4H5M6S").unwrap();
-/// let duration = winnow_iso8601::parse_duration("P1W").unwrap();
-/// ```
+/// Parses a duration string similiar to duration but allows for decimal places.
 pub fn parse_duration(mut i: &str) -> Result<Duration, String> {
     match parsers::duration(&mut i) {
+        Ok(p) => Ok(p),
+        Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
+    }
+}
+
+/// let duration = winnow_iso8601::parse_fractional_duration("P1,5Y2M3DT4,5H5M6S").unwrap();
+/// let duration = winnow_iso8601::parse_fractional_duration("P1,5W").unwrap();
+pub fn parse_fractional_duration(mut i: &str) -> Result<FractionalDuration, String> {
+    match parsers::fractional_duration(&mut i) {
         Ok(p) => Ok(p),
         Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
     }
@@ -49,6 +30,18 @@ pub fn coverage() -> DurationCoverage {
             // P1Y
             FormatCoverage {
                 format: "P1Y".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1,5Y
+            FormatCoverage {
+                format: "P1,5Y".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1.5Y
+            FormatCoverage {
+                format: "P1.5Y".into(),
                 exception: Ok(None),
                 complete: true,
             },
@@ -100,6 +93,18 @@ pub fn coverage() -> DurationCoverage {
                 exception: Ok(None),
                 complete: true,
             },
+            // PT1,5S
+            FormatCoverage {
+                format: "PT1,5S".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // PT1.5S
+            FormatCoverage {
+                format: "PT1.5S".into(),
+                exception: Ok(None),
+                complete: true,
+            },
             // P1Y1M
             FormatCoverage {
                 format: "P1Y1M".into(),
@@ -139,6 +144,42 @@ pub fn coverage() -> DurationCoverage {
             // P1DT1M
             FormatCoverage {
                 format: "P1DT1M".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1.5W
+            FormatCoverage {
+                format: "P1.5W".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1,5W
+            FormatCoverage {
+                format: "P1,5W".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1DT1.000S
+            FormatCoverage {
+                format: "P1DT1.000S".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1DT1.00000S
+            FormatCoverage {
+                format: "P1DT1.00000S".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1DT1H1M1.1S
+            FormatCoverage {
+                format: "P1DT1H1M1.1S".into(),
+                exception: Ok(None),
+                complete: true,
+            },
+            // P1H1M1.1S
+            FormatCoverage {
+                format: "P1H1M1.1S".into(),
                 exception: Ok(None),
                 complete: true,
             },

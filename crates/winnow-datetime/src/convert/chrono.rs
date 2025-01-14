@@ -13,10 +13,10 @@ impl TryFrom<crate::Date> for chrono::NaiveDate {
                 chrono::NaiveDate::from_ymd_opt(year, month, day)
             }
 
-            crate::Date::Week { year, ww, d } => chrono::Weekday::from_u32(d)
-                .and_then(|d| chrono::NaiveDate::from_isoywd_opt(year, ww, d)),
+            crate::Date::Week { year, week, day } => chrono::Weekday::from_u32(day)
+                .and_then(|d| chrono::NaiveDate::from_isoywd_opt(year, week, d)),
 
-            crate::Date::Ordinal { year, ddd } => chrono::NaiveDate::from_yo_opt(year, ddd),
+            crate::Date::Ordinal { year, day } => chrono::NaiveDate::from_yo_opt(year, day),
         };
         maybe.ok_or(())
     }
@@ -52,8 +52,8 @@ mod test_date {
     fn naivedate_from_ywd() {
         let iso = Date::Week {
             year: 2023,
-            ww: 6,
-            d: 2,
+            week: 6,
+            day: 2,
         };
         let naive = chrono::NaiveDate::try_from(iso).unwrap();
         assert_eq!(naive.year(), 2023);
@@ -65,7 +65,7 @@ mod test_date {
     fn naivedate_from_ordinal() {
         let iso = crate::Date::Ordinal {
             year: 2023,
-            ddd: 39,
+            day: 39,
         };
         let naive = chrono::NaiveDate::try_from(iso).unwrap();
         assert_eq!(naive.year(), 2023);
@@ -222,8 +222,8 @@ mod test_datetime {
         let iso = crate::DateTime {
             date: crate::Date::Week {
                 year: 2023,
-                ww: 6,
-                d: 2,
+                week: 6,
+                day: 2,
             },
             time: crate::Time {
                 hour: 23,

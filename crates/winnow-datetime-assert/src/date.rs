@@ -41,7 +41,7 @@ pub fn assertions() -> DateAssertion {
                 input: "2024-357".into(),
                 expected: Ok(Date::Ordinal {
                     year: 2024,
-                    ddd: 357,
+                    day: 357,
                 }),
             },
             FormatAssertion {
@@ -49,8 +49,8 @@ pub fn assertions() -> DateAssertion {
                 input: "2024-W51".into(),
                 expected: Ok(Date::Week {
                     year: 2024,
-                    ww: 51,
-                    d: 0,
+                    week: 51,
+                    day: 1,
                 }),
             },
             FormatAssertion {
@@ -58,8 +58,8 @@ pub fn assertions() -> DateAssertion {
                 input: "2024-W51-7".into(),
                 expected: Ok(Date::Week {
                     year: 2024,
-                    ww: 51,
-                    d: 7,
+                    week: 51,
+                    day: 7,
                 }),
             },
             FormatAssertion {
@@ -76,7 +76,7 @@ pub fn assertions() -> DateAssertion {
                 input: "2024357".into(),
                 expected: Ok(Date::Ordinal {
                     year: 2024,
-                    ddd: 357,
+                    day: 357,
                 }),
             },
             FormatAssertion {
@@ -84,8 +84,8 @@ pub fn assertions() -> DateAssertion {
                 input: "2024W51".into(),
                 expected: Ok(Date::Week {
                     year: 2024,
-                    ww: 51,
-                    d: 0,
+                    week: 51,
+                    day: 1,
                 }),
             },
             FormatAssertion {
@@ -93,8 +93,8 @@ pub fn assertions() -> DateAssertion {
                 input: "2024W517".into(),
                 expected: Ok(Date::Week {
                     year: 2024,
-                    ww: 51,
-                    d: 7,
+                    week: 51,
+                    day: 7,
                 }),
             },
             FormatAssertion {

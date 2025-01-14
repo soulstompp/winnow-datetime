@@ -32,7 +32,6 @@ extern crate std;
 #[macro_use]
 extern crate alloc;
 
-mod display;
 pub mod parsers;
 
 /// date mod
@@ -47,11 +46,18 @@ pub use time::parse_time;
 pub mod datetime;
 pub use datetime::parse_datetime;
 
-//TODO: move Duration to winnow-datetime
 /// duration mod
 pub mod duration;
-pub use duration::{parse_duration, Duration};
+pub use duration::parse_duration;
 
 /// offset mod
 pub mod offset;
+
+/// interval mod
+pub mod interval;
+
+/// fractional_duration mod
+pub mod fractional_duration;
+pub use fractional_duration::parse_fractional_duration;
+
 pub use offset::parse_offset;

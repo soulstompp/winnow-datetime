@@ -1,5 +1,8 @@
 use crate::parsers;
 use alloc::string::String;
+use winnow::combinator::eof;
+use winnow::combinator::terminated;
+use winnow::Parser;
 use winnow_datetime::Date;
 
 /// Parses a date string.
@@ -16,7 +19,7 @@ use winnow_datetime::Date;
 /// let date = winnow_iso8601::parse_date("2015-11-02").unwrap();
 /// ```
 pub fn parse_date(mut i: &str) -> Result<Date, String> {
-    if let Ok(parsed) = parsers::date(&mut i) {
+    if let Ok(parsed) = terminated(parsers::date, eof).parse_next(&mut i) {
         Ok(parsed)
     } else {
         Err(format!("Failed to parse date: {}", i))
