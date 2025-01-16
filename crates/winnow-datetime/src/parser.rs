@@ -14,6 +14,87 @@ use winnow::{PResult, Parser};
 
 // UTILITY
 
+/// Exactly 1 digit
+pub fn digit_1<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("digit_1", move |input: &mut Input| {
+        take_exact_digits(input, 1)
+    }).parse_next(i)
+}
+
+/// Exactly 2 digits
+pub fn digit_2<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("digit_2", move |input: &mut Input| {
+        take_exact_digits(input, 2)
+    }).parse_next(i)
+}
+
+/// Exactly 3 digits
+pub fn digit_3<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("digit_3", move |input: &mut Input| {
+        take_exact_digits(input, 2)
+    }).parse_next(i)
+}
+
+/// Exactly 4 digits
+pub fn digit_4<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("digit_4", move |input: &mut Input| {
+        take_exact_digits(input, 2)
+    }).parse_next(i)
+}
+
+/// Exactly 6 digits
+pub fn digit_6<'i, Input>(i: &mut Input) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("digit_4", move |input: &mut Input| {
+        take_exact_digits(input, 2)
+    }).parse_next(i)
+}
+
+fn take_exact_digits<'i, Input>(
+    i: &mut Input,
+    places: usize,
+) -> PResult<u32>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    let n = take_while(places, |c: <Input as InputStream>::Token| {
+        AsChar::is_dec_digit(&c.as_char())
+    }).parse_next(i)?;
+
+    let s = str::from_utf8(n.as_bstr()).expect("Invalid data, expected UTF-8 string");
+
+    let number: u32 = s
+        .parse()
+        .expect("Invalid string, expected ASCII representation of a number");
+
+    Ok(number)
+}
 pub fn take_digits<'i, Input>(i: &mut Input) -> PResult<u32>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,

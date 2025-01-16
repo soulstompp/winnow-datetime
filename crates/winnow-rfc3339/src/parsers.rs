@@ -17,11 +17,11 @@ use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPar
 use winnow::token::one_of;
 use winnow::token::{literal, take_while};
 use winnow::{seq, PResult, Parser, Partial};
-use winnow_datetime::parsers::date_day;
-use winnow_datetime::parsers::date_month;
-use winnow_datetime::parsers::sign;
-use winnow_datetime::parsers::{fraction_millisecond, time_hour, time_minute, time_second};
-use winnow_datetime::{Date, DateTime, Offset, Time};
+use winnow_datetime::parser::date_day;
+use winnow_datetime::parser::date_month;
+use winnow_datetime::parser::sign;
+use winnow_datetime::parser::{fraction_millisecond, time_hour, time_minute, time_second};
+use winnow_datetime::{date_ymd_seq, time_seq, Date, DateTime, Offset, Time};
 
 #[cfg(test)]
 mod tests;
@@ -32,6 +32,20 @@ pub type Stream<'i> = Partial<&'i [u8]>;
 // DATE
 
 // DATE
+
+/// Date separator -
+pub fn date_sep<'i, Input>(i: &mut Input) -> PResult<char>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("date_sep", move |input: &mut Input| {
+        literal("-").parse_next(input).map(|_| '-')
+    })
+    .parse_next(i)
+}
+
 /// Parse 4 digit year with no sign withing range 0000-9999
 // YYYY
 pub fn date_year<'i, Input>(i: &mut Input) -> PResult<i32>
@@ -57,8 +71,6 @@ where
     .parse_next(i)
 }
 
-// TODO: define_date_y_m_d!()
-
 /// Parses a date string in the format `YYYY-MM-DD`.
 // YYYY-MM-DD
 pub fn date_ymd<'i, Input>(i: &mut Input) -> PResult<Date>
@@ -68,12 +80,10 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("date_ymd", move |input: &mut Input| {
-        seq!(Date::YMD {
-            year: date_year,      // YYYY
-            _: literal("-"), // -
-            month: date_month,     // MM
-            _: literal("-"), // -
-            day: date_day,       //DD
+        date_ymd_seq!(Date::YMD {
+            year: date_year,                       // YYYY
+            month: preceded(date_sep, date_month), // MM
+            day: preceded(date_sep, date_day),     //DD
         })
         .parse_next(input)
     })
@@ -105,14 +115,13 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("parse_time", move |input: &mut Input| {
-        seq! {Time {
-            hour: time_hour,                                         // HH
-            _: literal(":"),                                    // :
-            minute: time_minute,                                       // MM
-            second: preceded(literal(":"), time_second),        // [SS]
+        time_seq!(Time {
+            hour: time_hour,                             // HH
+            minute: preceded(literal(":"), time_minute), // MM
+            second: preceded(literal(":"), time_second), // [SS]
             millisecond: opt(preceded(one_of(b",."), fraction_millisecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
-            offset: offset,           // [(Z|+...|-...)]
-        }}
+            offset: offset, // [(Z|+...|-...)]
+        })
         .parse_next(input)
     })
     .parse_next(i)

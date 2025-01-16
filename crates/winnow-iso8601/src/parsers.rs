@@ -11,27 +11,44 @@
 use core::str;
 use winnow::combinator::{alt, trace};
 use winnow::combinator::{empty, fail, opt};
-use winnow::combinator::{preceded, separated_pair, terminated};
+use winnow::combinator::{preceded, separated_pair};
 use winnow::error::{ContextError, ErrMode};
 use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
 use winnow::token::one_of;
 use winnow::token::{literal, take_while};
 use winnow::{seq, PResult, Parser};
-use winnow_datetime::parsers::date_day;
-use winnow_datetime::parsers::date_month;
-use winnow_datetime::parsers::sign;
-use winnow_datetime::parsers::take_digits;
-use winnow_datetime::parsers::take_digits_in_range;
-use winnow_datetime::parsers::{fraction_millisecond, time_hour, time_minute, time_second};
+use winnow_datetime::parser::date_day;
+use winnow_datetime::parser::date_month;
+use winnow_datetime::parser::digit_1;
+use winnow_datetime::parser::sign;
+use winnow_datetime::parser::take_digits;
+use winnow_datetime::parser::take_digits_in_range;
+use winnow_datetime::parser::{fraction_millisecond, time_hour, time_minute, time_second};
 use winnow_datetime::types::{
     Duration, DurationPart, Interval, IntervalRange, PartialDate, PartialDateTime, PartialTime,
 };
-use winnow_datetime::{date_yddd_seq, date_ymd_seq, date_ywd_seq, duration_part_seq, time_seq, Date, DateTime, FractionalDuration, Offset, Time};
+use winnow_datetime::{
+    date_yddd_seq, date_ymd_seq, date_ywd_seq, duration_part_seq, time_seq, Date, DateTime,
+    FractionalDuration, Offset, Time,
+};
 
 #[cfg(test)]
 mod tests;
 
 // DATE
+
+/// Date separator -
+pub fn date_sep<'i, Input>(i: &mut Input) -> PResult<char>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("date_sep", move |input: &mut Input| {
+        literal("-").parse_next(input).map(|_| '-')
+    })
+    .parse_next(i)
+}
 
 /// Parses 2 digit week of the year within range 01-52
 // WW
@@ -63,17 +80,19 @@ where
     .parse_next(i)
 }
 
-/// Parses 2 digit week of the year within range 01-7
-fn date_day_of_week<'i, Input>(i: &mut Input) -> PResult<u32>
+/// Verifies an opt value and calls a verification function on Some
+fn verify_opt<V, F>(verify_fn: F) -> impl Fn(Option<V>) -> bool
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    F: Fn(V) -> bool,
 {
-    trace("date_week_day", move |input: &mut Input| {
-        preceded(opt(literal("-")), day_of_week).parse_next(input)
-    })
-    .parse_next(i)
+    move |day: Option<V>| match day {
+        None => true,
+        Some(day) => verify_fn(day),
+    }
+}
+/// Verifies a day_of_week range (1-7)
+fn verify_day_of_week(day: u32) -> bool {
+    day >= 1 && day <= 7
 }
 
 /// Parses 2 digit week of the year within range 01-7
@@ -99,15 +118,12 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("", move |input: &mut Input| {
-        seq!((
-            date_year, // y
-            date_week, // w
-            opt(date_day_of_week)
-        ))
-        .map(|(year, week, day)| Date::Week {
-            year,
-            week,
-            day: day.unwrap_or(1),
+        date_ywd_seq!(Date::Week {
+            year: date_year, // y
+            week: date_week, // w
+            day: opt(preceded(opt(date_sep), digit_1))
+                .verify(|d| verify_opt(verify_day_of_week)(*d))
+                .map(|d| d.unwrap_or(1)), // d
         })
         .parse_next(input)
     })
@@ -175,11 +191,10 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("date_ymd", move |input: &mut Input| {
-        seq!(Date::YMD {
-            year: date_year,      // YYYY
-            _: opt(literal("-")), // -
-            month: date_month,     // MM
-            day: opt(preceded(opt(literal("-")), date_day)).map(|d| d.unwrap_or(1)),       //DD
+        date_ymd_seq!(Date::YMD {
+            year: date_year,                                                     // YYYY
+            month: preceded(date_sep, date_month),                               // MM
+            day: opt(preceded(opt(date_sep), date_day)).map(|d| d.unwrap_or(1)), //DD
         })
         .parse_next(input)
     })
@@ -1073,7 +1088,13 @@ where
     .parse_next(i)
 }
 
-fn duration_part_time<'i, Input>(i: &mut Input) -> PResult<(Option<DurationPart>, Option<DurationPart>, Option<DurationPart>)>
+fn duration_part_time<'i, Input>(
+    i: &mut Input,
+) -> PResult<(
+    Option<DurationPart>,
+    Option<DurationPart>,
+    Option<DurationPart>,
+)>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
@@ -1085,7 +1106,13 @@ where
     .parse_next(i)
 }
 
-fn duration_base_time<'i, Input>(i: &mut Input) -> PResult<(Option<DurationPart>, Option<DurationPart>, Option<DurationPart>)>
+fn duration_base_time<'i, Input>(
+    i: &mut Input,
+) -> PResult<(
+    Option<DurationPart>,
+    Option<DurationPart>,
+    Option<DurationPart>,
+)>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
@@ -1126,7 +1153,7 @@ where
             let p = [y, mo, w, d, &h, &m];
 
             (p.iter().any(|x| x.is_some() || s.is_some()))
-            && p.iter().all(|x| x.is_none() || x.unwrap().frac.is_none())
+                && p.iter().all(|x| x.is_none() || x.unwrap().frac.is_none())
         })
         .map(|(y, mo, w, d, time)| {
             let time = time.unwrap_or((None, None, None));
@@ -1163,30 +1190,30 @@ where
             opt(duration_part_day),
             opt(preceded(opt(literal("T")), duration_base_time)),
         ))
-            .verify(|(y, mo, w, d, time)| {
-                if y.is_none() && mo.is_none() && w.is_none() && d.is_none() && time.is_none() {
-                    false
-                } else {
-                    true
-                }
-            })
-            .map(|(y, mo, w, d, time)| {
-                let time = time.unwrap_or((None, None, None));
+        .verify(|(y, mo, w, d, time)| {
+            if y.is_none() && mo.is_none() && w.is_none() && d.is_none() && time.is_none() {
+                false
+            } else {
+                true
+            }
+        })
+        .map(|(y, mo, w, d, time)| {
+            let time = time.unwrap_or((None, None, None));
 
-                FractionalDuration {
-                    years: y.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
-                    months: mo.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
-                    weeks: w.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
-                    days: d.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
-                    hours: time.0.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
-                    minutes: time.1.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
-                    seconds: time.2.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
-                }
-                // at least one element must be present for a valid duration representation
-            })
-            .parse_next(input)
+            FractionalDuration {
+                years: y.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
+                months: mo.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
+                weeks: w.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
+                days: d.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
+                hours: time.0.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
+                minutes: time.1.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
+                seconds: time.2.map(|p| (p.whole, p.frac)).unwrap_or((0, None)),
+            }
+            // at least one element must be present for a valid duration representation
+        })
+        .parse_next(input)
     })
-        .parse_next(i)
+    .parse_next(i)
 }
 
 /// Parses a interval string containing combinations of partial date-times and duration.

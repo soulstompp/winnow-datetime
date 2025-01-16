@@ -237,7 +237,7 @@ impl Eq for Duration {}
 impl Duration {
     /// Whether this duration represents a zero duration.
     pub fn is_zero(&self) -> bool {
-        if let Duration {
+        let Duration {
             years,
             months,
             weeks,
@@ -246,39 +246,33 @@ impl Duration {
             minutes,
             seconds,
             milliseconds,
-        } = self
-        {
-            [*years, *months, *weeks, *days, *hours, *minutes, *seconds]
-                .iter()
-                .all(|&x| x == 0)
-                && milliseconds.unwrap_or(0.0) == 0.0
-        } else {
-            false
-        }
+        } = self;
+
+        [*years, *months, *weeks, *days, *hours, *minutes, *seconds]
+            .iter()
+            .all(|&x| x == 0)
+            && milliseconds.unwrap_or(0.0) == 0.0
     }
 
     /// Whether this duration has a time component.
     pub fn has_time(&self) -> bool {
-        if let Duration {
+        let Duration {
             days,
             hours,
             minutes,
             seconds,
             milliseconds,
             ..
-        } = self
-        {
-            [*days, *hours, *minutes, *seconds].iter().all(|&x| x > 0)
-                || milliseconds.unwrap_or(0.0) > 0.0
-        } else {
-            false
-        }
+        } = self;
+
+        [*days, *hours, *minutes, *seconds].iter().all(|&x| x > 0)
+            || milliseconds.unwrap_or(0.0) > 0.0
     }
 }
 
 impl From<Duration> for ::core::time::Duration {
     fn from(duration: Duration) -> Self {
-        if let Duration {
+        let Duration {
             years,
             months,
             weeks,
@@ -287,20 +281,17 @@ impl From<Duration> for ::core::time::Duration {
             minutes,
             seconds,
             milliseconds,
-        } = duration
-        {
-            let secs = years * 365 * 86_400
-                + months * 30 * 86_400
-                + weeks * 7 * 86_400
-                + days * 86_400
-                + hours * 3600
-                + minutes * 60
-                + seconds;
-            let nanos = (milliseconds.unwrap_or(0.0) * 1_000_000_000.0).floor();
-            Self::new(secs as u64, nanos as u32)
-        } else {
-            Self::new(0, 0)
-        }
+        } = duration;
+
+        let secs = years * 365 * 86_400
+            + months * 30 * 86_400
+            + weeks * 7 * 86_400
+            + days * 86_400
+            + hours * 3600
+            + minutes * 60
+            + seconds;
+        let nanos = (milliseconds.unwrap_or(0.0) * 1_000_000_000.0).floor();
+        Self::new(secs as u64, nanos as u32)
     }
 }
 
@@ -318,7 +309,6 @@ impl PartialEq for DurationPart {
 }
 
 impl Eq for DurationPart {}
-
 
 /// A time duration with fractional precision.
 ///
@@ -372,12 +362,28 @@ pub struct FractionalDuration {
 
 impl PartialEq for crate::FractionalDuration {
     fn eq(&self, other: &Self) -> bool {
-        [self.years, self.months, self.weeks, self.days, self.hours, self.minutes, self.seconds]
-            .iter().zip(
-            [other.years, other.months, other.weeks, other.days, other.hours, other.minutes, other.seconds]
-        )
+        [
+            self.years,
+            self.months,
+            self.weeks,
+            self.days,
+            self.hours,
+            self.minutes,
+            self.seconds,
+        ]
+        .iter()
+        .zip([
+            other.years,
+            other.months,
+            other.weeks,
+            other.days,
+            other.hours,
+            other.minutes,
+            other.seconds,
+        ])
         .all(|(part, other_part)| {
-            part.0 == other_part.0 && part.1.map(|v| v.to_bits()) == other_part.1.map(|v| v.to_bits())
+            part.0 == other_part.0
+                && part.1.map(|v| v.to_bits()) == other_part.1.map(|v| v.to_bits())
         })
     }
 }
@@ -387,7 +393,7 @@ impl Eq for crate::FractionalDuration {}
 impl crate::FractionalDuration {
     /// Whether this duration represents a zero duration.
     pub fn is_zero(&self) -> bool {
-        if let crate::FractionalDuration {
+        let crate::FractionalDuration {
             years,
             months,
             weeks,
@@ -395,29 +401,23 @@ impl crate::FractionalDuration {
             hours,
             minutes,
             seconds,
-        } = self
-        {
-            [*years, *months, *weeks, *days, *hours, *minutes, *seconds]
-                .iter()
-                .all(|&x| x.0 == 0 && x.1.unwrap_or(0.0) == 0.0)
-        } else {
-            false
-        }
+        } = self;
+        [*years, *months, *weeks, *days, *hours, *minutes, *seconds]
+            .iter()
+            .all(|&x| x.0 == 0 && x.1.unwrap_or(0.0) == 0.0)
     }
 
     /// Whether this duration has a time component.
     pub fn has_time(&self) -> bool {
-        if let crate::FractionalDuration {
+        let crate::FractionalDuration {
             days,
             hours,
             minutes,
             seconds,
             ..
-        } = self
-        {
-            [*days, *hours, *minutes, *seconds].iter().all(|&x| x.0 > 0 || x.1.unwrap_or(0.0) > 0.0)
-        } else {
-            false
-        }
+        } = self;
+        [*days, *hours, *minutes, *seconds]
+            .iter()
+            .all(|&x| x.0 > 0 || x.1.unwrap_or(0.0) > 0.0)
     }
 }

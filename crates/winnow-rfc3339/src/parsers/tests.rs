@@ -1,5 +1,5 @@
 use super::*;
-use winnow_datetime::parsers::{date_day, date_month};
+use winnow_datetime::parser::{date_day, date_month};
 
 #[test]
 fn test_date_month() {

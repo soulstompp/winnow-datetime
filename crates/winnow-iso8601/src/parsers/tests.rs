@@ -1,7 +1,6 @@
 use super::*;
 use crate::parsers::interval;
-use winnow::combinator::eof;
-use winnow_datetime::parsers::{date_day, date_month};
+use winnow_datetime::parser::{date_day, date_month};
 use winnow_datetime::Stream;
 
 #[test]
@@ -100,24 +99,20 @@ fn test_time_with_timezone() {
 
 #[test]
 fn test_date_iso_week_date() {
-    assert!(terminated(date_ywd, eof)
+    assert!(date_ywd
         .parse_next(&mut Stream::new(b"2015-W06-8"))
         .is_err());
-    assert!(terminated(date_ywd, eof)
-        .parse_next(&mut Stream::new(b"2015-W068"))
-        .is_err());
-    assert!(terminated(date_ywd, eof)
+    assert!(date_ywd.parse_next(&mut Stream::new(b"2015-W068")).is_err());
+    assert!(date_ywd
         .parse_next(&mut Stream::new(b"2015-W06-0"))
         .is_err());
-    assert!(terminated(date_ywd, eof)
+    assert!(date_ywd
         .parse_next(&mut Stream::new(b"2015-W00-2"))
         .is_err());
-    assert!(terminated(date_ywd, eof)
+    assert!(date_ywd
         .parse_next(&mut Stream::new(b"2015-W54-2"))
         .is_err());
-    assert!(terminated(date_ywd, eof)
-        .parse_next(&mut Stream::new(b"2015-W542"))
-        .is_err());
+    assert!(date_ywd.parse_next(&mut Stream::new(b"2015-W542")).is_err());
 }
 
 #[test]
@@ -179,15 +174,24 @@ fn disallows_notallowed() {
 fn test_duration_year() {
     assert_eq!(
         duration_part_year(&mut "2019Y".as_bstr()).unwrap(),
-        (DurationPart { whole: 2019, frac: None })
+        (DurationPart {
+            whole: 2019,
+            frac: None
+        })
     );
     assert_eq!(
         duration_part_year(&mut "0Y".as_bstr()).unwrap(),
-        (DurationPart { whole: 0, frac: None })
+        (DurationPart {
+            whole: 0,
+            frac: None
+        })
     );
     assert_eq!(
         duration_part_year(&mut "10000Y".as_bstr()).unwrap(),
-        (DurationPart { whole: 10000, frac: None })
+        (DurationPart {
+            whole: 10000,
+            frac: None
+        })
     );
     assert!(duration_part_year(&mut Stream::new(b"abcd")).is_err());
     assert!(duration_part_year(&mut Stream::new(b"-1")).is_err());
@@ -197,15 +201,24 @@ fn test_duration_year() {
 fn test_duration_month() {
     assert_eq!(
         duration_part_month(&mut "6M".as_bstr()).unwrap(),
-        (DurationPart { whole: 6, frac: None })
+        (DurationPart {
+            whole: 6,
+            frac: None
+        })
     );
     assert_eq!(
         duration_part_month(&mut "0M".as_bstr()).unwrap(),
-        (DurationPart { whole: 0, frac: None })
+        (DurationPart {
+            whole: 0,
+            frac: None
+        })
     );
     assert_eq!(
         duration_part_month(&mut "12M".as_bstr()).unwrap(),
-        (DurationPart { whole: 12, frac: None })
+        (DurationPart {
+            whole: 12,
+            frac: None
+        })
     );
 
     assert!(duration_part_month(&mut Stream::new(b"ab")).is_err());
@@ -217,15 +230,24 @@ fn test_duration_month() {
 fn test_duration_week() {
     assert_eq!(
         duration_part_week(&mut "26W".as_bstr()).unwrap(),
-        DurationPart { whole: 26, frac: None }
+        DurationPart {
+            whole: 26,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_week(&mut "0W".as_bstr()).unwrap(),
-        DurationPart { whole: 0, frac: None }
+        DurationPart {
+            whole: 0,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_week(&mut "52W".as_bstr()).unwrap(),
-        DurationPart { whole: 52, frac: None }
+        DurationPart {
+            whole: 52,
+            frac: None
+        }
     );
     assert!(duration_part_week(&mut Stream::new(b"ab")).is_err());
     assert!(duration_part_week(&mut Stream::new(b"-1")).is_err());
@@ -236,15 +258,24 @@ fn test_duration_week() {
 fn test_duration_day() {
     assert_eq!(
         duration_part_day(&mut "16D".as_bstr()).unwrap(),
-        DurationPart { whole: 16, frac: None }
+        DurationPart {
+            whole: 16,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_day(&mut "0D".as_bstr()).unwrap(),
-        DurationPart { whole: 0, frac: None }
+        DurationPart {
+            whole: 0,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_day(&mut "31D".as_bstr()).unwrap(),
-        DurationPart { whole: 31, frac: None }
+        DurationPart {
+            whole: 31,
+            frac: None
+        }
     );
     assert!(duration_part_day(&mut Stream::new(b"ab")).is_err());
     assert!(duration_part_day(&mut Stream::new(b"-1")).is_err());
@@ -255,15 +286,24 @@ fn test_duration_day() {
 fn test_duration_hour() {
     assert_eq!(
         duration_part_hour(&mut "12H".as_bstr()).unwrap(),
-        DurationPart { whole: 12, frac: None }
+        DurationPart {
+            whole: 12,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_hour(&mut "0H".as_bstr()).unwrap(),
-        DurationPart { whole: 0, frac: None }
+        DurationPart {
+            whole: 0,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_hour(&mut "24H".as_bstr()).unwrap(),
-        DurationPart { whole: 24, frac: None }
+        DurationPart {
+            whole: 24,
+            frac: None
+        }
     );
     assert!(duration_part_hour(&mut Stream::new(b"ab")).is_err());
     assert!(duration_part_hour(&mut Stream::new(b"-1")).is_err());
@@ -274,15 +314,24 @@ fn test_duration_hour() {
 fn test_duration_minute() {
     assert_eq!(
         duration_part_minute(&mut "30M".as_bstr()).unwrap(),
-        DurationPart { whole: 30, frac: None }
+        DurationPart {
+            whole: 30,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_minute(&mut "0M".as_bstr()).unwrap(),
-        DurationPart { whole: 0, frac: None }
+        DurationPart {
+            whole: 0,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_minute(&mut "60M".as_bstr()).unwrap(),
-        DurationPart { whole: 60, frac: None }
+        DurationPart {
+            whole: 60,
+            frac: None
+        }
     );
     assert!(duration_part_minute(&mut Stream::new(b"ab")).is_err());
     assert!(duration_part_minute(&mut Stream::new(b"-1")).is_err());
@@ -293,23 +342,38 @@ fn test_duration_minute() {
 fn test_duration_second_and_millisecond1() {
     assert_eq!(
         duration_part_second(&mut "30S".as_bstr()).unwrap(),
-        DurationPart{ whole: 30, frac: None }
+        DurationPart {
+            whole: 30,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_second(&mut "0S".as_bstr()).unwrap(),
-        DurationPart{ whole: 0, frac: None }
+        DurationPart {
+            whole: 0,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_second(&mut "60S".as_bstr()).unwrap(),
-        DurationPart{ whole: 60, frac: None }
+        DurationPart {
+            whole: 60,
+            frac: None
+        }
     );
     assert_eq!(
         duration_part_second(&mut "1,23S".as_bstr()).unwrap(),
-        DurationPart{ whole: 1, frac: Some(0.23) }
+        DurationPart {
+            whole: 1,
+            frac: Some(0.23)
+        }
     );
     assert_eq!(
         duration_part_second(&mut "2.34S".as_bstr()).unwrap(),
-        DurationPart{ whole: 2, frac: Some(0.34) }
+        DurationPart {
+            whole: 2,
+            frac: Some(0.34)
+        }
     );
     assert!(duration_part_second(&mut Stream::new(b"abS")).is_err());
     assert!(duration_part_second(&mut Stream::new(b"-1S")).is_err());
@@ -320,46 +384,92 @@ fn test_duration_time() {
     assert_eq!(
         duration_part_time(&mut "T1H2M3S".as_bstr()).unwrap(),
         (
-            Some(DurationPart { whole: 1, frac: None }),
-            Some(DurationPart { whole: 2, frac: None }),
-            Some(DurationPart { whole: 3, frac: None })
+            Some(DurationPart {
+                whole: 1,
+                frac: None
+            }),
+            Some(DurationPart {
+                whole: 2,
+                frac: None
+            }),
+            Some(DurationPart {
+                whole: 3,
+                frac: None
+            })
         )
     );
     assert_eq!(
         duration_part_time(&mut "T10H12M30S".as_bstr()).unwrap(),
         (
-            Some(DurationPart { whole: 10, frac: None }),
-            Some(DurationPart { whole: 12, frac: None }),
-            Some(DurationPart { whole: 30, frac: None })
+            Some(DurationPart {
+                whole: 10,
+                frac: None
+            }),
+            Some(DurationPart {
+                whole: 12,
+                frac: None
+            }),
+            Some(DurationPart {
+                whole: 30,
+                frac: None
+            })
         )
     );
     assert_eq!(
         duration_part_time(&mut "T1H3S".as_bstr()).unwrap(),
         (
-            Some(DurationPart { whole: 1, frac: None }),
+            Some(DurationPart {
+                whole: 1,
+                frac: None
+            }),
             None,
-            Some(DurationPart { whole: 3, frac: None })
+            Some(DurationPart {
+                whole: 3,
+                frac: None
+            })
         )
     );
 
     assert_eq!(
         duration_part_time(&mut "T2M".as_bstr()).unwrap(),
-        (None, Some(DurationPart { whole: 2, frac: None }), None)
+        (
+            None,
+            Some(DurationPart {
+                whole: 2,
+                frac: None
+            }),
+            None
+        )
     );
     assert_eq!(
         duration_part_time(&mut "T1H2M3,4S".as_bstr()).unwrap(),
         (
-            Some(DurationPart { whole: 1, frac: None }),
-            Some(DurationPart { whole: 2, frac: None }),
-            Some(DurationPart { whole: 3, frac: Some(0.4) })
+            Some(DurationPart {
+                whole: 1,
+                frac: None
+            }),
+            Some(DurationPart {
+                whole: 2,
+                frac: None
+            }),
+            Some(DurationPart {
+                whole: 3,
+                frac: Some(0.4)
+            })
         )
     );
     assert_eq!(
         duration_part_time(&mut "T1H23.4S".as_bstr()).unwrap(),
         (
-            Some(DurationPart { whole: 1, frac: None }),
+            Some(DurationPart {
+                whole: 1,
+                frac: None
+            }),
             None,
-            Some(DurationPart { whole: 23, frac: Some(0.4) })
+            Some(DurationPart {
+                whole: 23,
+                frac: Some(0.4)
+            })
         )
     );
     assert_eq!(
@@ -367,9 +477,10 @@ fn test_duration_time() {
         (
             None,
             None,
-            Some(
-                DurationPart { whole: 0, frac: Some(0.123) }
-            )
+            Some(DurationPart {
+                whole: 0,
+                frac: Some(0.123)
+            })
         )
     );
     assert_eq!(
@@ -377,9 +488,10 @@ fn test_duration_time() {
         (
             None,
             None,
-            Some(
-                DurationPart { whole: 123, frac: None },
-            )
+            Some(DurationPart {
+                whole: 123,
+                frac: None
+            },)
         )
     );
 }
@@ -1448,7 +1560,6 @@ fn interval_closed_partial_ywd_end_date() {
             },
         }
     );
-    //TODO: this should fail, can't go backward
     assert_eq!(
         interval(&mut "2024-W51-7/1".as_bstr()).unwrap(),
         Interval {
@@ -1491,7 +1602,6 @@ fn test_partial_end_date_ywd() {
         .unwrap(),
         PartialDate::YWD {
             year: Some(2024),
-            //TODO: should be 52
             week: Some(51),
             day: Some(1)
         }

@@ -1,7 +1,7 @@
 use crate::parsers;
 use alloc::string::String;
-use winnow_datetime::FractionalDuration;
 use winnow_datetime::types::Duration;
+use winnow_datetime::FractionalDuration;
 use winnow_datetime_assert::{DurationCoverage, FormatCoverage};
 
 /// Parses a duration string similiar to duration but allows for decimal places.
