@@ -22,20 +22,3 @@ pub fn parse_date(mut i: &str) -> Result<Date, String> {
         Err(format!("Failed to parse date: {}", i))
     }
 }
-
-#[cfg(feature = "testing")]
-use winnow_datetime_assert::DateCoverage;
-#[cfg(feature = "testing")]
-use winnow_datetime_assert::FormatCoverage;
-
-#[cfg(feature = "testing")]
-/// builds a list of assertions the date parser should pass
-pub fn coverage() -> DateCoverage {
-    DateCoverage {
-        coverage: vec![FormatCoverage {
-            format: "%Y-%M-%D".into(),
-            exception: Ok(None),
-            complete: true,
-        }],
-    }
-}

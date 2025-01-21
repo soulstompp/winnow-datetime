@@ -1,0 +1,141 @@
+coverage:
+  - format: "%Y-%M-%D/P1Y"
+    complete: true
+  - format: "%Y-%M-%D/P1M"
+    complete: true
+  - format: "%Y-%M-%D/P1D"
+    complete: true
+  - format: "%V-W%W-%w/P1Y"
+    complete: true
+  - format: "%V-W%W-%w/P1M"
+    complete: true
+  - format: "%V-W%W-%w/P1D"
+    complete: true
+  - format: "%Y-%O/P1Y"
+    complete: true
+  - format: "%Y-%O/P1M"
+    complete: true
+  - format: "%Y-%O/P1D"
+    complete: true
+  - format: "%Y-%M-%D/%Y-%M-%D"
+    complete: true
+  - format: "%V-W%W-%w/%V-W%W-%w"
+    complete: true
+  - format: "%Y-%O/%Y-%O"
+    complete: true
+  - format: "P1Y/%Y-%M-%D"
+    complete: true
+  - format: "P1Y/%V-W%W-%w"
+    complete: true
+  - format: "P1Y/%Y-%O"
+    complete: true
+  - format: "P1M/%Y-%M-%D"
+    complete: true
+  - format: "P1M/%V-W%W-%w"
+    complete: true
+  - format: "P1M/%Y-%O"
+    complete: true
+  - format: "P1D/%Y-%M-%D"
+    complete: true
+  - format: "P1D/%V-W%W-%w"
+    complete: true
+  - format: "P1D/%Y-%O"
+    complete: true
+  - format: "%Y-%M-%DT%h/P1DT1H"
+    complete: true
+  - format: "%Y-%M-%DT%h:%m/P1DT1H"
+    complete: true
+  - format: "%Y-%M-%DT%h:%m:%s/P1DT1H"
+    complete: true
+  - format: "%Y-%M-%DT%h:%m:%.3s/P1DT1H"
+    complete: true
+  - format: "%Y-%M-%DT%h:%mZ/P1DT1H"
+    complete: true
+  - format: "%V-W%W-%wT%h/P1DT1H"
+    complete: true
+  - format: "%V-W%W-%wT%h:%m/P1DT1H"
+    complete: true
+  - format: "%V-W%W-%wT%h:%m:%s/P1DT1H"
+    complete: true
+  - format: "%V-W%W-%wT%h:%m:%.3s/P1DT1H"
+    complete: true
+  - format: "%V-W%W-%wT%h:%mZ/P1DT1H"
+    complete: true
+  - format: "%Y-%OT%h/P1DT1H"
+    complete: true
+  - format: "%Y-%OT%h:%m/P1DT1H"
+    complete: true
+  - format: "%Y-%OT%h:%m:%s/P1DT1H"
+    complete: true
+  - format: "%Y-%OT%h:%m:%.3s/P1DT1H"
+    complete: true
+  - format: "%Y-%OT%h:%mZ/P1DT1H"
+    complete: true
+  - format: "P1DT1H/%Y-%M-%DT%h"
+    complete: true
+  - format: "P1DT1H/%Y-%M-%DT%h:%m"
+    complete: true
+  - format: "P1DT1H/%Y-%M-%DT%h:%m:%s"
+    complete: true
+  - format: "P1DT1H/%Y-%M-%DT%h:%m:%.3s"
+    complete: true
+  - format: "P1DT1H/%Y-%M-%DT%h:%mZ"
+    complete: true
+  - format: "P1DT1H/%V-W%W-%wT%h"
+    complete: true
+  - format: "P1DT1H/%V-W%W-%wT%h:%m"
+    complete: true
+  - format: "P1DT1H/%V-W%W-%wT%h:%m:%s"
+    complete: true
+  - format: "P1DT1H/%V-W%W-%wT%h:%m:%.3s"
+    complete: true
+  - format: "P1DT1H/%V-W%W-%wT%h:%mZ"
+    complete: true
+  - format: "P1DT1H/%Y-%OT%h"
+    complete: true
+  - format: "P1DT1H/%Y-%OT%h:%m"
+    complete: true
+  - format: "P1DT1H/%Y-%OT%h:%m:%s"
+    complete: true
+  - format: "P1DT1H/%Y-%OT%h:%m:%.3s"
+    complete: true
+  - format: "P1DT1H/%Y-%OT%h:%mZ"
+    complete: true
+  - format: "%Y/%Y"
+    complete: true
+  - format: "%Y-%M/%Y-%M"
+    complete: true
+  - format: "%Y-%M-%D/%Y-%M-%D"
+    complete: true
+  - format: "%Y-%M-%D/%M-%D"
+    complete: true
+  - format: "%Y-%M-%D/%D"
+    complete: true
+  - format: "%Y-%M/%Y-%M"
+    complete: true
+  - format: "%Y/%Y"
+    complete: true
+  - format: "%Y-%O/%Y-%O"
+    complete: true
+  - format: "%Y-%O/%O"
+    complete: true
+  - format: "%Y-W%W/%Y-W%W"
+    complete: true
+  - format: "%Y-W%W-%w/%Y-W%W-%w"
+    complete: true
+  - format: "%Y-W%W/%W"
+    complete: true
+  - format: "%Y-W%W-%w/%W-%w"
+    complete: true
+  - format: "%Y-W%W-%w/%w"
+    complete: true
+  - format: "%Y-%M-%D %h:%m:%s/%Y-%M-%D %h:%m:%s"
+    complete: true
+  - format: "%Y-%M-%D %h:%m:%s/%M-%D %h:%m:%s"
+    complete: true
+  - format: "%Y-%M-%D %h:%m:%s/%D %h:%m:%s"
+    complete: true
+  - format: "%Y-%M-%D %h:%m/%Y-%M-%D %h:%m"
+    complete: true
+  - format: "%Y-%M-%D %h/%Y-%M-%D %h"
+    complete: true

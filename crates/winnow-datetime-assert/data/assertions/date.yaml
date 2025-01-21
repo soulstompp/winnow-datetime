@@ -1,0 +1,76 @@
+  assertions:
+    - format: "%Y-%M-%D"
+      input: "2024-12-22"
+      expected:
+        !YMD
+          year: 2024
+          month: 12
+          day: 22
+    - format: "%Y-%M"
+      input: "2024-12"
+      expected:
+        !YMD
+          year: 2024
+          month: 12
+          day: 1
+    - format: "%Y-%O"
+      input: "2024-357"
+      expected:
+        !Ordinal
+          year: 2024
+          day: 357
+    - format: "%V-W%W"
+      input: "2024-W51"
+      expected:
+        !Week
+          year: 2024
+          week: 51
+          day: 1
+    - format: "%V-W%W-%w"
+      input: "2024-W51-7"
+      expected:
+        !Week
+          year: 2024
+          week: 51
+          day: 7
+    - format: "%Y%M%D"
+      input: "20241222"
+      expected:
+        !YMD
+          year: 2024
+          month: 12
+          day: 22
+    - format: "%Y%O"
+      input: "2024357"
+      expected:
+        !Ordinal
+          year: 2024
+          day: 357
+    - format: "%VW%W"
+      input: "2024W51"
+      expected:
+        !Week
+          year: 2024
+          week: 51
+          day: 1
+    - format: "%VW%W%w"
+      input: "2024W517"
+      expected:
+        !Week
+          year: 2024
+          week: 51
+          day: 7
+    - format: "--%M-%D"
+      input: "--12-22"
+      expected:
+        !YMD
+          year: 0
+          month: 12
+          day: 22
+    - format: "%M-%D"
+      input: "12-22"
+      expected:
+        !YMD
+          year: 0
+          month: 12
+          day: 22

@@ -1,0 +1,456 @@
+assertions:
+  - format: "%h:%m:%s"
+    input: "07:42:55"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 0
+  - format: "%h:%m:%.1s"
+    input: "07:42:55.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "%h:%m:%.2s"
+    input: "07:42:55.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%,3s"
+    input: "07:42:55,870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%.3s"
+    input: "07:42:55.870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%s,%u"
+    input: "07:42:55,870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%s.%u"
+    input: "07:42:55.870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h"
+    input: "T07"
+    expected:
+      hour: 7
+      minute: 0
+      second: 0
+      millisecond: 0
+  - format: "T%h:%m"
+    input: "T07:42"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 0
+  - format: "T%h:%,1m"
+    input: "T07:42,9"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 900
+  - format: "T%h:%.1m"
+    input: "T07:42.9"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 900
+  - format: "T%h:%m:%s"
+    input: "T07:42:55"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 0
+  - format: "T%h:%m:%.1s"
+    input: "T07:42:55.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "T%h:%m:%.2s"
+    input: "T07:42:55.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%,3s"
+    input: "T07:42:55,870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%.3s"
+    input: "T07:42:55.870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%s,%u"
+    input: "T07:42:55,870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%s.%u"
+    input: "T07:42:55.870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m"
+    input: "0742"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 0
+  - format: "%h%m%s"
+    input: "074255"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 0
+  - format: "%h%m%.1s"
+    input: "074255.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "%h%m%.2s"
+    input: "074255.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%,3s"
+    input: "074255,870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%.3s"
+    input: "074255.870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%s,%u"
+    input: "074255,870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%s.%u"
+    input: "074255.870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h%m"
+    input: "T0742"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 0
+  - format: "T%h%,1m"
+    input: "T0742,9"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 900
+  - format: "T%h%.1m"
+    input: "T0742.9"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 900
+  - format: "T%h%m%s"
+    input: "T074255"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 0
+  - format: "T%h%m%.1s"
+    input: "T074255.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "T%h%m%.2s"
+    input: "T074255.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h%m%,3s"
+    input: "T074255,870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h%m%.3s"
+    input: "T074255.870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h%m%s,%u"
+    input: "T074255,870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h%m%s.%u"
+    input: "T074255.870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h"
+    input: "07"
+    expected:
+      hour: 7
+      minute: 0
+      second: 0
+      millisecond: 0
+  - format: "%h:%m"
+    input: "07:42"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 0
+  - format: "%h:%.1m"
+    input: "07:42.9"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 900
+  - format: "%h:%m:%s"
+    input: "07:42:55"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 0
+  - format: "%h:%m:%.1s"
+    input: "07:42:55.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "%h:%m:%.2s"
+    input: "07:42:55.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%,3s"
+    input: "07:42:55,870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%.3s"
+    input: "07:42:55.870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%s,%u"
+    input: "07:42:55,870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h:%m:%s.%u"
+    input: "07:42:55.870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h"
+    input: "T07"
+    expected:
+      hour: 7
+      minute: 0
+      second: 0
+      millisecond: 0
+  - format: "T%h:%m"
+    input: "T07:42"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 0
+  - format: "T%h:%,1m"
+    input: "T07:42,9"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 900
+  - format: "T%h:%.1m"
+    input: "T07:42.9"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 900
+  - format: "T%h:%m:%s"
+    input: "T07:42:55"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 0
+  - format: "T%h:%m:%.1s"
+    input: "T07:42:55.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "T%h:%m:%.2s"
+    input: "T07:42:55.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%,3s"
+    input: "T07:42:55,870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%.3s"
+    input: "T07:42:55.870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%s,%u"
+    input: "T07:42:55,870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "T%h:%m:%s.%u"
+    input: "T07:42:55.870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m"
+    input: "0742"
+    expected:
+      hour: 7
+      minute: 42
+      second: 0
+      millisecond: 0
+  - format: "%h%m%s"
+    input: "074255"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 0
+  - format: "%h%m%.1s"
+    input: "074255.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "%h%m%.2s"
+    input: "074255.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%,3s"
+    input: "074255,870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%.3s"
+    input: "074255.870"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%s,%u"
+    input: "074255,870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
+  - format: "%h%m%s.%u"
+    input: "074255.870479"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870

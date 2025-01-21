@@ -1,0 +1,1288 @@
+assertions:
+  - format: "%Y-%M-%D/P1Y"
+    input: "2024-12-22/P1Y"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        duration:
+          years: 1
+  - format: "%Y-%M-%D/P1M"
+    input: "2024-12-22/P1M"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        duration:
+          months: 1
+  - format: "%Y-%M-%D/P1D"
+    input: "2024-12-22/P1D"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        duration:
+          days: 1
+  - format: "%V-W%W-%w/P1Y"
+    input: "2024-W51-7/P1Y"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        duration:
+          years: 1
+  - format: "%V-W%W-%w/P1M"
+    input: "2024-W51-7/P1M"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        duration:
+          months: 1
+  - format: "%V-W%W-%w/P1D"
+    input: "2024-W51-7/P1D"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        duration:
+          days: 1
+  - format: "%Y-%O/P1Y"
+    input: "2024-357/P1Y"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        duration:
+          years: 1
+  - format: "%Y-%O/P1M"
+    input: "2024-357/P1M"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        duration:
+          months: 1
+  - format: "%Y-%O/P1D"
+    input: "2024-357/P1D"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        duration:
+          days: 1
+  - format: "%Y-%M-%D/%Y-%M-%D"
+    input: "2024-12-22/2024-12-22"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+  - format: "%Y-%M-%D/%V-W%W-%w"
+    input: "2024-12-22/2024-W51-7"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+          year: 2024
+          month: 12
+          day: 22
+        end:
+          date:
+            !YWD
+          year: 2024
+          week: 51
+          day: 7
+  - format: "%Y-%M-%D/%Y-%O"
+    input: "2024-12-22/2024-357"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+  - format: "%V-W%W-%w/%Y-%M-%D"
+    input: "2024-W51-7/2024-12-22"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+  - format: "%V-W%W-%w/%V-W%W-%w"
+    input: "2024-W51-7/2024-W51-7"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+  - format: "%V-W%W-%w/%Y-%O"
+    input: "2024-W51-7/2024-357"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        end:
+          date:
+            !YDDD
+          year: 2024
+          day: 357
+  - format: "%Y-%O/%Y-%M-%D"
+    input: "2024-357/2024-12-22"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+  - format: "%Y-%O/%V-W%W-%w"
+    input: "2024-357/2024-W51-7"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+  - format: "%Y-%O/%Y-%O"
+    input: "2024-357/2024-357"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+  - format: "P1Y/%Y-%M-%D"
+    input: "P1Y/2024-12-22"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          years: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+  - format: "P1Y/%V-W%W-%w"
+    input: "P1Y/2024-W51-7"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          years: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+  - format: "P1Y/%Y-%O"
+    input: "P1Y/2024-357"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          years: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+  - format: "P1M/%Y-%M-%D"
+    input: "P1M/2024-12-22"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          months: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+  - format: "P1M/%V-W%W-%w"
+    input: "P1M/2024-W51-7"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          months: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+  - format: "P1M/%Y-%O"
+    input: "P1M/2024-357"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          months: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+  - format: "P1D/%Y-%M-%D"
+    input: "P1D/2024-12-22"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+  - format: "P1D/%V-W%W-%w"
+    input: "P1D/2024-W51-7"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+  - format: "P1D/%Y-%O"
+    input: "P1D/2024-357"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+  - format: "%Y-%M-%DT%h/P1DT1H"
+    input: "2024-12-22T07/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%M-%DT%h:%m/P1DT1H"
+    input: "2024-12-22T07:42/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+            minute: 42
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%M-%DT%h:%m:%s/P1DT1H"
+    input: "2024-12-22T07:42:55/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%M-%DT%h:%m:%.3s/P1DT1H"
+    input: "2024-12-22T07:42:55.870/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+            millisecond: 870
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%M-%DT%h:%mZ/P1DT1H"
+    input: "2024-12-22T07:42Z/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+            minute: 42
+            offset:
+              offset_hours: 0
+              offset_minutes: 0
+        duration:
+          days: 1
+          hours: 1
+  - format: "%V-W%W-%wT%h/P1DT1H"
+    input: "2024-W51-7T07/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+        duration:
+          days: 1
+          hours: 1
+  - format: "%V-W%W-%wT%h:%m/P1DT1H"
+    input: "2024-W51-7T07:42/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+            minute: 42
+        duration:
+          days: 1
+          hours: 1
+  - format: "%V-W%W-%wT%h:%m:%s/P1DT1H"
+    input: "2024-W51-7T07:42:55/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+        duration:
+          days: 1
+          hours: 1
+  - format: "%V-W%W-%wT%h:%m:%.3s/P1DT1H"
+    input: "2024-W51-7T07:42:55.870/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+            millisecond: 870
+        duration:
+          days: 1
+          hours: 1
+  - format: "%V-W%W-%wT%h:%mZ/P1DT1H"
+    input: "2024-W51-7T07:42Z/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+            minute: 42
+            offset:
+                offset_hours: 0
+                offset_minutes: 0
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%OT%h/P1DT1H"
+    input: "2024-357T07/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%OT%h:%m/P1DT1H"
+    input: "2024-357T07:42/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+            minute: 42
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%OT%h:%m:%s/P1DT1H"
+    input: "2024-357T07:42:55/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%OT%h:%m:%.3s/P1DT1H"
+    input: "2024-357T07:42:55.870/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+            millisecond: 870
+        duration:
+          days: 1
+          hours: 1
+  - format: "%Y-%OT%h:%mZ/P1DT1H"
+    input: "2024-357T07:42Z/P1DT1H"
+    expected:
+      range:
+        !ClosedStart
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+            minute: 42
+            offset:
+              offset_hours: 0
+              offset_minutes: 0
+        duration:
+          days: 1
+          hours: 1
+  - format: "P1DT1H/%Y-%M-%DT%h"
+    input: "P1DT1H/2024-12-22T07"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+  - format: "P1DT1H/%Y-%M-%DT%h:%m"
+    input: "P1DT1H/2024-12-22T07:42"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+            minute: 42
+  - format: "P1DT1H/%Y-%M-%DT%h:%m:%s"
+    input: "P1DT1H/2024-12-22T07:42:55"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+  - format: "P1DT1H/%Y-%M-%DT%h:%m:%.3s"
+    input: "P1DT1H/2024-12-22T07:42:55.870"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+            millisecond: 870
+  - format: "P1DT1H/%Y-%M-%DT%h:%mZ"
+    input: "P1DT1H/2024-12-22T15:42Z"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 15
+            minute: 42
+            offset:
+              offset_hours: 0
+              offset_minutes: 0
+  - format: "P1DT1H/%V-W%W-%wT%h"
+    input: "P1DT1H/2024-W51-7T07"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+  - format: "P1DT1H/%V-W%W-%wT%h:%m"
+    input: "P1DT1H/2024-W51-7T07:42"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+            minute: 42
+  - format: "P1DT1H/%V-W%W-%wT%h:%m:%s"
+    input: "P1DT1H/2024-W51-7T07:42:55"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+  - format: "P1DT1H/%V-W%W-%wT%h:%m:%.3s"
+    input: "P1DT1H/2024-W51-7T07:42:55.870"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+            millisecond: 870
+  - format: "P1DT1H/%V-W%W-%wT%h:%mZ"
+    input: "P1DT1H/2024-W51-7T15:42Z"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+          time:
+            hour: 15
+            minute: 42
+            offset:
+                offset_hours: 0
+                offset_minutes: 0
+  - format: "P1DT1H/%Y-%OT%h"
+    input: "P1DT1H/2024-357T07"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+  - format: "P1DT1H/%Y-%OT%h:%m"
+    input: "P1DT1H/2024-357T07:42"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+            minute: 42
+  - format: "P1DT1H/%Y-%OT%h:%m:%s"
+    input: "P1DT1H/2024-357T07:42:55"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+  - format: "P1DT1H/%Y-%OT%h:%m:%.3s"
+    input: "P1DT1H/2024-357T07:42:55.870"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 7
+            minute: 42
+            second: 55
+            millisecond: 870
+  - format: "P1DT1H/%Y-%OT%h:%mZ"
+    input: "P1DT1H/2024-357T15:42Z"
+    expected:
+      range:
+        !ClosedEnd
+        duration:
+          days: 1
+          hours: 1
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+          time:
+            hour: 15
+            minute: 42
+            offset:
+              offset_hours: 0
+              offset_minutes: 0
+  - format: "%Y/%Y"
+    input: "2024/2024"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !Year
+            year: 2024
+        end:
+          date:
+            !Year
+            year: 2024
+  - format: "%Y-%M/%Y-%M"
+    input: "2024-12/2024-12"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+  - format: "%Y-%M-%D/%Y-%M-%D"
+    input: "2024-12-22/2024-12-23"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+  - format: "%Y-%M-%D/%M-%D"
+    input: "2024-12-22/12-23"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+  - format: "%Y-%M-%D/%D"
+    input: "2024-12-22/23"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+  - format: "%Y-%M/%Y-%M"
+    input: "2024-12/2024-12"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+  - format: "%Y-%M-%D/%Y-%M"
+    input: "2024-12-22/2024-12"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+  - format: "%Y-%M-%D/%Y"
+    input: "2024-12-22/2024"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+        end:
+          !YMD
+          year: 2024
+          month: 12
+          day: 22
+  - format: "%Y-%O/%Y-%O"
+    input: "2024-357/2024-358"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 358
+  - format: "%Y-%O/%O"
+    input: "2024-357/358"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        end:
+          date:
+            !YDDD
+            year: 2024
+            day: 358
+  - format: "%Y-%O/%Y"
+    input: "2024-357/2024"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YDDD
+            year: 2024
+            day: 357
+        end:
+          year: 2024
+  - format: "%Y-W%W/%Y-W%W"
+    input: "2024-W51/2024-W52"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 52
+  - format: "%Y-W%W-%w/%Y-W%W-%w"
+    input: "2024-W51-7/2024-W52-1"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 52
+            day: 1
+  - format: "%Y-W%W/%W"
+    input: "2024-W51/52"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 52
+  - format: "%Y-W%W-%w/%W-%w"
+    input: "2024-W51-7/52-1"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 52
+            day: 1
+  - format: "%Y-W%W-%w/%w"
+    input: "2024-W51-7/1"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 7
+        end:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+            day: 1
+  - format: "%Y-W%W/%Y"
+    input: "2024-W51/2024"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YWD
+            year: 2024
+            week: 51
+        end:
+          date:
+            !YWD
+            year: 2024
+  - format: "%Y-%M-%D %h:%m:%s/%Y-%M-%D %h:%m:%s"
+    input: "2024-12-22 15:42:55/2024-12-23 18:45:32"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 15
+            minute: 42
+            second: 55
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+          time:
+            hour: 18
+            minute: 45
+            second: 32
+  - format: "%Y-%M-%D %h:%m:%s/%M-%D %h:%m:%s"
+    input: "2024-12-22 15:42:55/12-23 18:45:32"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 15
+            minute: 42
+            second: 55
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+          time:
+            hour: 18
+            minute: 45
+            second: 32
+  - format: "%Y-%M-%D %h:%m:%s/%D %h:%m:%s"
+    input: "2024-12-22 15:42:55/23 18:45:32"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 15
+            minute: 42
+            second: 55
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+          time:
+            hour: 18
+            minute: 45
+            second: 32
+  - format: "%Y-%M-%D %h:%m/%Y-%M-%D %h:%m"
+    input: "2024-12-22 15:42/2024-12-23 18:45"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 15
+            minute: 42
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+          time:
+            hour: 18
+            minute: 45
+  - format: "%Y-%M-%D %h/%Y-%M-%D %h"
+    input: "2024-12-22 15/2024-12-23 18"
+    expected:
+      range:
+        !Closed
+        start:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 22
+          time:
+            hour: 15
+        end:
+          date:
+            !YMD
+            year: 2024
+            month: 12
+            day: 23
+          time:
+            hour: 18

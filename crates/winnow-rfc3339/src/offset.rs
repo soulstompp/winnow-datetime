@@ -1,6 +1,5 @@
 use std::prelude::rust_2015::String;
 use winnow_datetime::Offset;
-use winnow_datetime_assert::FormatCoverage;
 
 /// Parses a offset offset string.
 ///
@@ -18,42 +17,5 @@ pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, String> {
         Ok(parsed)
     } else {
         Err(format!("Failed to parse datetime: {}", i))
-    }
-}
-
-#[cfg(feature = "testing")]
-use winnow_datetime_assert::OffsetCoverage;
-
-#[cfg(feature = "testing")]
-/// builds a list of assertions the date parser should pass
-pub fn coverage() -> OffsetCoverage {
-    OffsetCoverage {
-        coverage: vec![
-            FormatCoverage {
-                format: "%Z:%z".into(),
-                exception: Ok(None),
-                complete: true,
-            },
-            FormatCoverage {
-                format: "-00:00".into(),
-                exception: Ok(None),
-                complete: true,
-            },
-            FormatCoverage {
-                format: "+00:00".into(),
-                exception: Ok(None),
-                complete: true,
-            },
-            FormatCoverage {
-                format: "Z".into(),
-                exception: Ok(None),
-                complete: true,
-            },
-            FormatCoverage {
-                format: "z".into(),
-                exception: Ok(None),
-                complete: true,
-            },
-        ],
     }
 }

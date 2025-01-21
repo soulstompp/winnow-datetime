@@ -1,0 +1,3 @@
+coverage:
+  - format: "%Y-%M-%D"
+    complete: true

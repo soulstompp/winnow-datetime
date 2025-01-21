@@ -14,19 +14,51 @@ edition = "2021"
 
 [dependencies]
 winnow = {  version = "0.6.20"}
-winnow_datetime = { path = "../winnow-datetime" }
+winnow_datetime = { path = "../winnow-datetime", features = ["serde"] }
 chrono = { version = "0.4", default-features = false, optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }
 num-traits = { version = "0.2", optional = true }
-winnow_datetime_assert = { path = "../winnow-datetime-assert", optional = true }
+winnow_datetime_assert = { path = "../winnow-datetime-assert" }
+serde = { version = "1.0.217", features = ["derive"], optional = true }
 
 [dev-dependencies ]
 winnow_datetime_assert = { path = "../winnow-datetime-assert" }
-galvanic-test = "0.2.0"
+libtest-mimic = "0.8.1"
+
+[[test]]
+name = "iso8601_date_formats"
+path="tests/formats/date.rs"
+harness = false
+
+[[test]]
+name = "iso8601_duration_formats"
+path="tests/formats/duration.rs"
+harness = false
+
+[[test]]
+name = "iso8601_fractional_duration_formats"
+path="tests/formats/fractional_duration.rs"
+harness = false
+
+[[test]]
+name = "iso8601_interval_formats"
+path="tests/formats/interval.rs"
+harness = false
+
+[[test]]
+name = "iso8601_offset_formats"
+path="tests/formats/offset.rs"
+harness = false
+
+[[test]]
+name = "iso8601_time_formats"
+path="tests/formats/time.rs"
+harness = false
 
 [features]
-testing = ["winnow_datetime_assert"]
 default = ["std"]
 std = ["winnow/std"]
 chrono = ["dep:chrono", "dep:num-traits"]
 time = ["dep:time", "dep:num-traits"]
+serde = ["dep:serde", "winnow_datetime/serde", "winnow_datetime_assert/serde"]
+

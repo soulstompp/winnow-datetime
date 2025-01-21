@@ -1,0 +1,280 @@
+assertions:
+  - format: "P1Y"
+    input: "P1Y"
+    expected:
+      years:
+      - 1
+      - null
+      months:
+      - 0
+      - null
+  - format: "P1,5Y"
+    input: "P1,5Y"
+    expected:
+      years:
+      - 1
+      - 0.5
+  - format: "P1.5Y"
+    input: "P1.5Y"
+    expected:
+      years:
+      - 1
+      - 0.5
+  - format: "P1M"
+    input: "P1M"
+    expected:
+      months:
+      - 1
+      - null
+  - format: "P1W"
+    input: "P1W"
+    expected:
+      weeks:
+      - 1
+      - null
+  - format: "P1D"
+    input: "P1D"
+    expected:
+      days:
+      - 1
+      - null
+  - format: "PT1H"
+    input: "PT1H"
+    expected:
+      hours:
+      - 1
+      - null
+  - format: "P1H"
+    input: "P1H"
+    expected:
+      hours:
+      - 1
+      - null
+  - format: "PT1M"
+    input: "PT1M"
+    expected:
+      minutes:
+      - 1
+      - null
+  - format: "PT1S"
+    input: "PT1S"
+    expected:
+      seconds:
+      - 1
+      - null
+  - format: "P1S"
+    input: "P1S"
+    expected:
+      seconds:
+      - 1
+      - null
+  - format: "PT1,5S"
+    input: "PT1,5S"
+    expected:
+      seconds:
+      - 1
+      - 0.5
+  - format: "PT1.5S"
+    input: "PT1.5S"
+    expected:
+      seconds:
+      - 1
+      - 0.5
+  - format: "P1Y1M"
+    input: "P1Y1M"
+    expected:
+      years:
+      - 1
+      - null
+      months:
+      - 1
+      - null
+  - format: "P1Y1D"
+    input: "P1Y1D"
+    expected:
+      years:
+      - 1
+      - null
+      days:
+      - 1
+      - null
+  - format: "P1Y1M1D"
+    input: "P1Y1M1D"
+    expected:
+      years:
+      - 1
+      - null
+      months:
+      - 1
+      - null
+      days:
+      - 1
+      - null
+  - format: "P1Y1M1DT1H1M1S"
+    input: "P1Y1M1DT1H1M1S"
+    expected:
+      years:
+      - 1
+      - null
+      months:
+      - 1
+      - null
+      days:
+      - 1
+      - null
+      hours:
+      - 1
+      - null
+      minutes:
+      - 1
+      - null
+      seconds:
+      - 1
+      - null
+  - format: "P1DT1H"
+    input: "P1DT1H"
+    expected:
+      days:
+      - 1
+      - null
+      hours:
+      - 1
+      - null
+  - format: "P1MT1M"
+    input: "P1MT1M"
+    expected:
+      months:
+      - 1
+      - null
+      minutes:
+      - 1
+      - null
+  - format: "P1DT1M"
+    input: "P1DT1M"
+    expected:
+      days:
+      - 1
+      - null
+      minutes:
+      - 1
+      - null
+  - format: "P1.5W"
+    input: "P1.5W"
+    expected:
+      weeks:
+      - 1
+      - 0.5
+  - format: "P1,5W"
+    input: "P1,5W"
+    expected:
+      weeks:
+        - 1
+        - 0.5
+  - format: "P1DT1.000S"
+    input: "P1DT1.000S"
+    expected:
+      days:
+      - 1
+      - null
+      seconds:
+        - 1
+        - 0.0
+  - format: "P1DT1.00000S"
+    input: "P1DT1.00000S"
+    expected:
+      days:
+      - 1
+      - null
+      seconds:
+      - 1
+      - 0.0
+  - format: "P1DT1H1M1.1S"
+    input: "P1DT1H1M1.1S"
+    expected:
+      days:
+      - 1
+      - null
+      hours:
+      - 1
+      - null
+      minutes:
+      - 1
+      - null
+      seconds:
+      - 1
+      - 0.1
+  - format: "P1H1M1.1S"
+    input: "P1H1M1.1S"
+    expected:
+      hours:
+      - 1
+      - null
+      minutes:
+      - 1
+      - null
+      seconds:
+      - 1
+      - 0.1
+  - format: "1W1M1S"
+    input: "1W1M1S"
+    expected:
+      days:
+      - 7
+      - null
+      minutes:
+      - 1
+      - null
+      seconds:
+      - 1
+      - null
+  - format: "1S1M1H1W"
+    input: "1S1M1H1W"
+    expected:
+      days:
+      - 7
+      - null
+      hours:
+      - 1
+      - null
+      minutes:
+      - 1
+      - null
+      seconds:
+      - 1
+      - null
+  - format: "1 W"
+    input: "1 W"
+    expected:
+      days:
+      - 7
+      - null
+  - format: "1.5W"
+    input: "1.5W"
+    expected:
+      days:
+      - 10
+      - null
+  - format: "1 D 1 W"
+    input: "1 D 1 W"
+    expected:
+      days:
+      - 8
+      - null
+  - format: "1.5 S 1.5 M"
+    input: "1.5 S 1.5 M"
+    expected:
+      minutes:
+      - 1
+      - null
+      seconds:
+      - 1
+      - null
+  - format: "1H 15 M"
+    input: "1H 15 M"
+    expected:
+      hours:
+      - 1
+      - null
+      minutes:
+      - 15
+      - null

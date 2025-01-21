@@ -1,4 +1,6 @@
 use core::fmt;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 /// Compound struct, holds Date and Time.
 /// ```
@@ -14,6 +16,7 @@ use core::fmt;
 /// )
 /// */
 /// ```
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
 pub struct DateTime {
     /// The date part
@@ -22,6 +25,7 @@ pub struct DateTime {
     pub time: Time,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
 pub struct PartialDateTime {
     // optional date part
@@ -41,6 +45,7 @@ pub trait OffsetFormat: Sized {
 }
 
 /// A date object.
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub enum Date {
     /// consists of year, month and day of month
@@ -61,6 +66,7 @@ impl Default for Date {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub enum PartialDate {
     /// a standalone year
@@ -82,6 +88,7 @@ pub enum PartialDate {
 }
 
 /// A time object.
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
 pub struct Time {
     /// a 24th of a day
@@ -118,6 +125,7 @@ impl Time {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct PartialTime {
     pub hour: Option<u32>,
@@ -128,6 +136,7 @@ pub struct PartialTime {
 }
 
 /// struct holding an optional number of repetitions and an `IntervalRange`
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Interval {
     pub repetitions: Option<Option<u32>>,
@@ -138,6 +147,7 @@ pub struct Interval {
 ///     Closed Start - Start and time period, such as "2007-03-01T13:00:00Z/P1Y2M10DT2H30M"
 ///     Closed End - and end, such as "P1Y2M10DT2H30M/2008-05-11T15:30:00Z"
 ///     Open -  such as "P1Y2M10DT2H30M", with additional context information
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub enum IntervalRange {
     Closed {
@@ -158,6 +168,7 @@ pub enum IntervalRange {
 }
 
 /// Struct holding offset offsets
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
 pub struct Offset {
     /// hour offset offset
@@ -199,6 +210,7 @@ pub struct Offset {
 ///      milliseconds: Some(0.123)
 /// };
 /// ```
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(default))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Duration {
     /// Number of calendar years
@@ -295,6 +307,7 @@ impl From<Duration> for ::core::time::Duration {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct DurationPart {
     pub whole: u32,
@@ -342,6 +355,7 @@ impl Eq for DurationPart {}
 ///      seconds: (59, Some(0.123)),
 /// };
 /// ```
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(default))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct FractionalDuration {
     /// Number of calendar years
@@ -360,7 +374,7 @@ pub struct FractionalDuration {
     pub seconds: (u32, Option<f32>),
 }
 
-impl PartialEq for crate::FractionalDuration {
+impl PartialEq for FractionalDuration {
     fn eq(&self, other: &Self) -> bool {
         [
             self.years,
@@ -388,12 +402,12 @@ impl PartialEq for crate::FractionalDuration {
     }
 }
 
-impl Eq for crate::FractionalDuration {}
+impl Eq for FractionalDuration {}
 
-impl crate::FractionalDuration {
+impl FractionalDuration {
     /// Whether this duration represents a zero duration.
     pub fn is_zero(&self) -> bool {
-        let crate::FractionalDuration {
+        let FractionalDuration {
             years,
             months,
             weeks,
@@ -409,7 +423,7 @@ impl crate::FractionalDuration {
 
     /// Whether this duration has a time component.
     pub fn has_time(&self) -> bool {
-        let crate::FractionalDuration {
+        let FractionalDuration {
             days,
             hours,
             minutes,

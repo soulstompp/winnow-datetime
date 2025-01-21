@@ -1,190 +1,184 @@
-use winnow_datetime::{Date, Duration, Offset, Time};
+use serde::Deserialize;
+use std::path::PathBuf;
 
 pub mod date;
+pub use date::{DateAssertion, DateCoverage};
+
+pub mod duration;
+pub use duration::{DurationAssertion, DurationCoverage};
+
+pub mod interval;
+pub use interval::{IntervalAssertion, IntervalCoverage};
+
+pub mod fractional_duration;
+pub use fractional_duration::{FractionalDurationAssertion, FractionalDurationCoverage};
 
 pub mod offset;
+pub use offset::{OffsetAssertion, OffsetCoverage};
+
 pub mod time;
+pub use time::{TimeAssertion, TimeCoverage};
 
 #[path = "../../winnow-datetime/src/clippy.rs"]
 mod clippy;
-pub mod duration;
-pub mod interval;
-pub mod fractional_duration;
 
-use winnow::error::{ContextError, ErrMode};
-use winnow_datetime::types::Interval;
-
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct FormatAssertion<T> {
     pub format: String,
     pub input: String,
-    pub expected: Result<T, ErrMode<ContextError>>,
+    pub expected: T,
 }
 
 pub trait FormatAssertionBuilder<T> {
+    fn new() -> Self
+    where
+        Self: Sized,
+        for<'de> Self: Deserialize<'de>,
+    {
+        serde_yaml::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
+    }
+
+    fn piece() -> &'static str;
+
+    fn path() -> PathBuf {
+        let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR")); // Path to the crate's `Cargo.toml`
+        path.push("data/assertions"); // Adjust the relative path to t
+        path.join(Self::piece()).with_extension("yaml")
+    }
+
     fn base_assertions(&self) -> Vec<FormatAssertion<T>>;
     fn assertions(&self) -> Vec<FormatAssertion<T>>;
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct FormatCoverage<T> {
     pub format: String,
-    pub exception: Result<Option<T>, ErrMode<ContextError>>,
+    pub exception: Option<T>,
     pub complete: bool,
 }
 
 pub trait FormatCoverageBuilder<T> {
+    fn new() -> Self
+    where
+        Self: Sized,
+        for<'de> Self: Deserialize<'de>,
+    {
+        serde_yaml::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
+    }
+
+    fn piece() -> &'static str;
+
+    fn path() -> PathBuf {
+        let data_dir = std::env::var("COVERAGE_PATH")
+            .expect("COVERAGE_PATH should be set by test script calling it.");
+        PathBuf::from(data_dir)
+            .join(Self::piece())
+            .with_extension("yaml")
+    }
+
     fn base_coverage(&self) -> Vec<FormatCoverage<T>>;
     fn coverage(&self) -> Vec<FormatCoverage<T>>;
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct DateCoverage {
-    pub coverage: Vec<FormatCoverage<Date>>,
-}
-
-impl FormatCoverageBuilder<Date> for DateCoverage {
-    fn base_coverage(&self) -> Vec<FormatCoverage<Date>> {
-        self.coverage.clone()
-    }
-
-    fn coverage(&self) -> Vec<FormatCoverage<Date>> {
-        vec![]
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DurationCoverage {
-    pub coverage: Vec<FormatCoverage<Duration>>,
-}
-
-impl FormatCoverageBuilder<Duration> for crate::DurationCoverage {
-    fn base_coverage(&self) -> Vec<FormatCoverage<Duration>> {
-        self.coverage.clone()
-    }
-
-    fn coverage(&self) -> Vec<FormatCoverage<Duration>> {
-        vec![]
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct IntervalCoverage {
-    pub coverage: Vec<FormatCoverage<Interval>>,
-}
-
-impl FormatCoverageBuilder<Interval> for crate::IntervalCoverage {
-    fn base_coverage(&self) -> Vec<FormatCoverage<Interval>> {
-        self.coverage.clone()
-    }
-
-    fn coverage(&self) -> Vec<FormatCoverage<Interval>> {
-        vec![]
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct TimeCoverage {
-    pub coverage: Vec<FormatCoverage<Time>>,
-    pub separators: Vec<Option<&'static str>>,
-    pub timezone_coverage: OffsetCoverage,
-}
-
-impl FormatCoverageBuilder<Time> for TimeCoverage {
-    fn base_coverage(&self) -> Vec<FormatCoverage<Time>> {
-        self.coverage
-            .clone()
-            .iter()
-            .filter(|c| c.complete)
-            .cloned()
-            .collect()
-    }
-
-    fn coverage(&self) -> Vec<FormatCoverage<Time>> {
-        let mut acc = vec![];
-
-        for s in self.separators.iter() {
-            for t in self.coverage.clone() {
-                for tz in self.timezone_coverage.coverage.iter() {
-                    let format = format!("{}{}{}", t.format, s.unwrap_or(""), tz.format);
-                    let exception = match (t.exception.clone(), tz.exception.clone()) {
-                        (Ok(None), Ok(None)) => Ok(None),
-                        (Ok(Some(t)), Ok(Some(tz))) => {
-                            Ok(Some(t.set_tz(Some((tz.offset_hours, tz.offset_minutes)))))
-                        }
-                        (Err(e), _) => Err(e),
-                        (_, Err(e)) => Err(e),
-                        _ => panic!("Invalid exception combination"),
-                    };
-
-                    acc.push(FormatCoverage {
-                        format,
-                        exception,
-                        complete: true,
-                    });
-                }
-            }
-        }
-
-        acc
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct OffsetCoverage {
-    pub coverage: Vec<FormatCoverage<Offset>>,
-}
-
-impl FormatCoverageBuilder<Offset> for OffsetCoverage {
-    fn base_coverage(&self) -> Vec<FormatCoverage<Offset>> {
-        self.coverage.clone()
-    }
-
-    fn coverage(&self) -> Vec<FormatCoverage<Offset>> {
-        vec![]
-    }
-}
-
 #[macro_export]
-macro_rules! generate_test_suite {
-    ($suite_name: ident, $format: ident, $piece: ident, $piece_type:ty, $coverage: ident, $parser: ident) => {
-        test_suite! {
-            name $suite_name;
+macro_rules! define_format_tests {
+    ($format:ident, $coverage_path: expr, $assertion_type: ident, $piece_type:path, $coverage:ident, $parser:ident) => {
+        fn main() -> ExitCode {
+            use std::env;
 
-            use winnow_datetime_assert::$piece::assertions;
-            use winnow_datetime_assert::$coverage;
-            use winnow_datetime_assert::{FormatAssertion, FormatAssertionBuilder, FormatCoverage, FormatCoverageBuilder};
+            use libtest_mimic::{Arguments, Failed, Trial};
             use winnow::combinator::{eof, terminated};
             use winnow::Parser;
+            use winnow_datetime_assert::$coverage;
+            use winnow_datetime_assert::{FormatAssertion, FormatCoverage};
 
-            fixture format_checks(assertion: crate::FormatAssertion<$piece_type>) -> crate::FormatAssertion<$piece_type> {
-                params {
-                    assertions().assertions().into_iter()
-                }
-                setup(&mut self) {
-                    self.assertion.clone()
+            if env::var("COVERAGE_PATH").is_err() {
+                env::set_var("COVERAGE_PATH", $coverage_path);
+            }
+
+            let format_assertions = $assertion_type::new();
+            let format_coverage = $coverage::new();
+
+            let assertions = format_assertions
+                .base_assertions()
+                .into_iter()
+                .chain(format_assertions.assertions().into_iter())
+                .collect::<Vec<_>>();
+
+            let coverages = format_coverage
+                .base_coverage()
+                .into_iter()
+                .chain(format_coverage.coverage().into_iter())
+                .collect::<Vec<_>>();
+
+            let args = Arguments::from_args();
+            let mut trials = Vec::new();
+
+            let (covered, uncovered) =
+                assertions
+                    .into_iter()
+                    .fold((vec![], vec![]), |(mut covered, mut uncovered), a| {
+                        if let Some(c) = coverages.iter().find(|f| f.format == a.format) {
+                            if let Some(e) = c.exception {
+                                let mut a = a.clone();
+                                a.expected = e;
+                                covered.push(a);
+                            } else {
+                                covered.push(a);
+                            }
+                        } else {
+                            uncovered.push(a);
+                        }
+
+                        (covered, uncovered)
+                    });
+
+            fn parse_input(input: &str) -> Result<$piece_type, String> {
+                match terminated($format::parsers::$parser, eof).parse_next(&mut input.as_bytes()) {
+                    Ok(p) => Ok(p),
+                    Err(e) => Err(format!("Failed to parse {}: {}", input, e)),
                 }
             }
 
-            // Iterate through the formats and create tests for each
-            test format_assertions(format_checks) {
-                let mut input = format_checks.params.assertion.input.clone();
+            // Generate a trial for each assertion
+            for assertion in covered {
+                let name = format!("parses - {}", assertion.format);
+                trials.push(Trial::test(name, move || {
+                    // Parse the input
+                    let result = parse_input(&assertion.input);
 
-                let result = terminated($format::parsers::$parser, eof).parse_next(&mut input.as_bytes());
+                    // If covered, the result must match the expected value
+                    if result != Ok(assertion.expected) {
+                        return Err(Failed::from(format!(
+                            "Covered format mismatch: {}\nExpected: {:?}\nGot: {:?}",
+                            assertion.format, assertion.expected, result
+                        )));
+                    }
 
-                let base_coverage = $format::$piece::coverage().base_coverage();
-                let coverage = $format::$piece::coverage().coverage();
-
-                let mut coverage_iter = base_coverage.iter().chain(coverage.iter());
-
-                if coverage_iter.any(|c| c.format == format_checks.params.assertion.format) {
-                    assert_eq!(result, format_checks.params.assertion.expected);
-                }
-                else {
-                    assert!(result.is_err(), "Uncovered format {} ({}) should not parse", format_checks.params.assertion.format, format_checks.params.assertion.input);
-                }
-
+                    Ok(())
+                }));
             }
+
+            for assertion in uncovered {
+                let name = format!("rejects - {}", assertion.format);
+                trials.push(Trial::test(name, move || {
+                    // Parse the input
+                    let result = parse_input(&assertion.input);
+
+                    // If not covered, the result must be an error
+                    if result.is_ok() {
+                        return Err(Failed::from(format!(
+                            "Uncovered format should not parse: {}\nInput: {}",
+                            assertion.format, assertion.input
+                        )));
+                    }
+
+                    Ok(())
+                }));
+            }
+
+            // Run the trials and return the exit code
+            libtest_mimic::run(&args, trials).exit_code()
         }
-   }
+    };
 }

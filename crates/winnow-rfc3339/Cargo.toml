@@ -18,15 +18,31 @@ winnow_datetime = { path = "../winnow-datetime" }
 chrono = { version = "0.4", default-features = false, optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }
 num-traits = { version = "0.2", optional = true }
-winnow_datetime_assert = { path = "../winnow-datetime-assert", optional = true }
+winnow_datetime_assert = { path = "../winnow-datetime-assert" }
+serde = { version = "1.0.217", features = ["derive"], optional = true }
 
 [dev-dependencies ]
 winnow_datetime_assert = { path = "../winnow-datetime-assert" }
-galvanic-test = "0.2.0"
+libtest-mimic = "0.8.1"
+
+[[test]]
+name = "rfc3339_date_formats"
+path="tests/formats/date.rs"
+harness = false
+
+[[test]]
+name = "rfc3339_offset_formats"
+path="tests/formats/offset.rs"
+harness = false
+
+[[test]]
+name = "rfc3339_time_formats"
+path="tests/formats/time.rs"
+harness = false
 
 [features]
-testing = ["winnow_datetime_assert"]
 default = ["std"]
 std = ["winnow/std"]
 chrono = ["dep:chrono", "dep:num-traits"]
+serde = ["dep:serde", "winnow_datetime/serde", "winnow_datetime_assert/serde"]
 time = ["dep:time", "dep:num-traits"]

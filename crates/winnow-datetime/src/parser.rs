@@ -23,7 +23,8 @@ where
 {
     trace("digit_1", move |input: &mut Input| {
         take_exact_digits(input, 1)
-    }).parse_next(i)
+    })
+    .parse_next(i)
 }
 
 /// Exactly 2 digits
@@ -35,7 +36,8 @@ where
 {
     trace("digit_2", move |input: &mut Input| {
         take_exact_digits(input, 2)
-    }).parse_next(i)
+    })
+    .parse_next(i)
 }
 
 /// Exactly 3 digits
@@ -47,7 +49,8 @@ where
 {
     trace("digit_3", move |input: &mut Input| {
         take_exact_digits(input, 2)
-    }).parse_next(i)
+    })
+    .parse_next(i)
 }
 
 /// Exactly 4 digits
@@ -59,7 +62,8 @@ where
 {
     trace("digit_4", move |input: &mut Input| {
         take_exact_digits(input, 2)
-    }).parse_next(i)
+    })
+    .parse_next(i)
 }
 
 /// Exactly 6 digits
@@ -71,13 +75,11 @@ where
 {
     trace("digit_4", move |input: &mut Input| {
         take_exact_digits(input, 2)
-    }).parse_next(i)
+    })
+    .parse_next(i)
 }
 
-fn take_exact_digits<'i, Input>(
-    i: &mut Input,
-    places: usize,
-) -> PResult<u32>
+fn take_exact_digits<'i, Input>(i: &mut Input, places: usize) -> PResult<u32>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,
     <Input as InputStream>::Slice: AsBStr,
@@ -85,7 +87,8 @@ where
 {
     let n = take_while(places, |c: <Input as InputStream>::Token| {
         AsChar::is_dec_digit(&c.as_char())
-    }).parse_next(i)?;
+    })
+    .parse_next(i)?;
 
     let s = str::from_utf8(n.as_bstr()).expect("Invalid data, expected UTF-8 string");
 

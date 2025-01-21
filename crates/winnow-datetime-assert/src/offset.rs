@@ -1,12 +1,17 @@
-use crate::{FormatAssertion, FormatAssertionBuilder};
+use crate::{FormatAssertion, FormatAssertionBuilder, FormatCoverage, FormatCoverageBuilder};
+use serde::Deserialize;
 use winnow_datetime::Offset;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct OffsetAssertion {
     assertions: Vec<FormatAssertion<Option<Offset>>>,
 }
 
 impl FormatAssertionBuilder<Option<Offset>> for OffsetAssertion {
+    fn piece() -> &'static str {
+        "offset"
+    }
+
     fn base_assertions(&self) -> Vec<FormatAssertion<Option<Offset>>> {
         self.assertions.clone()
     }
@@ -16,54 +21,20 @@ impl FormatAssertionBuilder<Option<Offset>> for OffsetAssertion {
     }
 }
 
-pub fn assertions() -> OffsetAssertion {
-    OffsetAssertion {
-        assertions: vec![
-            FormatAssertion {
-                format: "%Z:%z".into(),
-                input: "-08:00".into(),
-                expected: Ok(Some(Offset {
-                    offset_hours: -8,
-                    offset_minutes: 0,
-                })),
-            },
-            FormatAssertion {
-                format: "Z".into(),
-                input: "Z".into(),
-                expected: Ok(Some(Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0,
-                })),
-            },
-            FormatAssertion {
-                format: "z".into(),
-                input: "z".into(),
-                expected: Ok(Some(Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0,
-                })),
-            },
-            FormatAssertion {
-                format: "-00:00".into(),
-                input: "-00:00".into(),
-                expected: Ok(None),
-            },
-            FormatAssertion {
-                format: "%Z".into(),
-                input: "-08".into(),
-                expected: Ok(Some(Offset {
-                    offset_hours: -8,
-                    offset_minutes: 0,
-                })),
-            },
-            FormatAssertion {
-                format: "%Z%z".into(),
-                input: "-0800".into(),
-                expected: Ok(Some(Offset {
-                    offset_hours: -8,
-                    offset_minutes: 0,
-                })),
-            },
-        ],
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct OffsetCoverage {
+    pub coverage: Vec<FormatCoverage<Option<Offset>>>,
+}
+
+impl FormatCoverageBuilder<Option<Offset>> for OffsetCoverage {
+    fn piece() -> &'static str {
+        "offset"
+    }
+    fn base_coverage(&self) -> Vec<FormatCoverage<Option<Offset>>> {
+        self.coverage.clone()
+    }
+
+    fn coverage(&self) -> Vec<FormatCoverage<Option<Offset>>> {
+        vec![]
     }
 }

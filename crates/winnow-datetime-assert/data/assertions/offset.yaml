@@ -1,0 +1,28 @@
+assertions:
+  - format: "%Z:%z"
+    input: "-08:00"
+    expected:
+      offset_hours: -8
+      offset_minutes: 0
+  - format: "Z"
+    input: "Z"
+    expected:
+      offset_hours: 0
+      offset_minutes: 0
+  - format: "z"
+    input: "z"
+    expected:
+      offset_hours: 0
+      offset_minutes: 0
+  - format: "-00:00"
+    input: "-00:00"
+  - format: "%Z"
+    input: "-08"
+    expected:
+      offset_hours: -8
+      offset_minutes: 0
+  - format: "%Z%z"
+    input: "-0800"
+    expected:
+      offset_hours: -8
+      offset_minutes: 0

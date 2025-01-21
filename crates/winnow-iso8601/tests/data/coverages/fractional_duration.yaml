@@ -1,0 +1,53 @@
+coverage:
+  - format: "P1Y"
+    complete: true
+  - format: "P1,5Y"
+    complete: true
+  - format: "P1.5Y"
+    complete: true
+  - format: "P1M"
+    complete: true
+  - format: "P1W"
+    complete: true
+  - format: "P1D"
+    complete: true
+  - format: "PT1H"
+    complete: true
+  - format: "P1H"
+    complete: true
+  - format: "PT1M"
+    complete: true
+  - format: "PT1S"
+    complete: true
+  - format: "P1S"
+    complete: true
+  - format: "PT1,5S"
+    complete: true
+  - format: "PT1.5S"
+    complete: true
+  - format: "P1Y1M"
+    complete: true
+  - format: "P1Y1D"
+    complete: true
+  - format: "P1Y1M1D"
+    complete: true
+  - format: "P1Y1M1DT1H1M1S"
+    complete: true
+  - format: "P1DT1H"
+    complete: true
+  - format: "P1MT1M"
+    complete: true
+  - format: "P1DT1M"
+    complete: true
+  - format: "P1.5W"
+    complete: true
+  - format: "P1,5W"
+    complete: true
+  - format: "P1DT1.000S"
+    complete: true
+  - format: "P1DT1.00000S"
+    complete: true
+  - format: "P1DT1H1M1.1S"
+    complete: true
+  - format: "P1H1M1.1S"
+    complete: true
