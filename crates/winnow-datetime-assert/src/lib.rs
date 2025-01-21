@@ -134,7 +134,7 @@ macro_rules! define_format_tests {
                     });
 
             fn parse_input(input: &str) -> Result<$piece_type, String> {
-                match terminated($format::parsers::$parser, eof).parse_next(&mut input.as_bytes()) {
+                match terminated($parser, eof).parse_next(&mut input.as_bytes()) {
                     Ok(p) => Ok(p),
                     Err(e) => Err(format!("Failed to parse {}: {}", input, e)),
                 }

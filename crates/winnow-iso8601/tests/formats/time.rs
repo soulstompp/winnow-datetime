@@ -1,5 +1,6 @@
 use std::process::ExitCode;
 use winnow_datetime_assert::{define_format_tests, TimeAssertion};
+use winnow_iso8601::time::time;
 
 use winnow_datetime_assert::FormatAssertionBuilder;
 use winnow_datetime_assert::FormatCoverageBuilder;

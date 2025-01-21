@@ -1,7 +1,7 @@
-# winnow-iso8601, making parsing [ISO8601][iso] dates a breeze
+# winnow-rfc3339, making parsing [RFC3339][iso] dates a breeze
 
-[![crates.io](https://img.shields.io/crates/v/winnow-iso8601?style=flat-square)](https://crates.io/crates/winnow-iso8601)
-[![docs.rs docs](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/winnow-iso8601)
+[![crates.io](https://img.shields.io/crates/v/winnow-rfc3339?style=flat-square)](https://crates.io/crates/winnow-rfc3339)
+[![docs.rs docs](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/winnow-rfc3339)
 
 [iso]: https://en.wikipedia.org/wiki/ISO_8601
 [winnow]: https://github.com/winnow-rs/winnow
@@ -9,7 +9,7 @@
 
 ## About
 
-This library contains parsers for parsing ISO8601 dates and their various components.
+This library contains parsers for parsing RFC3339 dates and their various components.
 
 ### Parsing
 
@@ -89,7 +89,7 @@ DateTime {
 ```
 # Contributors
 
-winnow-iso8601 is the fruit of the work of many contributors over the years, many
+winnow-rfc3339 is the fruit of the work of many contributors over the years, many
 thanks for your help! In particular, thanks to [badboy](https://github.com/badboy)
 and [hoodie](https://github.com/hoodie) for the original [`iso8601` crate][iso-crate] and actually reading the standard.
 

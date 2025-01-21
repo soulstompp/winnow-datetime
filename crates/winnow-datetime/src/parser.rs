@@ -48,7 +48,7 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("digit_3", move |input: &mut Input| {
-        take_exact_digits(input, 2)
+        take_exact_digits(input, 3)
     })
     .parse_next(i)
 }
@@ -61,7 +61,7 @@ where
     <Input as InputStream>::Token: AsChar + Clone,
 {
     trace("digit_4", move |input: &mut Input| {
-        take_exact_digits(input, 2)
+        take_exact_digits(input, 4)
     })
     .parse_next(i)
 }
@@ -73,7 +73,7 @@ where
     <Input as InputStream>::Slice: AsBStr,
     <Input as InputStream>::Token: AsChar + Clone,
 {
-    trace("digit_4", move |input: &mut Input| {
+    trace("digit_6", move |input: &mut Input| {
         take_exact_digits(input, 2)
     })
     .parse_next(i)

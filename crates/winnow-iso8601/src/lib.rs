@@ -32,8 +32,6 @@ extern crate std;
 #[macro_use]
 extern crate alloc;
 
-pub mod parsers;
-
 /// date mod
 pub mod date;
 pub use date::parse_date;
@@ -58,6 +56,10 @@ pub mod interval;
 
 /// fractional_duration mod
 pub mod fractional_duration;
+mod partial_date;
+mod partial_datetime;
+mod partial_time;
+
 pub use fractional_duration::parse_fractional_duration;
 
 pub use offset::parse_offset;

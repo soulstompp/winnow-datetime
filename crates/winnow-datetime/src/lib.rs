@@ -3,8 +3,6 @@ extern crate core;
 #[cfg(any(feature = "time", feature = "chrono"))]
 mod convert;
 pub mod parser;
-pub mod sequence;
-
 mod clippy;
 mod macros;
 pub mod types;
