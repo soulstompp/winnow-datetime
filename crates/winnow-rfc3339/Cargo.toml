@@ -5,8 +5,8 @@ description = "Parsing RFC 3339 dates using winnow"
 keywords = [ "rfc3339", "date-time", "parser", "winnow" ]
 categories = [ "parser-implementations", "date-and-time" ]
 
-repository = "https://github.com/soulstompp/winnow-iso8601"
-documentation = "https://docs.rs/winnow-iso8601/"
+repository = "https://github.com/soulstompp/winnow-datetime"
+documentation = "https://docs.rs/winnow-rfc3339/"
 license = "MIT"
 readme = "README.md"
 
