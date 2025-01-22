@@ -1,0 +1,103 @@
+assertions:
+  - format: "P1Y"
+    input: "P1Y"
+    expected:
+      years: 1
+  - format: "P1M"
+    input: "P1M"
+    expected:
+      months: 1
+  - format: "P1W"
+    input: "P1W"
+    expected:
+      weeks: 1
+  - format: "P1D"
+    input: "P1D"
+    expected:
+      days: 1
+  - format: "PT1H"
+    input: "PT1H"
+    expected:
+      hours: 1
+  - format: "P1H"
+    input: "P1H"
+    expected:
+      hours: 1
+  - format: "PT1M"
+    input: "PT1M"
+    expected:
+      minutes: 1
+  - format: "PT1S"
+    input: "PT1S"
+    expected:
+      seconds: 1
+  - format: "P1S"
+    input: "P1S"
+    expected:
+      seconds: 1
+  - format: "P1Y1M"
+    input: "P1Y1M"
+    expected:
+      years: 1
+      months: 1
+  - format: "P1Y1D"
+    input: "P1Y1D"
+    expected:
+      years: 1
+      days: 1
+  - format: "P1Y1M1D"
+    input: "P1Y1M1D"
+    expected:
+      years: 1
+      months: 1
+      days: 1
+  - format: "P1Y1M1DT1H1M1S"
+    input: "P1Y1M1DT1H1M1S"
+    expected:
+      years: 1
+      months: 1
+      days: 1
+      hours: 1
+      minutes: 1
+      seconds: 1
+  - format: "P1DT1H"
+    input: "P1DT1H"
+    expected:
+      days: 1
+      hours: 1
+  - format: "P1MT1M"
+    input: "P1MT1M"
+    expected:
+      months: 1
+      minutes: 1
+  - format: "P1DT1M"
+    input: "P1DT1M"
+    expected:
+      days: 1
+      minutes: 1
+  - format: "1W1M1S"
+    input: "1W1M1S"
+    expected:
+      days: 7
+      minutes: 1
+      seconds: 1
+  - format: "1S1M1H1W"
+    input: "1S1M1H1W"
+    expected:
+      days: 7
+      hours: 1
+      minutes: 1
+      seconds: 1
+  - format: "1 W"
+    input: "1 W"
+    expected:
+      days: 7
+  - format: "1 D 1 W"
+    input: "1 D 1 W"
+    expected:
+      days: 8
+  - format: "1H 15 M"
+    input: "1H 15 M"
+    expected:
+      hours: 1
+      minutes: 15

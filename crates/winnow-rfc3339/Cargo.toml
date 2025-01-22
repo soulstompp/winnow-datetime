@@ -1,0 +1,48 @@
+[package]
+name = "winnow_rfc3339"
+version = "0.1.0"
+description = "Parsing RFC 3339 dates using winnow"
+keywords = [ "rfc3339", "date-time", "parser", "winnow" ]
+categories = [ "parser-implementations", "date-and-time" ]
+
+repository = "https://github.com/soulstompp/winnow-iso8601"
+documentation = "https://docs.rs/winnow-iso8601/"
+license = "MIT"
+readme = "README.md"
+
+edition = "2021"
+
+[dependencies]
+winnow = {  version = "0.6.20" }
+winnow_datetime = { path = "../winnow-datetime" }
+chrono = { version = "0.4", default-features = false, optional = true }
+time = { version = "0.3.37", default-features = false, optional = true }
+num-traits = { version = "0.2", optional = true }
+winnow_datetime_assert = { path = "../winnow-datetime-assert" }
+serde = { version = "1.0.217", features = ["derive"], optional = true }
+
+[dev-dependencies ]
+winnow_datetime_assert = { path = "../winnow-datetime-assert" }
+libtest-mimic = "0.8.1"
+
+[[test]]
+name = "rfc3339_date_formats"
+path="tests/formats/date.rs"
+harness = false
+
+[[test]]
+name = "rfc3339_offset_formats"
+path="tests/formats/offset.rs"
+harness = false
+
+[[test]]
+name = "rfc3339_time_formats"
+path="tests/formats/time.rs"
+harness = false
+
+[features]
+default = ["std"]
+std = ["winnow/std"]
+chrono = ["dep:chrono", "dep:num-traits"]
+serde = ["dep:serde", "winnow_datetime/serde"]
+time = ["dep:time", "dep:num-traits"]

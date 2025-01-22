@@ -1,0 +1,11 @@
+coverage:
+  - format: "%Z:%z"
+    complete: true
+  - format: "Z"
+    complete: true
+  - format: "+00:00"
+    complete: true
+  - format: "%Z"
+    complete: true
+  - format: "%Z%z"
+    complete: true

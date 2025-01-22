@@ -1,0 +1,21 @@
+coverage:
+  - format: "%h:%m:%s"
+    complete: false
+  - format: "%h:%m:%.1s"
+    complete: false
+  - format: "%h:%m:%,1s"
+    complete: false
+  - format: "%h:%m:%.2s"
+    complete: false
+  - format: "%h:%m:%,2s"
+    complete: false
+  - format: "%h:%m:%.3s"
+    complete: false
+  - format: "%h:%m:%,3s"
+    complete: false
+  - format: "%h:%m:%s.%u"
+    complete: false
+  - format: "%h:%m:%s,%u"
+    complete: false
+separators:
+  - null

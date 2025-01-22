@@ -1,104 +1,29 @@
-# winnow-iso8601, making parsing [ISO8601][iso] dates a breeze
+# winnow-datetime, making datetime parsing a breeze.
 
-[![crates.io](https://img.shields.io/crates/v/winnow-iso8601?style=flat-square)](https://crates.io/crates/winnow-iso8601)
-[![docs.rs docs](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/winnow-iso8601)
-
-[iso]: https://en.wikipedia.org/wiki/ISO_8601
 [winnow]: https://github.com/winnow-rs/winnow
-[iso-crate]: https://crates.io/crates/iso8601
+[winnow-datetime]: https://crates.io/crates/winnow-datetime
+[winnow-iso8601]: https://crates.io/crates/winnow-iso8601
+[winnow-rfc3339]: https://crates.io/crates/winnow-rfc3339
+[winnow-datetime-assert]: https://crates.io/crates/winnow-datetime-assert
 
 ## About
+`winnow-datetime` is a family of crates for parsing datetime formats with [winnow] with a consistent API 
+and using a common AST that converts to common rust datetime libraries. These parsers will ensure that the datetime is
+correctly formatted and does some validation on values as specified for each format. Date validity is not ensured until
+conversion.
 
-This library contains parsers for parsing ISO8601 dates and their various components.
+The core crate, [winnow-datetime], provides the AST and common parsers and parser macros to build out
+the parsers needed to parse datetime components that behaves like any core winnow parser and can be called from any
+winnow parser or combinator.
 
-### Parsing
+## Format-specific Crates
+Most public parsers will return the one of the types defined in [winnow-datetime], most of which should convert directly
+to an equivalent object from the datetime library. Some formats accept values that leave some ambiguity in the conversion
+process and the consumer will need to decide how to handle these cases, however, these should be fairly rare. 
 
-#### Complete
-If you have all the data you need, you can just pass along the input directly.
+* [winnow-rfc3339] - parsers for RFC3339 dates and times, this is probably the one you are looking for.
+* [winnow-iso8601] - parsers for ISO8601 dates, times, durations, and intervals.
 
-```rust,ignore
-let datetime = opt(parse_datetime)
-    .parse_next(&mut "2015-06-26T16:43:23+0200"));
-
-// the above will give you:
-Some(DateTime {
-    date: Date::YMD {
-        year: 2015,
-        month: 6,
-        day: 26,
-    },
-    time: Time {
-        hour: 16,
-        minute: 43,
-        second: 23,
-        tz_offset_hours: 2,
-        tz_offset_minutes: 0,
-    },
-});
-```
-
-#### Partial
-For partial data the only difference is wrapping input in Partial and handling incomplete errors correctly,
-which is documented in [winnow partial docs](https://docs.rs/winnow/latest/winnow/_topic/partial/index.html).
-```rust,ignore
-pub type Stream<'i> = Partial<&'i [u8]>;
-
-let datetime = opt(parse_datetime)
-    .parse_next(&mut Stream::new("2015-06-26T16:43:23+0200").as_bytes()));
-
-// the above will give you:
-Some(DateTime {
-    date: Date::YMD {
-        year: 2015,
-        month: 6,
-        day: 26,
-    },
-    time: Time {
-        hour: 16,
-        minute: 43,
-        second: 23,
-        tz_offset_hours: 2,
-        tz_offset_minutes: 0,
-    },
-});
-```
-
-### Serializing
-
-If you have a datetime string handy you can use the helper methods such as datetime to get a DateTime object. This can
-be serialized into a chrono date object if the `serde` feature is enabled.
-
-```rust,ignore
-let datetime = winnow_iso8601::datetime("2015-06-26T16:43:23+0200").unwrap();
-
-// the above will give you:
-DateTime {
-    date: Date::YMD {
-        year: 2015,
-        month: 6,
-        day: 26,
-    },
-    time: Time {
-        hour: 16,
-        minute: 43,
-        second: 23,
-        tz_offset_hours: 2,
-        tz_offset_minutes: 0,
-    },
-};
-```
-# Contributors
-
-winnow-iso8601 is the fruit of the work of many contributors over the years, many
-thanks for your help! In particular, thanks to [badboy](https://github.com/badboy)
-and [hoodie](https://github.com/hoodie) for the original [`iso8601` crate][iso-crate] and actually reading the standard.
-
-# [Documentation][docs]
-
-[Documentation][docs] is online.
-
-# License
-
-MIT Licensed. See [LICENSE](https://mit-license.org/)
-
-[docs]: https://docs.rs/iso8601/
+## Testing
+* [winnow-datetime-assert] - provides macros for building test and benchmark binaries for format-specific parser crates 
+  built with [winnow-datetime].

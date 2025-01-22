@@ -1,0 +1,95 @@
+coverage:
+  - format: "%h"
+    complete: true
+  - format: "%,1h"
+    complete: true
+  - format: "%.1h"
+    complete: true
+  - format: "%h:%m"
+    complete: true
+  - format: "%h:%,1m"
+    complete: true
+  - format: "%h:%.1m"
+    complete: true
+  - format: "%h:%m:%s"
+    complete: true
+  - format: "%h:%m:%.1s"
+    complete: true
+  - format: "%h:%m:%.2s"
+    complete: true
+  - format: "%h:%m:%,3s"
+    complete: true
+  - format: "%h:%m:%.3s"
+    complete: true
+  - format: "%h:%m:%s,%u"
+    complete: true
+  - format: "%h:%m:%s.%u"
+    complete: true
+  - format: "T%h"
+    complete: true
+  - format: "T%,1h"
+    complete: true
+  - format: "T%.1h"
+    complete: true
+  - format: "T%h:%m"
+    complete: true
+  - format: "T%h:%,1m"
+    complete: true
+  - format: "T%h:%.1m"
+    complete: true
+  - format: "T%h:%m:%s"
+    complete: true
+  - format: "T%h:%m:%.1s"
+    complete: true
+  - format: "T%h:%m:%.2s"
+    complete: true
+  - format: "T%h:%m:%,3s"
+    complete: true
+  - format: "T%h:%m:%.3s"
+    complete: true
+  - format: "T%h:%m:%s,%u"
+    complete: true
+  - format: "T%h:%m:%s.%u"
+    complete: true
+  - format: "%h%m"
+    complete: true
+  - format: "%h%,1m"
+    complete: true
+  - format: "%h%.1m"
+    complete: true
+  - format: "%h%m%s"
+    complete: true
+  - format: "%h%m%.1s"
+    complete: true
+  - format: "%h%m%.2s"
+    complete: true
+  - format: "%h%m%,3s"
+    complete: true
+  - format: "%h%m%.3s"
+    complete: true
+  - format: "%h%m%s,%u"
+    complete: true
+  - format: "%h%m%s.%u"
+    complete: true
+  - format: "T%h%m"
+    complete: true
+  - format: "T%h%,1m"
+    complete: true
+  - format: "T%h%.1m"
+    complete: true
+  - format: "T%h%m%s"
+    complete: true
+  - format: "T%h%m%.1s"
+    complete: true
+  - format: "T%h%m%.2s"
+    complete: true
+  - format: "T%h%m%,3s"
+    complete: true
+  - format: "T%h%m%.3s"
+    complete: true
+  - format: "T%h%m%s,%u"
+    complete: true
+  - format: "T%h%m%s.%u"
+    complete: true
+separators:
+  - null

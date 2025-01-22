@@ -1,0 +1,25 @@
+coverage:
+  - format: "%Y-%M-%D"
+    complete: true
+  - format: "%C"
+    complete: true
+  - format: "%X"
+    complete: true
+  - format: "%Y"
+    complete: true
+  - format: "%Y-%M"
+    complete: true
+  - format: "%Y-%O"
+    complete: true
+  - format: "%V-W%W"
+    complete: true
+  - format: "%V-W%W-%w"
+    complete: true
+  - format: "%Y%M%D"
+    complete: true
+  - format: "%Y%O"
+    complete: true
+  - format: "%VW%W"
+    complete: true
+  - format: "%VW%W%w"
+    complete: true
