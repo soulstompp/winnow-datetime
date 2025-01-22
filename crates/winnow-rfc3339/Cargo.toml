@@ -18,7 +18,7 @@ winnow_datetime = { path = "../winnow-datetime", version = "0.1.0" }
 chrono = { version = "0.4", default-features = false, optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }
 num-traits = { version = "0.2", optional = true }
-winnow_datetime_assert = { path = "../winnow-datetime-assert" }
+winnow_datetime_assert = { path = "../winnow-datetime-assert", version = "0.1.0" }
 serde = { version = "1.0.217", features = ["derive"], optional = true }
 
 [dev-dependencies ]
