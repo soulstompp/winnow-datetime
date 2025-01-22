@@ -9,12 +9,6 @@ use winnow_datetime::Time;
 
 /// Parses a time string.
 ///
-/// A string can have one of the following formats:
-///
-/// * `07:35:[00][.123]` or `0735[00][.123]`
-/// * `07:35:[00][.123][(Z|(+|-)00:00)]`
-/// * `0735[00][.123][(Z|(+|-)00:00)]`
-/// * `0735[00][.123][(Z|(+|-)0000)]`
 ///
 /// ## Example
 ///
@@ -29,9 +23,15 @@ pub fn parse_time(mut i: &str) -> Result<Time, String> {
     }
 }
 
-/// Parses a time string with an optional preceding 'T'.
+/// Parses a time with an optional preceding 'T'.
 ///
-/// See [`time()`][`crate::time()`] for the supported formats.
+/// A string can have one of the following formats:
+///
+/// * `07:35:[00][.123]` or `0735[00][.123]`
+/// * `07:35:[00][.123][(Z|(+|-)00:00)]`
+/// * `0735[00][.123][(Z|(+|-)00:00)]`
+/// * `0735[00][.123][(Z|(+|-)0000)]`
+///
 // HH:MM:[SS][.(m*)][(Z|+...|-...)]
 pub fn time<'i, Input>(i: &mut Input) -> PResult<Time>
 where

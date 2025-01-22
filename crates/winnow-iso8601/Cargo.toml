@@ -60,5 +60,5 @@ default = ["std"]
 std = ["winnow/std"]
 chrono = ["dep:chrono", "dep:num-traits"]
 time = ["dep:time", "dep:num-traits"]
-serde = ["dep:serde", "winnow_datetime/serde", "winnow_datetime_assert/serde"]
+serde = ["dep:serde", "winnow_datetime/serde"]
 

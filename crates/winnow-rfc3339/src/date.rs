@@ -6,17 +6,11 @@ use winnow::error::{ContextError, ErrMode};
 use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
 use winnow::token::literal;
 use winnow::{seq, PResult, Parser};
-use winnow_datetime::parser::{date_day, digit_4};
 use winnow_datetime::parser::date_month;
+use winnow_datetime::parser::{date_day, digit_4};
 use winnow_datetime::{date_ymd_seq, Date};
 
 /// Parses a date string.
-///
-/// A string can have one of the following formats:
-///
-/// * `2015-11-02` or `20151102`
-/// * `2015-W45-01` or `2015W451`
-/// * `2015-306` or `2015306`
 ///
 /// ## Example
 ///
@@ -29,6 +23,23 @@ pub fn parse_date(mut i: &str) -> Result<Date, String> {
     } else {
         Err(format!("Failed to parse date: {}", i))
     }
+}
+
+/// Parses a date
+///
+/// A string can have one of the following formats:
+///
+/// * `2015-11-02` or `20151102`
+/// * `2015-W45-01` or `2015W451`
+/// * `2015-306` or `2015306`
+///
+pub fn date<'i, Input>(i: &mut Input) -> PResult<Date>
+where
+    Input: StreamIsPartial + InputStream + Compare<&'i str>,
+    <Input as InputStream>::Slice: AsBStr,
+    <Input as InputStream>::Token: AsChar + Clone,
+{
+    trace("parse_date", move |input: &mut Input| date_ymd(input)).parse_next(i)
 }
 
 /// Date separator -
@@ -81,18 +92,6 @@ where
         .parse_next(input)
     })
     .parse_next(i)
-}
-
-/// Parses a date string.
-///
-/// See [`date()`][`crate::date()`] for the supported formats.
-pub fn date<'i, Input>(i: &mut Input) -> PResult<Date>
-where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
-{
-    trace("parse_date", move |input: &mut Input| date_ymd(input)).parse_next(i)
 }
 
 #[cfg(test)]

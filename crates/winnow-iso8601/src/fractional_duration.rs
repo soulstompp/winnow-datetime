@@ -10,7 +10,7 @@ use winnow::{seq, PResult, Parser};
 use winnow_datetime::types::Duration;
 use winnow_datetime::FractionalDuration;
 
-/// Parses a duration string similiar to duration but allows for decimal places.
+/// Parses a duration with the same formating rules but allows for decimal places.
 pub fn parse_duration(mut i: &str) -> Result<Duration, String> {
     match duration(&mut i) {
         Ok(p) => Ok(p),

@@ -17,12 +17,6 @@ use winnow_datetime::{date_ymd_seq, date_ywd_seq};
 
 /// Parses a date string.
 ///
-/// A string can have one of the following formats:
-///
-/// * `2015-11-02` or `20151102`
-/// * `2015-W45-01` or `2015W451`
-/// * `2015-306` or `2015306`
-///
 /// ## Example
 ///
 /// ```rust
@@ -36,7 +30,13 @@ pub fn parse_date(mut i: &str) -> Result<Date, String> {
     }
 }
 
-/// Parses a date string.
+/// Parses a date
+///
+/// The date can have one of the following formats:
+///
+/// * `2015-11-02` or `20151102`
+/// * `2015-W45-01` or `2015W451`
+/// * `2015-306` or `2015306`
 ///
 /// See [`date()`][`crate::date()`] for the supported formats.
 pub fn date<'i, Input>(i: &mut Input) -> PResult<Date>

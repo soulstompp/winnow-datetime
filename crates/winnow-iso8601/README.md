@@ -5,11 +5,12 @@
 
 [iso]: https://en.wikipedia.org/wiki/ISO_8601
 [winnow]: https://github.com/winnow-rs/winnow
+[winnow-datetime]: https://crates.io/crates/winnow-datetime
 [iso-crate]: https://crates.io/crates/iso8601
 
 ## About
 
-This library contains parsers for parsing ISO8601 dates and their various components.
+This library contains parsers for parsing ISO8601 dates and their various components built off the [winnow-datetime parsers][winnow-datetime]
 
 ### Parsing
 
@@ -17,7 +18,7 @@ This library contains parsers for parsing ISO8601 dates and their various compon
 If you have all the data you need, you can just pass along the input directly.
 
 ```rust,ignore
-let datetime = opt(parse_datetime)
+let datetime = opt(datetime)
     .parse_next(&mut "2015-06-26T16:43:23+0200"));
 
 // the above will give you:
@@ -43,7 +44,7 @@ which is documented in [winnow partial docs](https://docs.rs/winnow/latest/winno
 ```rust,ignore
 pub type Stream<'i> = Partial<&'i [u8]>;
 
-let datetime = opt(parse_datetime)
+let datetime = opt(datetime)
     .parse_next(&mut Stream::new("2015-06-26T16:43:23+0200").as_bytes()));
 
 // the above will give you:
@@ -77,4 +78,4 @@ and [hoodie](https://github.com/hoodie) for the original [`iso8601` crate][iso-c
 
 MIT Licensed. See [LICENSE](https://mit-license.org/)
 
-[docs]: https://docs.rs/iso8601/
+[docs]: https://docs.rs/winnow_iso8601/

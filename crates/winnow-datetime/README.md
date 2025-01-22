@@ -1,63 +1,44 @@
-# winnow-datetime, making building new datetime format parsing a breeze. 
+# winnow-datetime, making building new datetime parsers a breeze.
 
 [![crates.io](https://img.shields.io/crates/v/winnow-datetime?style=flat-square)](https://crates.io/crates/winnow-datetime)
 [![docs.rs docs](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/winnow-datetime)
 
 [winnow]: https://github.com/winnow-rs/winnow
+[rfc3339]: https://en.wikipedia.org/wiki/RFC_3339
+[winnow-iso8601]: https://crates.io/crates/winnow-iso8601
+[winnow-rfc3339]: https://crates.io/crates/winnow-rfc3339
+[winnow-datetime-assert]: https://crates.io/crates/winnow-datetime-assert
 
 ## About
 
-This library contains parsers for various possible ways to parse the pieces that make up a datetime. This would behave
-most of which are covered strictly from . If you are looking for a parser to parse a date that you have come accross in 
-while parsing a log, well-known format see the Supported Formats section below. 
+This library hopes to provide common parsers and an AST which can be used to convert between these formats, along with
+others that are share a lot in common with RFC_3339, such as SQL dates/times. Each format crate should follow the
+following format.
 
-However, 
+For most use cases using one of the format specific crates will be the best option. However, if you are looking to parse
+something that doesn't fit into one of the provided formats you can use the parsers provided in this crate to build up
+your own parser.
+
+## Format-specific Crates
+### RFC3339
+[winnow-rfc3339] provides parsers for [RFC3339][rfc3339] dates and times. This
+is the most common format used on the internet.
+
+### ISO8601
+[winnow-iso8601] provides parsers for [ISO8601](https://en.wikipedia.org/wiki/ISO_8601)
+dates, times, durations, and intervals. [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) is a very ambitious format
+that can represent a wide range of date and time concepts.
 
 ## Parsing Something Strange
 Despite there being countless specifications some people will still come up with their own way to poetically express a
 datetime. So if you are looking to parse those you can build the provided structs with any combination of the pieces
-needed. 
+needed. It is probably best to start with the [winnow-rfc3339] crate and only replace the parsers where they differ.
 
-## Supported Formats
-### RFC3339
-Two of the most common formats are currently included in the workspace:
-- [RFC3339](https://en.wikipedia.org/wiki/RFC_3339) which is a straightforward format that was inteded for communicating
-on the internet. These will often come up in logs and protocol headers.
-### ISO8601
-- [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) is a more ambitious format that can represent a wide range of dates
-- time ranges and time periods. 
+Most parsers assume that date and time components are specified from the largest to smallest unit. However, even if the
+format you need to parse isn't this library would still be a good option to build off, there will just be some additional
+parts that will have be written by hand, particularly pieces currently handled by macros.
 
-This library hopes to provide common parsers and an AST which can be used to convert between these formats, along with
-others that are share a lot in common with RFC_3339, such as SQL dates/times. Each format crate should follow the
-following format:
-
-### Format Crates
-In order for the format crates to run tests from `winnow-assert` they should allow follow the
-following structure:
-```
--- /src
-  |-- lib.rs
-  |-- date.rs
-      |-- parse_date(&str) -> Result<winnow_datetime::Date, Error>
-      |-- coverage() -> winnow_assert::DateCoverage
-  |-- datetime.rs
-        |-- parse_datetime() -> Result<winnow_datetime::DateTime, Error>
-        |-- coverage() -> winnow_assert::DateTimeCoverage
-  |-- [duration.rs
-        | -- parse_duration() -> Result<winnow_datetime::Duration, Error>
-        | -- coverage()] -> winnow_assert::DurationCoverage
-  |-- offset.rs
-        | -- parse_offset() -> Result<winnow_datetime::Offset, Error>
-        | -- coverage() -> winnow_assert::OffsetCoverage
-  |-- parsers.rs
-        | - date() -> PResult<winnow_datetime::Date>
-        | - datetime() -> PResult<winnow_datetime::DateTime>
-        | - [duration()] -> PResult<winnow_datetime::Duration>
-        | - offset() -> PResult<winnow_datetime::Offset>
-        | - time() -> PResult<winnow_datetime::Time>
-  |-- time.rs
-        | -- parse_time() -> Result<winnow_datetime::Time, Error>
-        | -- coverage() -> winnow_assert::TimeCoverage
-```
-
-
+### Test and Benchmarking
+Format-specific crates will use [winnow-datetime-assert] to build test and benchmark binaries. This crate provides a
+large set of test cases which greatly help ensure reliability and performance. Any crates off of these parsers should
+consider implementing these tests to avoid finding countless edge-cases by trial-and-error.

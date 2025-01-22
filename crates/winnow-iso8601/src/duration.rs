@@ -10,7 +10,23 @@ use winnow_datetime::types::{Duration, DurationPart};
 
 /// Parses a duration string.
 ///
-/// A string starts with `P` and can have one of the following formats:
+///
+/// ## Examples
+///
+/// ```rust
+/// let duration = winnow_iso8601::parse_duration("P1Y2M3DT4H5M6S").unwrap();
+/// let duration = winnow_iso8601::parse_duration("P1W").unwrap();
+/// ```
+pub fn parse_duration(mut i: &str) -> Result<Duration, String> {
+    match duration(&mut i) {
+        Ok(p) => Ok(p),
+        Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
+    }
+}
+
+/// Parses a duration string with the format P%dY%dM%dDT%dH%dM%dS
+///
+/// A duration starts with `P` and can have one of the following formats:
 ///
 /// * Fully-specified duration: `P1Y2M3DT4H5M6S`
 /// * Duration in weekly intervals: `P1W`
@@ -31,21 +47,6 @@ use winnow_datetime::types::{Duration, DurationPart};
 /// * Hour 0 - 24
 /// * Minute 0 - 60
 /// * Second 0 - 60
-///
-/// ## Examples
-///
-/// ```rust
-/// let duration = winnow_iso8601::parse_duration("P1Y2M3DT4H5M6S").unwrap();
-/// let duration = winnow_iso8601::parse_duration("P1W").unwrap();
-/// ```
-pub fn parse_duration(mut i: &str) -> Result<Duration, String> {
-    match duration(&mut i) {
-        Ok(p) => Ok(p),
-        Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
-    }
-}
-
-/// Parses a duration string with the format P%dY%dM%dDT%dH%dM%dS
 pub fn duration<'i, Input>(i: &mut Input) -> PResult<Duration>
 where
     Input: StreamIsPartial + InputStream + Compare<&'i str>,

@@ -6,11 +6,7 @@ use winnow::{seq, PResult, Parser};
 use winnow_datetime::parser::{sign, time_hour, time_minute};
 use winnow_datetime::Offset;
 
-/// Parses a offset offset string.
-///
-/// An offset string is a combination of the valid formats specifying a time's UTC offset
-///
-/// This will accept (Z|+...|-...) as offsets
+/// Parses an offset string.
 ///
 /// ## Example
 ///
@@ -28,7 +24,10 @@ pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, String> {
 // (+...|-...)
 /// Parses a offset offset string.
 ///
-/// See [`offset()`][`crate::offset()`] for the supported formats.
+/// An offset string is a combination of the valid formats specifying a time's UTC offset
+///
+/// This will accept (Z|+...|-...) as offsets
+///
 // (Z|+...|-...)
 pub fn offset<'i, Input>(i: &mut Input) -> PResult<Option<Offset>>
 where

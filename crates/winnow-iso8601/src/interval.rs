@@ -11,7 +11,7 @@ use winnow::{seq, PResult, Parser};
 use winnow_datetime::parser::take_digits;
 use winnow_datetime::types::{Interval, IntervalRange};
 
-/// Parses an interval string.
+/// Parses an interval
 ///
 /// A string that optionally starts with `R` and contains a combination of partial date-times in the
 /// following permissible formats:

@@ -9,7 +9,7 @@ libtest-mimic = "0.8.1"
 galvanic-test = "0.2.0"
 winnow = "0.6.20"
 paste = "1.0.15"
-serde = { version = "1.0", optional = true, features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9.34-deprecated"
 
 [dev-dependencies]

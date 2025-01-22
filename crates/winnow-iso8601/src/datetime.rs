@@ -10,10 +10,6 @@ use winnow_datetime::DateTime;
 
 /// Parses a datetime string.
 ///
-/// A datetime string is a combination of the valid formats for the date and time,
-/// separated by a literal `T`.
-/// See the respective functions for the correct format.
-///
 /// ## Example
 ///
 /// ```rust
@@ -29,7 +25,8 @@ pub fn parse_datetime(mut i: &str) -> Result<DateTime, String> {
 
 /// Parses a datetime string.
 ///
-/// See [`datetime()`][`crate::datetime()`] for supported formats.
+/// A datetime string is a combination of the valid formats for the date and time,
+/// separated by a literal `T`.
 // Full ISO8601 datetime
 pub fn datetime<'i, Input>(i: &mut Input) -> PResult<DateTime>
 where
