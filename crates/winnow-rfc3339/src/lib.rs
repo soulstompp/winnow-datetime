@@ -12,25 +12,14 @@
 //! let datetime = winnow_rfc3339::parse_datetime("2015-06-26T16:43:23+02:00").unwrap();
 //! ```
 
-#![allow(clippy::uninlined_format_args)]
-#![deny(
-    missing_copy_implementations,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
-    unused_import_braces,
-    unused_qualifications,
-    missing_docs
-)]
-#![warn(clippy::doc_markdown)]
-#![no_std]
-
 #[cfg(any(feature = "std", test))]
 #[macro_use]
 extern crate std;
 
 #[macro_use]
 extern crate alloc;
+
+mod clippy;
 
 /// date mod
 pub mod date;
