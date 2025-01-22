@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use std::path::PathBuf;
 
+mod clippy;
+
 pub mod date;
 pub use date::{DateAssertion, DateCoverage};
 
@@ -18,9 +20,6 @@ pub use offset::{OffsetAssertion, OffsetCoverage};
 
 pub mod time;
 pub use time::{TimeAssertion, TimeCoverage};
-
-#[path = "../../winnow-datetime/src/clippy.rs"]
-mod clippy;
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct FormatAssertion<T> {
