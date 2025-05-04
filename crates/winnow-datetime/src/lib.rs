@@ -18,4 +18,4 @@ pub use types::Time;
 use winnow::Partial;
 
 /// Type for holding partial data for parsers
-pub type Stream<'i> = Partial<&'i [u8]>;
+pub type PartialInput<'i> = Partial<&'i [u8]>;

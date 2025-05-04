@@ -1,6 +1,6 @@
 [package]
 name = "winnow_datetime"
-version = "0.1.0"
+version = "0.2.0"
 description = "Parsing dates using winnow"
 keywords = [ "iso8601", "date-time", "parser", "winnow" ]
 categories = [ "parser-implementations", "date-and-time" ]
@@ -13,7 +13,7 @@ readme = "README.md"
 edition = "2021"
 
 [dependencies]
-winnow = "0.6.20"
+winnow = "0.7"
 chrono = { version = "0.4", default-features = false, optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }
 num-traits = { version = "0.2", optional = true }

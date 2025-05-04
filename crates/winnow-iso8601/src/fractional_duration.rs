@@ -1,38 +1,30 @@
 use crate::duration::{
-    duration, duration_base_time, duration_part_day, duration_part_month, duration_part_week,
+    duration_base_time, duration_part_day, duration_part_month, duration_part_week,
     duration_part_year,
 };
-use alloc::string::String;
-use winnow::combinator::{opt, preceded, trace};
-use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
+use winnow::combinator::{eof, opt, preceded, terminated, trace};
+use winnow::error::{InputError, ParserError};
+use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::literal;
-use winnow::{seq, PResult, Parser};
-use winnow_datetime::types::Duration;
+use winnow::{seq, Parser, Result};
 use winnow_datetime::FractionalDuration;
 
 /// Parses a duration with the same formating rules but allows for decimal places.
-pub fn parse_duration(mut i: &str) -> Result<Duration, String> {
-    match duration(&mut i) {
-        Ok(p) => Ok(p),
-        Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
-    }
-}
-
 /// let duration = winnow_iso8601::parse_fractional_duration("P1,5Y2M3DT4,5H5M6S").unwrap();
 /// let duration = winnow_iso8601::parse_fractional_duration("P1,5W").unwrap();
-pub fn parse_fractional_duration(mut i: &str) -> Result<FractionalDuration, String> {
-    match fractional_duration(&mut i) {
-        Ok(p) => Ok(p),
-        Err(e) => Err(format!("Failed to parse duration {}: {}", i, e)),
-    }
+pub fn parse_fractional_duration(mut i: &str) -> Result<FractionalDuration, InputError<&str>> {
+    terminated(fractional_duration, eof).parse_next(&mut i)
 }
 
 /// Parses a duration string with the format P%dY%dM%dDT%dH%dM%dS
-pub fn fractional_duration<'i, Input>(i: &mut Input) -> PResult<FractionalDuration>
+pub fn fractional_duration<'i, Input, Error>(
+    input: &mut Input,
+) -> std::result::Result<FractionalDuration, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("fractional_duration", move |input: &mut Input| {
         seq!((
@@ -66,5 +58,5 @@ where
         })
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }

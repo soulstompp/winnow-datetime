@@ -2,19 +2,21 @@ use crate::partial_date::{partial_date, partial_end_date};
 use crate::partial_time::{partial_end_base_time, partial_time};
 use core::str;
 use winnow::combinator::{alt, opt, preceded, trace};
-use winnow::error::ContextError;
-use winnow::error::ErrMode;
-use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
+use winnow::error::ParserError;
+use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::literal;
-use winnow::{seq, PResult, Parser};
+use winnow::{seq, Parser, Result};
 use winnow_datetime::types::PartialDateTime;
 
 // partial date time
-pub(crate) fn partial_datetime<'i, Input>(i: &mut Input) -> PResult<PartialDateTime>
+pub(crate) fn partial_datetime<'i, Input, Error>(
+    input: &mut Input,
+) -> Result<PartialDateTime, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("partial_datetime", move |input: &mut Input| {
         seq!((
@@ -25,17 +27,18 @@ where
         .map(|(d, t)| PartialDateTime { date: d, time: t })
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
-pub(crate) fn partial_end_datetime<'i, Input>(
-    i: &mut Input,
+pub(crate) fn partial_end_datetime<'i, Input, Error>(
+    input: &mut Input,
     start_datetime: &PartialDateTime,
-) -> PResult<PartialDateTime>
+) -> Result<PartialDateTime, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace(
         "partial_end_datetime",
@@ -48,7 +51,7 @@ where
                 let mut end_time = None;
 
                 if start_date.is_none() && start_date.is_none() {
-                    return Err(ErrMode::Backtrack(ContextError::new()));
+                    return Err(ParserError::from_input(input));
                 }
 
                 if let Some(d) = start_date {
@@ -68,19 +71,20 @@ where
             }
         },
     )
-    .parse_next(i)
+    .parse_next(input)
 }
 #[cfg(test)]
 mod parsers {
     use crate::partial_datetime::{partial_datetime, partial_end_datetime};
-    use winnow::stream::AsBStr;
+    use winnow::error::InputError;
+
     use winnow_datetime::types::{PartialDate, PartialDateTime};
 
     #[test]
     fn partial_datetime_parsing() {
         // Year
         assert_eq!(
-            partial_datetime(&mut "2015".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::Year { year: Some(2015) }),
                 time: None,
@@ -88,7 +92,7 @@ mod parsers {
         );
         // YMD
         assert_eq!(
-            partial_datetime(&mut "2015-06-26".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015-06-26").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::YMD {
                     year: Some(2015),
@@ -99,7 +103,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_datetime(&mut "2015-06".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015-06").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::YMD {
                     year: Some(2015),
@@ -111,7 +115,7 @@ mod parsers {
         );
         // YWD
         assert_eq!(
-            partial_datetime(&mut "2015-W05-6".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015-W05-6").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::YWD {
                     year: Some(2015),
@@ -122,7 +126,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_datetime(&mut "2015-W05-1".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015-W05-1").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::YWD {
                     year: Some(2015),
@@ -133,7 +137,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_datetime(&mut "2015-W05".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015-W05").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::YWD {
                     year: Some(2015),
@@ -145,7 +149,7 @@ mod parsers {
         );
         //Ordinal
         assert_eq!(
-            partial_datetime(&mut "2015-156".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015-156").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::YDDD {
                     year: Some(2015),
@@ -155,7 +159,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_datetime(&mut "2015-156".as_bstr()).unwrap(),
+            partial_datetime::<_, InputError<_>>(&mut "2015-156").unwrap(),
             PartialDateTime {
                 date: Some(PartialDate::YDDD {
                     year: Some(2015),
@@ -169,8 +173,8 @@ mod parsers {
     #[test]
     fn partial_ymd() {
         assert_eq!(
-            partial_end_datetime(
-                &mut "2015-06-26".as_bstr(),
+            partial_end_datetime::<_, InputError<_>>(
+                &mut "2015-06-26",
                 &PartialDateTime {
                     date: Some(PartialDate::YMD {
                         year: Some(2015),
@@ -191,8 +195,8 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_end_datetime(
-                &mut "06-26".as_bstr(),
+            partial_end_datetime::<_, InputError<_>>(
+                &mut "06-26",
                 &PartialDateTime {
                     date: Some(PartialDate::YMD {
                         year: Some(2015),
@@ -213,8 +217,8 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_end_datetime(
-                &mut "26".as_bstr(),
+            partial_end_datetime::<_, InputError<_>>(
+                &mut "26",
                 &PartialDateTime {
                     date: Some(PartialDate::YMD {
                         year: Some(2015),
@@ -239,8 +243,8 @@ mod parsers {
     #[test]
     fn partial_ywd() {
         assert_eq!(
-            partial_end_datetime(
-                &mut "2024-W51-4".as_bstr(),
+            partial_end_datetime::<_, InputError<_>>(
+                &mut "2024-W51-4",
                 &PartialDateTime {
                     date: Some(PartialDate::YWD {
                         year: Some(2024),
@@ -261,8 +265,8 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_end_datetime(
-                &mut "W51-4".as_bstr(),
+            partial_end_datetime::<_, InputError<_>>(
+                &mut "W51-4",
                 &PartialDateTime {
                     date: Some(PartialDate::YWD {
                         year: Some(2024),
@@ -283,8 +287,8 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_end_datetime(
-                &mut "4".as_bstr(),
+            partial_end_datetime::<_, InputError<_>>(
+                &mut "4",
                 &PartialDateTime {
                     date: Some(PartialDate::YWD {
                         year: Some(2024),
@@ -309,8 +313,8 @@ mod parsers {
     #[test]
     fn partial_yddd() {
         assert_eq!(
-            partial_end_datetime(
-                &mut "083".as_bstr(),
+            partial_end_datetime::<_, InputError<_>>(
+                &mut "083",
                 &PartialDateTime {
                     date: Some(PartialDate::YDDD {
                         year: Some(2025),

@@ -16,9 +16,6 @@
 #[macro_use]
 extern crate std;
 
-#[macro_use]
-extern crate alloc;
-
 mod clippy;
 
 /// date mod
