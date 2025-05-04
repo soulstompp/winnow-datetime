@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.0 - 2024-05-04
+* Changed parser signatures to meet winnow 0.7 standards
+
 ## 0.4.0 - 2014-12-29
 * Moved Date, Time, and DateTime, Timezone to the `winnow-datetime` so that upcoming format crates
   can re-use them. This crate will no longer export these directly, since this caused several type

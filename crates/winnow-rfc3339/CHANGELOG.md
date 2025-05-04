@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 - 2024-05-04
+* Changed parser signatures to meet winnow 0.7 standards
+* Removed mistaken dependency on winnow-datetime-assert, now only using winnow-datetime-assert as a dev-dependency
+
 ## 0.1.0 - 2024-12-29
 
 Initial release

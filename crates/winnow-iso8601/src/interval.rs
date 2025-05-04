@@ -1,13 +1,12 @@
 use crate::duration::duration;
 use crate::partial_datetime::{partial_datetime, partial_end_datetime};
-use alloc::string::String;
-use core::str;
-use winnow::combinator::alt;
 use winnow::combinator::opt;
 use winnow::combinator::trace;
-use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
+use winnow::combinator::{alt, eof, terminated};
+use winnow::error::{InputError, ParserError};
+use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::literal;
-use winnow::{seq, PResult, Parser};
+use winnow::{seq, Parser, Result};
 use winnow_datetime::parser::take_digits;
 use winnow_datetime::types::{Interval, IntervalRange};
 
@@ -16,19 +15,17 @@ use winnow_datetime::types::{Interval, IntervalRange};
 /// A string that optionally starts with `R` and contains a combination of partial date-times in the
 /// following permissible formats:
 ///
-pub fn parse_interval(mut i: &str) -> Result<Interval, String> {
-    match interval(&mut i) {
-        Ok(p) => Ok(p),
-        Err(e) => Err(format!("Failed to parse interval {}: {}", i, e)),
-    }
+pub fn parse_interval(mut i: &str) -> Result<Interval, InputError<&str>> {
+    terminated(interval, eof).parse_next(&mut i)
 }
 
 /// Parses a interval string containing combinations of partial date-times and duration.
-pub fn interval<'i, Input>(i: &mut Input) -> PResult<Interval>
+pub fn interval<'i, Input, Error>(input: &mut Input) -> Result<Interval, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("interval", move |input: &mut Input| {
         seq!(Interval {
@@ -42,40 +39,43 @@ where
         })
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
-fn interval_repetitions<'i, Input>(i: &mut Input) -> PResult<Option<u32>>
+pub fn interval_repetitions<'i, Input, Error>(input: &mut Input) -> Result<Option<u32>, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("interval_repetitions", move |input: &mut Input| {
         seq!((literal("R"), opt(take_digits), literal("/")))
             .map(|(_, r, _)| r)
             .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
-fn interval_open<'i, Input>(i: &mut Input) -> PResult<IntervalRange>
+fn interval_open<'i, Input, Error>(input: &mut Input) -> Result<IntervalRange, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("interval_open", move |input: &mut Input| {
         duration(input).map(|duration| IntervalRange::Open { duration })
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
-fn interval_closed<'i, Input>(i: &mut Input) -> PResult<IntervalRange>
+fn interval_closed<'i, Input, Error>(input: &mut Input) -> Result<IntervalRange, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("interval_closed", move |input: &mut Input| {
         let start = partial_datetime(input)?;
@@ -84,14 +84,15 @@ where
 
         Ok(IntervalRange::Closed { start, end })
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
-fn interval_closed_end<'i, Input>(i: &mut Input) -> PResult<IntervalRange>
+fn interval_closed_end<'i, Input, Error>(input: &mut Input) -> Result<IntervalRange, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("interval_closed_end", move |input: &mut Input| {
         seq!(IntervalRange::ClosedEnd {
@@ -101,14 +102,15 @@ where
         })
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
-fn interval_closed_start<'i, Input>(i: &mut Input) -> PResult<IntervalRange>
+fn interval_closed_start<'i, Input, Error>(input: &mut Input) -> Result<IntervalRange, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("interval_closed_start", move |input: &mut Input| {
         seq!( IntervalRange::ClosedStart {
@@ -118,21 +120,22 @@ where
         })
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
 #[cfg(test)]
 mod parsers {
     use crate::interval::interval;
     use crate::partial_date::partial_end_date;
-    use winnow::stream::AsBStr;
+    use winnow::error::InputError;
+
     use winnow_datetime::types::{IntervalRange, PartialDate, PartialDateTime, PartialTime};
     use winnow_datetime::{Duration, Interval, Offset};
 
     #[test]
     fn interval_closed() {
         assert_eq!(
-            interval(&mut "2015-06-25/2015-06-26".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2015-06-25/2015-06-26").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -157,7 +160,7 @@ mod parsers {
         );
 
         assert_eq!(
-            interval(&mut "2015-06-25 12:00:00Z/2015-06-26 12:00:00Z".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2015-06-25 12:00:00Z/2015-06-26 12:00:00Z").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -204,7 +207,7 @@ mod parsers {
     fn interval_closed_partial_ymd_end_date() {
         // Partial end: 2024-12-22/12-23
         assert_eq!(
-            interval(&mut "2024-12-22/12-23".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2024-12-22/12-23").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -230,7 +233,7 @@ mod parsers {
 
         // Partial start: 2024-12-22/12-23
         assert_eq!(
-            interval(&mut "2024-12-22/23".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2024-12-22/23").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -259,7 +262,7 @@ mod parsers {
     fn interval_closed_partial_ywd_end_date() {
         // Partial end: 2024-12-22/12-23
         assert_eq!(
-            interval(&mut "2024-W51-7/2024-W52-1".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2024-W51-7/2024-W52-1").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -283,7 +286,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            interval(&mut "2024-W51-7/W52-1".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2024-W51-7/W52-1").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -307,7 +310,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            interval(&mut "2024-W51-7/52-1".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2024-W51-7/52-1").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -331,7 +334,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            interval(&mut "2024-W51-1/2".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2024-W51-1/2").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -355,7 +358,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            interval(&mut "2024-W51-7/1".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2024-W51-7/1").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Closed {
@@ -385,8 +388,8 @@ mod parsers {
     #[test]
     fn test_partial_end_date_ywd() {
         assert_eq!(
-            partial_end_date(
-                &mut "1".as_bstr(),
+            partial_end_date::<_, InputError<_>>(
+                &mut "1",
                 &PartialDate::YWD {
                     year: Some(2024),
                     week: Some(51),
@@ -405,7 +408,7 @@ mod parsers {
     #[test]
     fn interval_open() {
         assert_eq!(
-            interval(&mut "P1Y2M".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "P1Y2M").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::Open {
@@ -427,7 +430,7 @@ mod parsers {
     #[test]
     fn interval_closed_start() {
         assert_eq!(
-            interval(&mut "2015-06-25/P1M".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "2015-06-25/P1M").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::ClosedStart {
@@ -457,7 +460,7 @@ mod parsers {
     #[test]
     fn interval_closed_end() {
         assert_eq!(
-            interval(&mut "P1M/2015-06-25".as_bstr()).unwrap(),
+            interval::<_, InputError<_>>(&mut "P1M/2015-06-25").unwrap(),
             Interval {
                 repetitions: None,
                 range: IntervalRange::ClosedEnd {

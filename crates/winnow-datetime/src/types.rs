@@ -104,7 +104,7 @@ pub struct Time {
 }
 
 impl Time {
-    /// Change this time's offset offset.
+    /// Change this time's offset.
     ///
     /// # Arguments
     ///

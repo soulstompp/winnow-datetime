@@ -1,8 +1,8 @@
-use alloc::string::String;
-use winnow::combinator::{alt, opt, preceded, trace};
-use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
+use winnow::combinator::{alt, eof, opt, preceded, terminated, trace};
+use winnow::error::{InputError, ParserError};
+use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::literal;
-use winnow::{seq, PResult, Parser};
+use winnow::{seq, Parser, Result};
 use winnow_datetime::parser::{sign, time_hour, time_minute};
 use winnow_datetime::Offset;
 
@@ -13,12 +13,8 @@ use winnow_datetime::Offset;
 /// ```rust
 /// let dt = winnow_iso8601::parse_offset("Z").unwrap();
 /// ```
-pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, String> {
-    if let Ok(parsed) = offset(&mut i) {
-        Ok(parsed)
-    } else {
-        Err(format!("Failed to parse datetime: {}", i))
-    }
+pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, InputError<&str>> {
+    terminated(offset, eof).parse_next(&mut i)
 }
 
 // (+...|-...)
@@ -29,38 +25,41 @@ pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, String> {
 /// This will accept (Z|+...|-...) as offsets
 ///
 // (Z|+...|-...)
-pub fn offset<'i, Input>(i: &mut Input) -> PResult<Option<Offset>>
+pub fn offset<'i, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("offset", move |input: &mut Input| {
         alt((offset_hour, offset_zulu)).parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
 // Z
-fn offset_zulu<'i, Input>(i: &mut Input) -> PResult<Option<Offset>>
+pub fn offset_zulu<'i, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("offset_zulu", move |input: &mut Input| {
         literal("Z")
             .map(|_| Some(Offset::default()))
             .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
-fn offset_hour<'i, Input>(i: &mut Input) -> PResult<Option<Offset>>
+pub fn offset_hour<'i, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("offset_hour", move |input: &mut Input| {
         seq!((
@@ -77,5 +76,5 @@ where
         })
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }

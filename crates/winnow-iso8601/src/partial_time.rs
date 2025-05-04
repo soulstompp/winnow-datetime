@@ -1,10 +1,11 @@
 use crate::offset::offset;
 use core::str;
 use winnow::combinator::{alt, empty, fail, opt, preceded, trace};
-use winnow::stream::{AsBStr, AsChar, Compare, Stream as InputStream, StreamIsPartial};
+use winnow::error::ParserError;
+use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::literal;
 use winnow::token::one_of;
-use winnow::{seq, PResult, Parser};
+use winnow::{seq, Parser, Result};
 use winnow_datetime::parser::fraction_millisecond;
 use winnow_datetime::parser::time_hour;
 use winnow_datetime::parser::time_minute;
@@ -16,11 +17,12 @@ use winnow_datetime::types::PartialTime;
 ///
 /// See [`time()`][`crate::time()`] for the supported formats.
 // HH:MM:[SS][.(m*)][(Z|+...|-...)]
-pub(crate) fn partial_time<'i, Input>(i: &mut Input) -> PResult<PartialTime>
+pub(crate) fn partial_time<'i, Input, Error>(input: &mut Input) -> Result<PartialTime, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("partial_time", move |input: &mut Input| {
         seq!((
@@ -30,18 +32,19 @@ where
         .map(|r| r.0)
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
 /// Parses a partial time string.
 ///
 /// See [`time()`][`crate::time()`] for the supported formats.
 // HH:MM:[SS][.(m*)][(Z|+...|-...)]
-pub(crate) fn partial_base_time<'i, Input>(i: &mut Input) -> PResult<PartialTime>
+pub(crate) fn partial_base_time<'a, Input, Error>(input: &mut Input) -> Result<PartialTime, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'a str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("partial_base_time", move |input: &mut Input| {
         seq!(PartialTime {
@@ -56,37 +59,39 @@ where
         })
         .parse_next(input)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
 // NOTE: this is marked as dead code because this is likely going to be made public
 #[allow(dead_code)]
-pub(crate) fn partial_end_time<'i, Input>(
-    i: &mut Input,
+pub(crate) fn partial_end_time<'i, Input, Error>(
+    input: &mut Input,
     start_time: &PartialTime,
-) -> PResult<PartialTime>
+) -> Result<PartialTime, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'i str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("partial_end_time", move |input: &mut Input| {
         let _ = opt(alt((literal(" "), literal("T")))).parse_next(input)?;
 
         partial_end_base_time(input, start_time)
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
 /// a partial time string which can be truncated depending on a partial start time
-pub(crate) fn partial_end_base_time<'i, Input>(
-    i: &mut Input,
+pub(crate) fn partial_end_base_time<'a, Input, Error>(
+    input: &mut Input,
     start_time: &PartialTime,
-) -> PResult<PartialTime>
+) -> Result<PartialTime, Error>
 where
-    Input: StreamIsPartial + InputStream + Compare<&'i str>,
-    <Input as InputStream>::Slice: AsBStr,
-    <Input as InputStream>::Token: AsChar + Clone,
+    Input: StreamIsPartial + Stream + Compare<&'a str>,
+    <Input as Stream>::Slice: AsBStr,
+    <Input as Stream>::Token: AsChar + Clone,
+    Error: ParserError<Input>,
 {
     trace("partial_end_base_time", move |input: &mut Input| {
         match [
@@ -186,19 +191,20 @@ where
             [_, _, _, _] => fail.parse_next(input),
         }
     })
-    .parse_next(i)
+    .parse_next(input)
 }
 
 #[cfg(test)]
 mod parsers {
     use crate::partial_time::{partial_end_time, partial_time};
-    use winnow::stream::AsBStr;
+    use winnow::error::InputError;
+
     use winnow_datetime::types::PartialTime;
 
     #[test]
     fn partial_time_parsing() {
         assert_eq!(
-            partial_time(&mut "12:01:30".as_bstr()).unwrap(),
+            partial_time::<_, InputError<_>>(&mut "12:01:30").unwrap(),
             PartialTime {
                 hour: Some(12),
                 minute: Some(1),
@@ -208,7 +214,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_time(&mut "12:01".as_bstr()).unwrap(),
+            partial_time::<_, InputError<_>>(&mut "12:01").unwrap(),
             PartialTime {
                 hour: Some(12),
                 minute: Some(1),
@@ -218,7 +224,7 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_time(&mut "12:01:30.123".as_bstr()).unwrap(),
+            partial_time::<_, InputError<_>>(&mut "12:01:30.123").unwrap(),
             PartialTime {
                 hour: Some(12),
                 minute: Some(1),
@@ -232,8 +238,8 @@ mod parsers {
     #[test]
     fn partial_end_time_parsing() {
         assert_eq!(
-            partial_end_time(
-                &mut "12:01:30".as_bstr(),
+            partial_end_time::<_, InputError<_>>(
+                &mut "12:01:30",
                 &PartialTime {
                     hour: Some(12),
                     minute: Some(1),
@@ -252,8 +258,8 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_end_time(
-                &mut "12:01".as_bstr(),
+            partial_end_time::<_, InputError<_>>(
+                &mut "12:01",
                 &PartialTime {
                     hour: Some(12),
                     minute: Some(0),
@@ -272,8 +278,8 @@ mod parsers {
             }
         );
         assert_eq!(
-            partial_end_time(
-                &mut "12:01:30.123".as_bstr(),
+            partial_end_time::<_, InputError<_>>(
+                &mut "12:01:30.123",
                 &PartialTime {
                     hour: Some(12),
                     minute: Some(1),

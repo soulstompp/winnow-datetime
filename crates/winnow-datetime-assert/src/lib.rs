@@ -132,11 +132,33 @@ macro_rules! define_format_tests {
                         (covered, uncovered)
                     });
 
-            fn parse_input(input: &str) -> Result<$piece_type, String> {
-                match terminated($parser, eof).parse_next(&mut input.as_bytes()) {
-                    Ok(p) => Ok(p),
-                    Err(e) => Err(format!("Failed to parse {}: {}", input, e)),
-                }
+            fn parse_input<'i, Input>(input: &mut Input) -> Result<$piece_type, String>
+            where
+                Input: StreamIsPartial
+                    + Stream
+                    + Compare<&'i str>
+                    + AsBStr
+                    + Clone
+                    + std::fmt::Display,
+                <Input as Stream>::Slice: AsBStr,
+                <Input as Stream>::Token: AsChar + Clone,
+            {
+                let o = $parser::<Input, InputError<Input>>(input).map_err(|e| {
+                    format!(
+                        "Failed to parse datetime: {}: {}",
+                        String::from_utf8_lossy(input.as_bstr()),
+                        e.to_string()
+                    )
+                })?;
+                let _ = eof::<Input, InputError<Input>>(input).map_err(|e| {
+                    format!(
+                        "Remaining input parsing datetime: {}: {}",
+                        String::from_utf8_lossy(input.as_bstr()),
+                        e.to_string()
+                    )
+                })?;
+
+                Ok(o)
             }
 
             // Generate a trial for each assertion
@@ -144,7 +166,7 @@ macro_rules! define_format_tests {
                 let name = format!("parses - {}", assertion.format);
                 trials.push(Trial::test(name, move || {
                     // Parse the input
-                    let result = parse_input(&assertion.input);
+                    let result = parse_input(&mut assertion.input.as_str());
 
                     // If covered, the result must match the expected value
                     if result != Ok(assertion.expected) {
@@ -162,7 +184,7 @@ macro_rules! define_format_tests {
                 let name = format!("rejects - {}", assertion.format);
                 trials.push(Trial::test(name, move || {
                     // Parse the input
-                    let result = parse_input(&assertion.input);
+                    let result = parse_input(&mut assertion.input.as_str());
 
                     // If not covered, the result must be an error
                     if result.is_ok() {
