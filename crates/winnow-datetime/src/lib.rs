@@ -2,7 +2,7 @@ extern crate core;
 
 mod clippy;
 #[cfg(any(feature = "time", feature = "chrono"))]
-mod convert;
+pub mod convert;
 mod macros;
 pub mod parser;
 pub mod types;
