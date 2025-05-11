@@ -1,5 +1,5 @@
 #[cfg(feature = "time")]
-mod time;
+pub mod time;
 
 #[cfg(feature = "chrono")]
-mod chrono;
+pub mod chrono;

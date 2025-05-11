@@ -71,10 +71,38 @@ impl TryFrom<crate::DateTime> for time::PrimitiveDateTime {
     }
 }
 
+impl TryFrom<crate::DateTime> for time::OffsetDateTime {
+    type Error = ();
+
+    fn try_from(iso: crate::DateTime) -> Result<Self, Self::Error> {
+        let naive_date = time::Date::try_from(iso.date)?;
+        let naive_time = time::Time::try_from(iso.time)?;
+
+        if let Some(o) = iso.time.offset {
+            if o.offset_hours == 0 && o.offset_minutes == 0 {
+                Ok(time::OffsetDateTime::new_utc(naive_date, naive_time))
+            } else {
+                Ok(time::OffsetDateTime::new_in_offset(
+                    naive_date,
+                    naive_time,
+                    time::UtcOffset::from_hms(o.offset_hours as i8, o.offset_minutes as i8, 0)
+                        .unwrap(),
+                ))
+            }
+        } else {
+            Ok(time::OffsetDateTime::new_utc(naive_date, naive_time))
+        }
+    }
+}
+
 impl crate::DateTime {
     /// create a [`time::PrimitiveDateTime`] if possible
     pub fn into_primitive(self) -> Option<time::PrimitiveDateTime> {
         time::PrimitiveDateTime::try_from(self).ok()
+    }
+
+    pub fn into_offset(self) -> Option<time::OffsetDateTime> {
+        time::OffsetDateTime::try_from(self).ok()
     }
 }
 

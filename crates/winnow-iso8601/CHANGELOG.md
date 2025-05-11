@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 - 2024-05-11
+* Dependency on winnow-datetime 0.2 instead of a more specific version
+* Dropped feature "serde" for winnow-datetime since it isn't needed.
+
 ## 0.5.0 - 2024-05-04
 * Changed parser signatures to meet winnow 0.7 standards
 
