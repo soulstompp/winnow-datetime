@@ -29,6 +29,12 @@ is the most common format used on the internet.
 dates, times, durations, and intervals. [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) is a very ambitious format
 that can represent a wide range of date and time concepts.
 
+### Conversion
+[winnow-datetime] provides a set of TryInto implementations to convert to common rust date/time libraries. Currently
+chrono, jiff, and time are supported. Each have a feature flag of the same name as the lib to enable support for the
+conversions. The TryInto implementations are available with the features and so try_into() could be called to convert to
+any of the compatible types.
+
 ## Parsing Something Strange
 Despite there being countless specifications some people will still come up with their own way to poetically express a
 datetime. So if you are looking to parse those you can build the provided structs with any combination of the pieces

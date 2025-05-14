@@ -3,11 +3,11 @@ use core::convert::TryFrom;
 impl TryFrom<crate::Time> for time::Time {
     type Error = ();
 
-    fn try_from(iso: crate::Time) -> Result<Self, Self::Error> {
+    fn try_from(t: crate::Time) -> Result<Self, Self::Error> {
         time::Time::from_hms(
-            iso.hour.try_into().unwrap(),
-            iso.minute.try_into().unwrap(),
-            iso.second.try_into().unwrap(),
+            t.hour.try_into().unwrap(),
+            t.minute.try_into().unwrap(),
+            t.second.try_into().unwrap(),
         )
         .or(Err(()))
     }
@@ -23,8 +23,8 @@ impl crate::Time {
 impl TryFrom<crate::Date> for time::Date {
     type Error = ();
 
-    fn try_from(iso: crate::Date) -> Result<Self, Self::Error> {
-        match iso {
+    fn try_from(d: crate::Date) -> Result<Self, Self::Error> {
+        match d {
             crate::Date::YMD { year, month, day } => time::Date::from_calendar_date(
                 year,
                 time::Month::try_from(u8::try_from(month).unwrap()).unwrap(),
@@ -64,9 +64,9 @@ impl crate::Date {
 impl TryFrom<crate::DateTime> for time::PrimitiveDateTime {
     type Error = ();
 
-    fn try_from(iso: crate::DateTime) -> Result<Self, Self::Error> {
-        let naive_date = time::Date::try_from(iso.date)?;
-        let naive_time = time::Time::try_from(iso.time)?;
+    fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
+        let naive_date = time::Date::try_from(dt.date)?;
+        let naive_time = time::Time::try_from(dt.time)?;
         Ok(naive_date.with_time(naive_time))
     }
 }
@@ -74,11 +74,11 @@ impl TryFrom<crate::DateTime> for time::PrimitiveDateTime {
 impl TryFrom<crate::DateTime> for time::OffsetDateTime {
     type Error = ();
 
-    fn try_from(iso: crate::DateTime) -> Result<Self, Self::Error> {
-        let naive_date = time::Date::try_from(iso.date)?;
-        let naive_time = time::Time::try_from(iso.time)?;
+    fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
+        let naive_date = time::Date::try_from(dt.date)?;
+        let naive_time = time::Time::try_from(dt.time)?;
 
-        if let Some(o) = iso.time.offset {
+        if let Some(o) = dt.time.offset {
             if o.offset_hours == 0 && o.offset_minutes == 0 {
                 Ok(time::OffsetDateTime::new_utc(naive_date, naive_time))
             } else {
