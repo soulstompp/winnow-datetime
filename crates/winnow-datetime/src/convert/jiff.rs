@@ -50,11 +50,10 @@ impl TryFrom<crate::Date> for jiff::civil::Date {
             }
 
             crate::Date::Ordinal { year, day } => {
-                unimplemented!(
-                    "Ordinal date conversion for {}-{} not implemented for jiff",
-                    year,
-                    day
-                );
+                jiff::civil::Date::new(year.try_into().unwrap(), 1, 1)?
+                    .with()
+                    .day_of_year(day.try_into().unwrap())
+                    .build()
             }
         }
     }
@@ -186,6 +185,17 @@ mod date_and_time {
         assert_eq!(datetime.hour(), 23);
         assert_eq!(datetime.minute(), 40);
         assert_eq!(datetime.second(), 0);
+    }
+
+    #[test]
+    fn date_from_yddd() {
+        let dt = crate::Date::Ordinal {
+            year: 2024,
+            day: 122,
+        };
+
+        let date = jiff::civil::Date::try_from(dt).unwrap();
+        assert_eq!(date, jiff::civil::date(2024, 5, 1));
     }
 
     #[test]

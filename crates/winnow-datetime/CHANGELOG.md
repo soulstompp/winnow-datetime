@@ -1,3 +1,6 @@
+## 0.2.3 - 2015-05-14
+* Support for `Date::Ordinal` conversions to `jiff::civil::Date`
+
 ## 0.2.2 - 2015-05-14
 * Added convert::jiff for jiff support of date and time
 
