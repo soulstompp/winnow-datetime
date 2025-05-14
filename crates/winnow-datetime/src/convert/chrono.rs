@@ -7,8 +7,8 @@ use num_traits::FromPrimitive;
 impl TryFrom<crate::Date> for chrono::NaiveDate {
     type Error = ();
 
-    fn try_from(iso: crate::Date) -> Result<Self, Self::Error> {
-        let maybe = match iso {
+    fn try_from(d: crate::Date) -> Result<Self, Self::Error> {
+        let maybe = match d {
             crate::Date::YMD { year, month, day } => {
                 chrono::NaiveDate::from_ymd_opt(year, month, day)
             }
@@ -37,12 +37,12 @@ mod test_date {
 
     #[test]
     fn naivedate_from_ymd() {
-        let iso = crate::Date::YMD {
+        let d = crate::Date::YMD {
             year: 2023,
             month: 2,
             day: 8,
         };
-        let naive = chrono::NaiveDate::try_from(iso).unwrap();
+        let naive = chrono::NaiveDate::try_from(d).unwrap();
         assert_eq!(naive.year(), 2023);
         assert_eq!(naive.month(), 2);
         assert_eq!(naive.day(), 8);
@@ -50,12 +50,12 @@ mod test_date {
 
     #[test]
     fn naivedate_from_ywd() {
-        let iso = Date::Week {
+        let d = Date::Week {
             year: 2023,
             week: 6,
             day: 2,
         };
-        let naive = chrono::NaiveDate::try_from(iso).unwrap();
+        let naive = chrono::NaiveDate::try_from(d).unwrap();
         assert_eq!(naive.year(), 2023);
         assert_eq!(naive.month(), 2);
         assert_eq!(naive.day(), 8);
@@ -63,11 +63,11 @@ mod test_date {
 
     #[test]
     fn naivedate_from_ordinal() {
-        let iso = crate::Date::Ordinal {
+        let d = crate::Date::Ordinal {
             year: 2023,
             day: 39,
         };
-        let naive = chrono::NaiveDate::try_from(iso).unwrap();
+        let naive = chrono::NaiveDate::try_from(d).unwrap();
         assert_eq!(naive.year(), 2023);
         assert_eq!(naive.month(), 2);
         assert_eq!(naive.day(), 8);
@@ -76,8 +76,8 @@ mod test_date {
 
 impl TryFrom<crate::Time> for chrono::NaiveTime {
     type Error = ();
-    fn try_from(iso: crate::Time) -> Result<Self, Self::Error> {
-        chrono::NaiveTime::from_hms_opt(iso.hour, iso.minute, iso.second).ok_or(())
+    fn try_from(t: crate::Time) -> Result<Self, Self::Error> {
+        chrono::NaiveTime::from_hms_opt(t.hour, t.minute, t.second).ok_or(())
     }
 }
 
@@ -91,8 +91,8 @@ impl crate::Time {
 impl TryFrom<crate::DateTime> for chrono::DateTime<chrono::FixedOffset> {
     type Error = ();
 
-    fn try_from(iso: crate::DateTime) -> Result<Self, Self::Error> {
-        let offset = iso.time.offset.unwrap_or(crate::Offset {
+    fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
+        let offset = dt.time.offset.unwrap_or(crate::Offset {
             offset_hours: 0,
             offset_minutes: 0,
         });
@@ -100,8 +100,8 @@ impl TryFrom<crate::DateTime> for chrono::DateTime<chrono::FixedOffset> {
         let offset_minutes = offset.offset_hours * 3600 + offset.offset_minutes;
         let offset = chrono::FixedOffset::east_opt(offset_minutes).ok_or(())?;
 
-        let naive_time = chrono::NaiveTime::try_from(iso.time)?;
-        let naive_date_time = chrono::NaiveDate::try_from(iso.date)?.and_time(naive_time);
+        let naive_time = chrono::NaiveTime::try_from(dt.time)?;
+        let naive_date_time = chrono::NaiveDate::try_from(dt.date)?.and_time(naive_time);
 
         offset
             .from_local_datetime(&naive_date_time)
@@ -129,7 +129,7 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ymd_offset() {
-        let iso = crate::DateTime {
+        let dt = crate::DateTime {
             date: crate::Date::YMD {
                 year: 2023,
                 month: 2,
@@ -146,7 +146,7 @@ mod test_datetime {
                 }),
             },
         };
-        let datetime = chrono::DateTime::try_from(iso).unwrap();
+        let datetime = chrono::DateTime::try_from(dt).unwrap();
 
         assert_eq!(datetime.year(), 2023);
         assert_eq!(datetime.month(), 2);
@@ -159,7 +159,7 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ymd_utc() {
-        let iso = crate::DateTime {
+        let dt = crate::DateTime {
             date: crate::Date::YMD {
                 year: 2023,
                 month: 2,
@@ -176,7 +176,7 @@ mod test_datetime {
                 }),
             },
         };
-        let datetime = chrono::DateTime::try_from(iso).unwrap();
+        let datetime = chrono::DateTime::try_from(dt).unwrap();
 
         assert_eq!(datetime.year(), 2023);
         assert_eq!(datetime.month(), 2);
@@ -189,7 +189,7 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ymd_no_offset() {
-        let iso = crate::DateTime {
+        let dt = crate::DateTime {
             date: crate::Date::YMD {
                 year: 2023,
                 month: 2,
@@ -206,7 +206,7 @@ mod test_datetime {
                 }),
             },
         };
-        let datetime = chrono::DateTime::try_from(iso).unwrap();
+        let datetime = chrono::DateTime::try_from(dt).unwrap();
 
         assert_eq!(datetime.year(), 2023);
         assert_eq!(datetime.month(), 2);
@@ -219,7 +219,7 @@ mod test_datetime {
 
     #[test]
     fn datetime_from_iso_ywd() {
-        let iso = crate::DateTime {
+        let dt = crate::DateTime {
             date: crate::Date::Week {
                 year: 2023,
                 week: 6,
@@ -236,7 +236,7 @@ mod test_datetime {
                 }),
             },
         };
-        let datetime = chrono::DateTime::try_from(iso).unwrap();
+        let datetime = chrono::DateTime::try_from(dt).unwrap();
 
         assert_eq!(datetime.year(), 2023);
         assert_eq!(datetime.month(), 2);
