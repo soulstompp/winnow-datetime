@@ -76,17 +76,25 @@ impl TryFrom<crate::DateTime> for time::OffsetDateTime {
 
     fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
         let naive_date = time::Date::try_from(dt.date)?;
-        let naive_time = time::Time::try_from(dt.time)?;
+        let naive_time = time::Time::try_from(dt.time.clone())?;
 
         if let Some(o) = dt.time.offset {
-            if o.offset_hours == 0 && o.offset_minutes == 0 {
+            let (offset_hours, offset_minutes) = match o {
+                crate::Offset::Fixed {
+                    hours,
+                    minutes,
+                    critical: _,
+                } => (hours, minutes),
+                crate::Offset::LocalUnknown { critical: _ } => (0, 0),
+            };
+
+            if offset_hours == 0 && offset_minutes == 0 {
                 Ok(time::OffsetDateTime::new_utc(naive_date, naive_time))
             } else {
                 Ok(time::OffsetDateTime::new_in_offset(
                     naive_date,
                     naive_time,
-                    time::UtcOffset::from_hms(o.offset_hours as i8, o.offset_minutes as i8, 0)
-                        .unwrap(),
+                    time::UtcOffset::from_hms(offset_hours as i8, offset_minutes as i8, 0).unwrap(),
                 ))
             }
         } else {
@@ -118,6 +126,8 @@ mod date_and_time {
             second: 0,
             millisecond: 0,
             offset: Default::default(),
+            time_zone: None,
+            calendar: None,
         };
         let time = time::Time::try_from(iso).unwrap();
         assert_eq!(time.hour(), 23);
@@ -153,6 +163,8 @@ mod date_and_time {
                 second: 0,
                 millisecond: 0,
                 offset: Default::default(),
+                time_zone: None,
+                calendar: None,
             },
         };
 

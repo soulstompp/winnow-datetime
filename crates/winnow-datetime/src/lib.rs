@@ -15,6 +15,8 @@ pub use types::FractionalDuration;
 pub use types::Interval;
 pub use types::Offset;
 pub use types::Time;
+pub use types::TimeZone;
+
 use winnow::Partial;
 
 /// Type for holding partial data for parsers

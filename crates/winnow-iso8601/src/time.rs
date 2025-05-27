@@ -72,7 +72,9 @@ where
             minute,                                // MM
             second: second.unwrap_or(0),           // [SS]
             millisecond: millisecond.unwrap_or(0), // [.(m*)]
-            offset: offset.unwrap_or(None),        // [(Z|+...|-...)]
+            offset,                                // [(Z|+...|-...)]
+            time_zone: None,
+            calendar: None,
         })
     })
     .parse_next(input)

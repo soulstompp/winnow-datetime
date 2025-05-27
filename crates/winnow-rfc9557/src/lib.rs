@@ -1,0 +1,41 @@
+//! ISO8601 is a parser library for the
+//! [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) format
+//! and partially RFC9557.
+//!
+//! Validity of a given date is not guaranteed, this parser will happily parse
+//! `"2015-02-29"` as a valid date,
+//! even though 2015 was no leap year.
+//!
+//! # Example
+//!
+//! ```rust
+//! let datetime = winnow_rfc9557::parse_datetime("2015-06-26T16:43:23+02:00").unwrap();
+//! ```
+
+#[cfg(any(feature = "std", test))]
+#[macro_use]
+extern crate std;
+
+mod clippy;
+
+/// date mod
+pub mod date;
+pub use date::parse_date;
+
+/// time mod
+pub mod time;
+pub use time::parse_time;
+
+/// datetime mod
+pub mod datetime;
+pub use datetime::parse_datetime;
+
+/// timezone mod
+pub mod time_zone;
+pub use time_zone::parse_time_zone;
+
+pub mod calendar;
+pub mod offset;
+pub mod suffix;
+
+pub use offset::parse_offset;

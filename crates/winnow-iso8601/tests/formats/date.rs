@@ -1,5 +1,6 @@
 use std::process::ExitCode;
 use winnow::error::InputError;
+use winnow_datetime_assert::Exception;
 use winnow_datetime_assert::{define_format_tests, DateAssertion};
 use winnow_iso8601::date::date;
 

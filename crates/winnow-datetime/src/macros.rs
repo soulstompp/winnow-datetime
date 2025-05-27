@@ -79,6 +79,30 @@ macro_rules! time_seq {
         second: $second_parser:expr,
         millisecond: $millisecond_parser:expr,
         offset: $offset_parser:expr,
+        time_zone: $time_zone_parser:expr,
+        calendar: $calendar_parser:expr,
+    }) => {
+        seq!($variant {
+            hour: $hour_parser,
+            minute: $minute_parser,
+            second: $second_parser,
+            millisecond: $millisecond_parser,
+            offset: $offset_parser,
+            time_zone: $time_zone_parser,
+            calendar: $calendar_parser,
+        })
+    };
+}
+
+#[macro_export]
+macro_rules! partial_time_seq {
+    (
+    $variant:ident {
+        hour: $hour_parser:expr,
+        minute: $minute_parser:expr,
+        second: $second_parser:expr,
+        millisecond: $millisecond_parser:expr,
+        offset: $offset_parser:expr,
     }) => {
         seq!($variant {
             hour: $hour_parser,

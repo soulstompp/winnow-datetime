@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 /// */
 /// ```
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
+#[derive(Eq, PartialEq, Debug, Clone, Default)]
 pub struct DateTime {
     /// The date part
     pub date: Date,
@@ -89,7 +89,7 @@ pub enum PartialDate {
 
 /// A time object.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
+#[derive(Eq, PartialEq, Debug, Clone, Default)]
 pub struct Time {
     /// a 24th of a day
     pub hour: u32,
@@ -101,28 +101,10 @@ pub struct Time {
     pub millisecond: u32,
     /// Note, offset can't be partial, so a regular Offset is used
     pub offset: Option<Offset>,
-}
-
-impl Time {
-    /// Change this time's offset.
-    ///
-    /// # Arguments
-    ///
-    /// * `tzo` - A tuple of `(hours, minutes)` specifying the offset offset from UTC.
-    pub fn set_tz(&self, tzo: Option<(i32, i32)>) -> Time {
-        let mut t = *self;
-
-        if let Some(tzo) = tzo {
-            t.offset = Some(Offset {
-                offset_hours: tzo.0,
-                offset_minutes: tzo.1,
-            });
-        } else {
-            t.offset = None;
-        }
-
-        t
-    }
+    /// time zone, which is more reliable than offset
+    pub time_zone: Option<TimeZone>,
+    /// calendar that the date should be calulcated off of
+    pub calendar: Option<Calendar>,
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -169,12 +151,18 @@ pub enum IntervalRange {
 
 /// Struct holding offset offsets
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
-pub struct Offset {
-    /// hour offset offset
-    pub offset_hours: i32,
-    /// minute offset offset
-    pub offset_minutes: i32,
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
+pub enum Offset {
+    LocalUnknown {
+        critical: bool,
+    },
+    Fixed {
+        /// hour offset offset
+        hours: i32,
+        /// minute offset offset
+        minutes: i32,
+        critical: bool,
+    },
 }
 
 /// A time duration.
@@ -434,4 +422,26 @@ impl FractionalDuration {
             .iter()
             .all(|&x| x.0 > 0 || x.1.unwrap_or(0.0) > 0.0)
     }
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Eq, PartialEq, Debug, Clone)]
+pub enum TimeZone {
+    Named{ zone: NamedTimeZone },
+    Fixed{ offset: Offset },
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Eq, PartialEq, Debug, Clone, Default)]
+pub struct NamedTimeZone {
+    /// Time zone name
+    pub identifier: String,
+    pub critical: bool,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Eq, PartialEq, Debug, Clone, Default)]
+pub struct Calendar {
+    pub identifier: String,
+    pub critical: bool,
 }

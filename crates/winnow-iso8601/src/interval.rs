@@ -175,9 +175,10 @@ mod parsers {
                             minute: Some(0),
                             second: Some(0),
                             millisecond: None,
-                            offset: Some(Offset {
-                                offset_hours: 0,
-                                offset_minutes: 0,
+                            offset: Some(Offset::Fixed {
+                                hours: 0,
+                                minutes: 0,
+                                critical: false,
                             })
                         }),
                     },
@@ -192,9 +193,10 @@ mod parsers {
                             minute: Some(0),
                             second: Some(0),
                             millisecond: None,
-                            offset: Some(Offset {
-                                offset_hours: 0,
-                                offset_minutes: 0,
+                            offset: Some(Offset::Fixed {
+                                hours: 0,
+                                minutes: 0,
+                                critical: false,
                             })
                         }),
                     },

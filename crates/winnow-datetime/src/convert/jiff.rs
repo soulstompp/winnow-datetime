@@ -1,3 +1,4 @@
+use crate::Offset;
 use core::convert::TryFrom;
 
 impl TryFrom<crate::Time> for jiff::civil::Time {
@@ -82,15 +83,22 @@ impl TryFrom<crate::DateTime> for jiff::Zoned {
 
     fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
         let naive_date = jiff::civil::Date::try_from(dt.date)?;
-        let naive_time = jiff::civil::Time::try_from(dt.time)?;
+        let naive_time = jiff::civil::Time::try_from(dt.time.clone())?;
         let naive_datetime = naive_date.to_datetime(naive_time);
 
-        let offset = jiff::tz::Offset::from_seconds(match dt.time.offset {
-            Some(o) => (o.offset_hours * 3600 + o.offset_minutes * 60)
-                .try_into()
-                .unwrap(),
+        let o_seconds = match dt.time.offset {
+            Some(o) => match o {
+                Offset::Fixed {
+                    hours,
+                    minutes,
+                    critical: _,
+                } => hours * 3600 + minutes * 60,
+                Offset::LocalUnknown { critical: _ } => 0,
+            },
             None => 0,
-        })?;
+        };
+
+        let offset = jiff::tz::Offset::from_seconds(o_seconds.try_into().unwrap())?;
 
         let tz = jiff::tz::TimeZone::fixed(offset);
         naive_datetime.to_zoned(tz)
@@ -140,6 +148,8 @@ mod date_and_time {
             second: 0,
             millisecond: 0,
             offset: Default::default(),
+            time_zone: None,
+            calendar: None,
         };
         let time = jiff::civil::Time::try_from(iso).unwrap();
         assert_eq!(time.hour(), 23);
@@ -175,6 +185,8 @@ mod date_and_time {
                 second: 0,
                 millisecond: 0,
                 offset: Default::default(),
+                time_zone: None,
+                calendar: None,
             },
         };
 

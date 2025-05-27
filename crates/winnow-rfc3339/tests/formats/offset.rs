@@ -1,6 +1,7 @@
 use std::process::ExitCode;
 use winnow::error::InputError;
 use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
+use winnow_datetime_assert::Exception;
 use winnow_datetime_assert::{define_format_tests, OffsetAssertion};
 use winnow_rfc3339::offset::offset;
 
@@ -11,7 +12,7 @@ define_format_tests!(
     winnow_rfc3339,
     "tests/data/coverages",
     OffsetAssertion,
-    Option<winnow_datetime::Offset>,
+    winnow_datetime::Offset,
     OffsetCoverage,
     offset
 );

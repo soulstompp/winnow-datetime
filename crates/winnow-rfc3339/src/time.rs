@@ -1,4 +1,5 @@
 use crate::offset::offset;
+use winnow::combinator::empty;
 use winnow::combinator::preceded;
 use winnow::combinator::trace;
 use winnow::combinator::{eof, opt, terminated};
@@ -48,7 +49,9 @@ where
             minute: preceded(literal(":"), time_minute), // MM
             second: preceded(literal(":"), time_second), // [SS]
             millisecond: opt(preceded(one_of(b",."), fraction_millisecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
-            offset: offset, // [(Z|+...|-...)]
+            offset: offset.map(|o| Some(o)), // [(Z|+...|-...)]
+            time_zone: empty.map(|_| None),
+            calendar: empty.map(|_| None),
         })
         .parse_next(input)
     })
