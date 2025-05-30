@@ -1,0 +1,19 @@
+coverage:
+  - format: "%Z:%z"
+    exception: !Unspecified
+    complete: true
+  - format: "-00:00"
+    exception: !Unspecified
+    complete: true
+  - format: "+00:00"
+    exception: !Unspecified
+    complete: true
+  - format: "Z"
+    exception: !Unspecified
+    complete: true
+  - format: "z"
+    exception: !Unspecified
+    complete: true
+  - format: "America/Los_Angeles"
+    exception: !Unspecified
+    complete: true

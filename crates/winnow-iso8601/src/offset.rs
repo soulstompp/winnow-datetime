@@ -13,7 +13,7 @@ use winnow_datetime::Offset;
 /// ```rust
 /// let dt = winnow_iso8601::parse_offset("Z").unwrap();
 /// ```
-pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, InputError<&str>> {
+pub fn parse_offset(mut i: &str) -> Result<Offset, InputError<&str>> {
     terminated(offset, eof).parse_next(&mut i)
 }
 
@@ -25,7 +25,7 @@ pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, InputError<&str>> {
 /// This will accept (Z|+...|-...) as offsets
 ///
 // (Z|+...|-...)
-pub fn offset<'i, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
+pub fn offset<'i, Input, Error>(input: &mut Input) -> Result<Offset, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -39,7 +39,7 @@ where
 }
 
 // Z
-pub fn offset_zulu<'i, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
+pub fn offset_zulu<'i, Input, Error>(input: &mut Input) -> Result<Offset, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -48,13 +48,17 @@ where
 {
     trace("offset_zulu", move |input: &mut Input| {
         literal("Z")
-            .map(|_| Some(Offset::default()))
+            .map(|_| Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
+            })
             .parse_next(input)
     })
     .parse_next(input)
 }
 
-pub fn offset_hour<'i, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
+pub fn offset_hour<'i, Input, Error>(input: &mut Input) -> Result<Offset, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -68,11 +72,10 @@ where
             opt(preceded(opt(literal(":")), time_minute))
         ))
         .verify(|(s, h, m)| !(*s == -1 && h * 1 == 0 && (m.is_none() || m.unwrap() * 1 == 0)))
-        .map(|(s, h, m)| {
-            Some(Offset {
-                offset_hours: s * (h as i32),
-                offset_minutes: s * (m.unwrap_or(0) as i32),
-            })
+        .map(|(s, h, m)| Offset::Fixed {
+            hours: s * (h as i32),
+            minutes: s * (m.unwrap_or(0) as i32),
+            critical: false,
         })
         .parse_next(input)
     })

@@ -1,3 +1,4 @@
+use crate::Offset;
 use chrono::TimeZone;
 use core::convert::TryFrom;
 use num_traits::FromPrimitive;
@@ -92,21 +93,34 @@ impl TryFrom<crate::DateTime> for chrono::DateTime<chrono::FixedOffset> {
     type Error = ();
 
     fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
-        let offset = dt.time.offset.unwrap_or(crate::Offset {
-            offset_hours: 0,
-            offset_minutes: 0,
-        });
+        match dt.time.offset {
+            Some(o) => {
+                let offset_minutes = if let Offset::Fixed {
+                    hours,
+                    minutes,
+                    critical: _,
+                } = o
+                {
+                    hours * 3600 + minutes
+                } else {
+                    0
+                };
 
-        let offset_minutes = offset.offset_hours * 3600 + offset.offset_minutes;
-        let offset = chrono::FixedOffset::east_opt(offset_minutes).ok_or(())?;
+                let offset = chrono::FixedOffset::east_opt(offset_minutes).ok_or(())?;
 
-        let naive_time = chrono::NaiveTime::try_from(dt.time)?;
-        let naive_date_time = chrono::NaiveDate::try_from(dt.date)?.and_time(naive_time);
+                let naive_time = chrono::NaiveTime::try_from(dt.time)?;
+                let naive_date_time = chrono::NaiveDate::try_from(dt.date)?.and_time(naive_time);
 
-        offset
-            .from_local_datetime(&naive_date_time)
-            .single()
-            .ok_or(())
+                offset
+                    .from_local_datetime(&naive_date_time)
+                    .single()
+                    .ok_or(())
+            }
+            None => {
+                //TODO: don't panic!
+                panic!("no offset, wrong type used")
+            }
+        }
     }
 }
 
@@ -140,10 +154,13 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                offset: Some(crate::Offset {
-                    offset_hours: 1,
-                    offset_minutes: 23,
+                offset: Some(crate::Offset::Fixed {
+                    hours: 1,
+                    minutes: 23,
+                    critical: false,
                 }),
+                time_zone: None,
+                calendar: None,
             },
         };
         let datetime = chrono::DateTime::try_from(dt).unwrap();
@@ -170,10 +187,13 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                offset: Some(crate::Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0,
+                offset: Some(crate::Offset::Fixed {
+                    hours: 0,
+                    minutes: 0,
+                    critical: false,
                 }),
+                time_zone: None,
+                calendar: None,
             },
         };
         let datetime = chrono::DateTime::try_from(dt).unwrap();
@@ -200,10 +220,13 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                offset: Some(crate::Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0,
+                offset: Some(crate::Offset::Fixed {
+                    hours: 0,
+                    minutes: 0,
+                    critical: false,
                 }),
+                time_zone: None,
+                calendar: None,
             },
         };
         let datetime = chrono::DateTime::try_from(dt).unwrap();
@@ -230,10 +253,13 @@ mod test_datetime {
                 minute: 40,
                 second: 0,
                 millisecond: 0,
-                offset: Some(crate::Offset {
-                    offset_hours: 1,
-                    offset_minutes: 23,
+                offset: Some(crate::Offset::Fixed {
+                    hours: 1,
+                    minutes: 23,
+                    critical: false,
                 }),
+                time_zone: None,
+                calendar: None,
             },
         };
         let datetime = chrono::DateTime::try_from(dt).unwrap();

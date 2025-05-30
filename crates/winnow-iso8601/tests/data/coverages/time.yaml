@@ -1,95 +1,147 @@
 coverage:
   - format: "%h"
+    exception: !Unspecified
     complete: true
   - format: "%,1h"
+    exception: !Unspecified
     complete: true
   - format: "%.1h"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m"
+    exception: !Unspecified
     complete: true
   - format: "%h:%,1m"
+    exception: !Unspecified
     complete: true
   - format: "%h:%.1m"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m:%s"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m:%.1s"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m:%.2s"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m:%,3s"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m:%.3s"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m:%s,%u"
+    exception: !Unspecified
     complete: true
   - format: "%h:%m:%s.%u"
+    exception: !Unspecified
     complete: true
   - format: "T%h"
+    exception: !Unspecified
     complete: true
   - format: "T%,1h"
+    exception: !Unspecified
     complete: true
   - format: "T%.1h"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%m"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%,1m"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%.1m"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%m:%s"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%m:%.1s"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%m:%.2s"
     complete: true
+    exception: !Unspecified
   - format: "T%h:%m:%,3s"
     complete: true
+    exception: !Unspecified
   - format: "T%h:%m:%.3s"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%m:%s,%u"
+    exception: !Unspecified
     complete: true
   - format: "T%h:%m:%s.%u"
+    exception: !Unspecified
     complete: true
   - format: "%h%m"
+    exception: !Unspecified
     complete: true
   - format: "%h%,1m"
+    exception: !Unspecified
     complete: true
   - format: "%h%.1m"
+    exception: !Unspecified
     complete: true
   - format: "%h%m%s"
+    exception: !Unspecified
     complete: true
   - format: "%h%m%.1s"
+    exception: !Unspecified
     complete: true
   - format: "%h%m%.2s"
+    exception: !Unspecified
     complete: true
   - format: "%h%m%,3s"
+    exception: !Unspecified
     complete: true
   - format: "%h%m%.3s"
+    exception: !Unspecified
     complete: true
   - format: "%h%m%s,%u"
+    exception: !Unspecified
     complete: true
   - format: "%h%m%s.%u"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m"
+    exception: !Unspecified
     complete: true
   - format: "T%h%,1m"
+    exception: !Unspecified
     complete: true
   - format: "T%h%.1m"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m%s"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m%.1s"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m%.2s"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m%,3s"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m%.3s"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m%s,%u"
+    exception: !Unspecified
     complete: true
   - format: "T%h%m%s.%u"
+    exception: !Unspecified
+    complete: true
+  - format: "%h:%m:%,1s"
+    exception: !Unspecified
+    complete: true
+  - format: "%h:%m:%,2s"
+    exception: !Unspecified
     complete: true
 separators:
   - null

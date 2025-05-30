@@ -1,33 +1,49 @@
 coverage:
   - format: "P1Y"
+    exception: !Unspecified
     complete: true
   - format: "P1M"
+    exception: !Unspecified
     complete: true
   - format: "P1W"
+    exception: !Unspecified
     complete: true
   - format: "P1D"
+    exception: !Unspecified
     complete: true
   - format: "PT1H"
+    exception: !Unspecified
     complete: true
   - format: "P1H"
+    exception: !Unspecified
     complete: true
   - format: "PT1M"
+    exception: !Unspecified
     complete: true
   - format: "PT1S"
+    exception: !Unspecified
     complete: true
   - format: "P1S"
+    exception: !Unspecified
     complete: true
   - format: "P1Y1M"
+    exception: !Unspecified
     complete: true
   - format: "P1Y1D"
+    exception: !Unspecified
     complete: true
   - format: "P1Y1M1D"
+    exception: !Unspecified
     complete: true
   - format: "P1Y1M1DT1H1M1S"
+    exception: !Unspecified
     complete: true
   - format: "P1DT1H"
+    exception: !Unspecified
     complete: true
   - format: "P1MT1M"
+    exception: !Unspecified
     complete: true
   - format: "P1DT1M"
+    exception: !Unspecified
     complete: true

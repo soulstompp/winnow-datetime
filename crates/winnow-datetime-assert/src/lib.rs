@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 mod clippy;
@@ -20,6 +21,13 @@ pub use offset::{OffsetAssertion, OffsetCoverage};
 
 pub mod time;
 pub use time::{TimeAssertion, TimeCoverage};
+
+pub mod calendar;
+pub mod time_zone;
+
+pub use time_zone::{TimeZoneAssertion, TimeZoneCoverage};
+
+pub use calendar::{CalendarAssertion, CalendarCoverage};
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct FormatAssertion<T> {
@@ -47,12 +55,34 @@ pub trait FormatAssertionBuilder<T> {
 
     fn base_assertions(&self) -> Vec<FormatAssertion<T>>;
     fn assertions(&self) -> Vec<FormatAssertion<T>>;
+
+    fn base_assertion_map(&self) -> HashMap<String, T>
+    where
+        T: Clone,
+    {
+        self.base_assertions()
+            .into_iter()
+            .map(|a| (a.format, a.expected))
+            .collect()
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize)]
+pub enum Exception<T> {
+    Specific { value: T },
+    Unspecified,
+}
+
+impl<T> Default for Exception<T> {
+    fn default() -> Self {
+        Exception::Unspecified
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct FormatCoverage<T> {
     pub format: String,
-    pub exception: Option<T>,
+    pub exception: Exception<T>,
     pub complete: bool,
 }
 
@@ -118,9 +148,9 @@ macro_rules! define_format_tests {
                     .into_iter()
                     .fold((vec![], vec![]), |(mut covered, mut uncovered), a| {
                         if let Some(c) = coverages.iter().find(|f| f.format == a.format) {
-                            if let Some(e) = c.exception {
+                            if let Exception::Specific { value: e } = &c.exception {
                                 let mut a = a.clone();
-                                a.expected = e;
+                                a.expected = e.clone();
                                 covered.push(a);
                             } else {
                                 covered.push(a);
@@ -169,7 +199,7 @@ macro_rules! define_format_tests {
                     let result = parse_input(&mut assertion.input.as_str());
 
                     // If covered, the result must match the expected value
-                    if result != Ok(assertion.expected) {
+                    if result != Ok(assertion.expected.clone()) {
                         return Err(Failed::from(format!(
                             "Covered format mismatch: {}\nExpected: {:?}\nGot: {:?}",
                             assertion.format, assertion.expected, result

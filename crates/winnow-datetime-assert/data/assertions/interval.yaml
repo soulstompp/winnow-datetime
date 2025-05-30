@@ -459,8 +459,10 @@ assertions:
             hour: 7
             minute: 42
             offset:
-              offset_hours: 0
-              offset_minutes: 0
+              !Fixed
+              hours: 0
+              minutes: 0
+              critical: false
         duration:
           days: 1
           hours: 1
@@ -549,8 +551,10 @@ assertions:
             hour: 7
             minute: 42
             offset:
-                offset_hours: 0
-                offset_minutes: 0
+              !Fixed
+                hours: 0
+                minutes: 0
+                critical: false
         duration:
           days: 1
           hours: 1
@@ -634,8 +638,10 @@ assertions:
             hour: 7
             minute: 42
             offset:
-              offset_hours: 0
-              offset_minutes: 0
+              !Fixed
+              hours: 0
+              minutes: 0
+              critical: false
         duration:
           days: 1
           hours: 1
@@ -727,8 +733,10 @@ assertions:
             hour: 15
             minute: 42
             offset:
-              offset_hours: 0
-              offset_minutes: 0
+              !Fixed
+              hours: 0
+              minutes: 0
+              critical: false
   - format: "P1DT1H/%V-W%W-%wT%h"
     input: "P1DT1H/2024-W51-7T07"
     expected:
@@ -817,8 +825,10 @@ assertions:
             hour: 15
             minute: 42
             offset:
-                offset_hours: 0
-                offset_minutes: 0
+              !Fixed
+                hours: 0
+                minutes: 0
+                critical: false
   - format: "P1DT1H/%Y-%OT%h"
     input: "P1DT1H/2024-357T07"
     expected:
@@ -902,8 +912,10 @@ assertions:
             hour: 15
             minute: 42
             offset:
-              offset_hours: 0
-              offset_minutes: 0
+              !Fixed
+              hours: 0
+              minutes: 0
+              critical: false
   - format: "%Y/%Y"
     input: "2024/2024"
     expected:

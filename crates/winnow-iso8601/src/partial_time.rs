@@ -10,7 +10,7 @@ use winnow_datetime::parser::fraction_millisecond;
 use winnow_datetime::parser::time_hour;
 use winnow_datetime::parser::time_minute;
 use winnow_datetime::parser::time_second;
-use winnow_datetime::time_seq;
+use winnow_datetime::partial_time_seq;
 use winnow_datetime::types::PartialTime;
 
 /// Parses a partial time string with an optional preceding 'T'.
@@ -55,7 +55,7 @@ where
                 alt((literal("."), literal(","))),
                 fraction_millisecond
             )), // .mmm
-            offset: opt(offset).map(|o| o.unwrap_or(None)),   // [(Z|+...|-...)]
+            offset: opt(offset),                              // [(Z|+...|-...)]
         })
         .parse_next(input)
     })
@@ -102,88 +102,88 @@ where
         ] {
             // Case 1: Full precision (%H:%M:%S.%ms)
             [true, true, true, true] => alt((
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: time_hour.map(Some),
                     minute: preceded(literal(":"), time_minute).map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
                     millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: time_minute.map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
                     millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: opt(empty).map(|_| start_time.minute),
                     second: time_second.map(Some),
                     millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: opt(empty).map(|_| start_time.minute),
                     second: opt(empty).map(|_| start_time.second),
                     millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
             ))
             .parse_next(input),
             // Case 2: HH:MM:SS (no milliseconds)
             [true, true, true, false] => alt((
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: time_hour.map(Some),
                     minute: preceded(literal(":"), time_minute).map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
                     millisecond: opt(empty).map(|_| None),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: time_minute.map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
                     millisecond: opt(empty).map(|_| None),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: opt(empty).map(|_| start_time.minute),
                     second: time_second.map(Some),
                     millisecond: opt(empty).map(|_| None),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
             ))
             .parse_next(input),
 
             // Case 3: HH:MM (no seconds or milliseconds)
             [true, true, false, false] => alt((
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: time_hour.map(Some),
                     minute: preceded(literal(":"), time_minute).map(Some),
                     second: opt(empty).map(|_| None),
                     millisecond: opt(empty).map(|_| None),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
-                time_seq!(PartialTime {
+                partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: time_minute.map(Some),
                     second: opt(empty).map(|_| None),
                     millisecond: opt(empty).map(|_| None),
-                    offset: opt(offset).map(|o| o.unwrap_or(None)),
+                    offset: opt(offset),
                 }),
             ))
             .parse_next(input),
 
             // Case 4: HH only (no minutes, seconds, or milliseconds)
-            [true, false, false, false] => time_seq!(PartialTime {
+            [true, false, false, false] => partial_time_seq!(PartialTime {
                 hour: time_hour.map(Some),
                 minute: opt(empty).map(|_| None),
                 second: opt(empty).map(|_| None),
                 millisecond: opt(empty).map(|_| None),
-                offset: opt(offset).map(|o| o.unwrap_or(None)),
+                offset: opt(offset),
             })
             .parse_next(input),
 

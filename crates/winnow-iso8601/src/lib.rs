@@ -45,10 +45,9 @@ pub mod interval;
 
 /// fractional_duration mod
 pub mod fractional_duration;
-mod partial_date;
-mod partial_datetime;
-mod partial_time;
-
+pub mod partial_date;
+pub mod partial_datetime;
+pub mod partial_time;
 pub use fractional_duration::parse_fractional_duration;
 
 pub use offset::parse_offset;

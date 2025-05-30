@@ -1,0 +1,22 @@
+coverage:
+  - format: "%Z:%z"
+    exception: !Unspecified
+    complete: true
+  - format: "-00:00"
+    exception: !Specific
+      value: !LocalUnknown
+        critical: false
+    complete: true
+  - format: "+00:00"
+    exception: !Unspecified
+    complete: true
+  - format: "Z"
+    exception: !Specific
+      value: !LocalUnknown
+        critical: false
+    complete: true
+  - format: "z"
+    exception: !Specific
+      value: !LocalUnknown
+        critical: false
+    complete: true

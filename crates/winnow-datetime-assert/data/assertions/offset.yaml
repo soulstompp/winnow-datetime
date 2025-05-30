@@ -1,28 +1,37 @@
 assertions:
   - format: "%Z:%z"
     input: "-08:00"
-    expected:
-      offset_hours: -8
-      offset_minutes: 0
+    expected: !Fixed
+      hours: -8
+      minutes: 0
+      critical: false
   - format: "Z"
     input: "Z"
-    expected:
-      offset_hours: 0
-      offset_minutes: 0
+    expected: !Fixed
+      hours: 0
+      minutes: 0
+      critical: false
   - format: "z"
     input: "z"
-    expected:
-      offset_hours: 0
-      offset_minutes: 0
+    expected: !Fixed
+      hours: 0
+      minutes: 0
+      critical: false
   - format: "-00:00"
     input: "-00:00"
+    expected: !Fixed
+      hours: 0
+      minutes: 0
+      critical: false
   - format: "%Z"
     input: "-08"
-    expected:
-      offset_hours: -8
-      offset_minutes: 0
+    expected: !Fixed
+      hours: -8
+      minutes: 0
+      critical: false
   - format: "%Z%z"
     input: "-0800"
-    expected:
-      offset_hours: -8
-      offset_minutes: 0
+    expected: !Fixed
+      hours: -8
+      minutes: 0
+      critical: false

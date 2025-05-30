@@ -1,25 +1,37 @@
 coverage:
   - format: "%Y-%M-%D"
+    exception: !Unspecified
     complete: true
   - format: "%C"
+    exception: !Unspecified
     complete: true
   - format: "%X"
+    exception: !Unspecified
     complete: true
   - format: "%Y"
+    exception: !Unspecified
     complete: true
   - format: "%Y-%M"
+    exception: !Unspecified
     complete: true
   - format: "%Y-%O"
+    exception: !Unspecified
     complete: true
   - format: "%V-W%W"
+    exception: !Unspecified
     complete: true
   - format: "%V-W%W-%w"
+    exception: !Unspecified
     complete: true
   - format: "%Y%M%D"
+    exception: !Unspecified
     complete: true
   - format: "%Y%O"
+    exception: !Unspecified
     complete: true
   - format: "%VW%W"
+    exception: !Unspecified
     complete: true
   - format: "%VW%W%w"
+    exception: !Unspecified
     complete: true

@@ -28,10 +28,13 @@ fn test_millisecond() {
                 minute: 43,
                 second: 0,
                 millisecond: i,
-                offset: Some(Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0,
+                offset: Some(Offset::Fixed {
+                    hours: 0,
+                    minutes: 0,
+                    critical: false,
                 }),
+                time_zone: None,
+                calendar: None,
             }),
             parse_time(format!("16:43:00.{:0>3}Z", i).as_str())
         );
@@ -44,10 +47,13 @@ fn test_millisecond() {
             minute: 43,
             second: 0,
             millisecond: 100,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:00.1Z")
     );
@@ -58,10 +64,13 @@ fn test_millisecond() {
             minute: 43,
             second: 0,
             millisecond: 120,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:00.12Z")
     );
@@ -72,10 +81,13 @@ fn test_millisecond() {
             minute: 43,
             second: 0,
             millisecond: 123,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:00.123Z")
     );
@@ -86,10 +98,13 @@ fn test_millisecond() {
             minute: 43,
             second: 0,
             millisecond: 432,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:00.4321Z")
     );
@@ -100,10 +115,13 @@ fn test_millisecond() {
             minute: 43,
             second: 11,
             millisecond: 432,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:11.4321Z")
     );
@@ -114,10 +132,13 @@ fn test_millisecond() {
             minute: 43,
             second: 0,
             millisecond: 100,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:00,1Z")
     );
@@ -128,10 +149,13 @@ fn test_millisecond() {
             minute: 5,
             second: 6,
             millisecond: 123,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("04:05:06.12345Z")
     );
@@ -142,10 +166,13 @@ fn test_millisecond() {
             minute: 43,
             second: 16,
             millisecond: 123,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:16.123Z")
     );
@@ -156,10 +183,13 @@ fn test_millisecond() {
             minute: 43,
             second: 16,
             millisecond: 123,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:16.123+00:00")
     );
@@ -170,10 +200,13 @@ fn test_millisecond() {
             minute: 43,
             second: 16,
             millisecond: 123,
-            offset: Some(Offset {
-                offset_hours: 5,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 5,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:16.123+05:00")
     );
@@ -184,29 +217,6 @@ fn test_time() {
     assert!(parse_time("16:43:16").is_err());
 
     assert!(parse_time("pppp").is_err());
-}
-
-#[test]
-fn test_time_set_tz() {
-    let original = Time {
-        hour: 0,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-        offset: Default::default(),
-    };
-    let expected = Time {
-        hour: 0,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-        offset: Some(Offset {
-            offset_hours: 2,
-            offset_minutes: 30,
-        }),
-    };
-
-    assert_eq!(expected, original.set_tz(Some((2, 30))));
 }
 
 #[test]
@@ -222,10 +232,13 @@ fn test_time_with_offset() {
             minute: 43,
             second: 16,
             millisecond: 0,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:16Z")
     );
@@ -236,10 +249,13 @@ fn test_time_with_offset() {
             minute: 43,
             second: 16,
             millisecond: 0,
-            offset: Some(Offset {
-                offset_hours: 0,
-                offset_minutes: 0,
+            offset: Some(Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
             }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:16+00:00")
     );
@@ -250,10 +266,13 @@ fn test_time_with_offset() {
             minute: 43,
             second: 16,
             millisecond: 0,
-            offset: Some(Offset {
-                offset_hours: 5,
-                offset_minutes: 0,
-            })
+            offset: Some(Offset::Fixed {
+                hours: 5,
+                minutes: 0,
+                critical: false,
+            }),
+            time_zone: None,
+            calendar: None,
         }),
         parse_time("16:43:16+05:00")
     );
@@ -276,10 +295,13 @@ fn test_datetime_correct() {
                 minute: 0,
                 second: 0,
                 millisecond: 0,
-                offset: Some(Offset {
-                    offset_hours: 1,
-                    offset_minutes: 0
-                })
+                offset: Some(Offset::Fixed {
+                    hours: 1,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: None,
+                calendar: None,
             }
         })
     );
@@ -297,10 +319,13 @@ fn test_datetime_correct() {
                 minute: 30,
                 second: 0,
                 millisecond: 0,
-                offset: Some(Offset {
-                    offset_hours: 2,
-                    offset_minutes: 0
-                })
+                offset: Some(Offset::Fixed {
+                    hours: 2,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: None,
+                calendar: None,
             }
         })
     );
@@ -318,10 +343,13 @@ fn test_datetime_correct() {
                 minute: 43,
                 second: 16,
                 millisecond: 0,
-                offset: Some(Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0
-                })
+                offset: Some(Offset::Fixed {
+                    hours: 0,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: None,
+                calendar: None,
             }
         })
     );
@@ -339,10 +367,13 @@ fn test_datetime_correct() {
                 minute: 43,
                 second: 16,
                 millisecond: 0,
-                offset: Some(Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0
-                })
+                offset: Some(Offset::Fixed {
+                    hours: 0,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: None,
+                calendar: None,
             }
         })
     );
@@ -363,10 +394,13 @@ fn lower_case_separators() {
                 minute: 30,
                 second: 0,
                 millisecond: 0,
-                offset: Some(Offset {
-                    offset_hours: 0,
-                    offset_minutes: 0
-                })
+                offset: Some(Offset::Fixed {
+                    hours: 0,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: None,
+                calendar: None,
             }
         })
     );

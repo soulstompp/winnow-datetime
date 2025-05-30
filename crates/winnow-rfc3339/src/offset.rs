@@ -18,7 +18,7 @@ use winnow_datetime::Offset;
 /// ```rust
 /// let dt = winnow_rfc3339::parse_offset("Z").unwrap();
 /// ```
-pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, InputError<&str>> {
+pub fn parse_offset(mut i: &str) -> Result<Offset, InputError<&str>> {
     terminated(offset, eof).parse_next(&mut i)
 }
 
@@ -26,7 +26,7 @@ pub fn parse_offset(mut i: &str) -> Result<Option<Offset>, InputError<&str>> {
 ///
 /// See [`offset()`][`mod@crate::offset`] for the supported formats.
 // (Z|+...|-...)
-pub fn offset<'a, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
+pub fn offset<'a, Input, Error>(input: &mut Input) -> Result<Offset, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'a str>,
     <Input as Stream>::Slice: AsBStr,
@@ -40,7 +40,7 @@ where
 }
 
 // Z|z
-fn offset_zulu<'a, Input, Error>(input: &mut Input) -> Result<Option<Offset>, Error>
+fn offset_zulu<'a, Input, Error>(input: &mut Input) -> Result<Offset, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'a str>,
     <Input as Stream>::Slice: AsBStr,
@@ -49,16 +49,18 @@ where
 {
     trace("offset_zulu", move |input: &mut Input| {
         alt((literal("Z"), literal("z")))
-            .map(|_| Some(Offset::default()))
+            .map(|_| Offset::Fixed {
+                hours: 0,
+                minutes: 0,
+                critical: false,
+            })
             .parse_next(input)
     })
     .parse_next(input)
 }
 
 // (+...|-...)
-pub fn offset_hour<'a, Input, Error>(
-    input: &mut Input,
-) -> std::result::Result<Option<Offset>, Error>
+pub fn offset_hour<'a, Input, Error>(input: &mut Input) -> std::result::Result<Offset, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'a str>,
     <Input as Stream>::Slice: AsBStr,
@@ -75,12 +77,13 @@ where
         ))
         .map(|(h, m)| {
             if s == -1 && h == 0 && m == 0 {
-                None
+                Offset::LocalUnknown { critical: false }
             } else {
-                Some(Offset {
-                    offset_hours: s * (h as i32),
-                    offset_minutes: s * (m as i32),
-                })
+                Offset::Fixed {
+                    hours: s * (h as i32),
+                    minutes: s * (m as i32),
+                    critical: false,
+                }
             }
         })
         .parse_next(input)

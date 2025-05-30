@@ -1,3 +1,4 @@
+use crate::Offset;
 use core::convert::TryFrom;
 
 impl TryFrom<crate::Time> for jiff::civil::Time {
@@ -17,6 +18,25 @@ impl crate::Time {
     /// create a [`jiff::civil::Time`] if possible
     pub fn into_civil_time(self) -> Option<jiff::civil::Time> {
         jiff::civil::Time::try_from(self).ok()
+    }
+
+    pub fn jiff_fixed_tz(o: Option<crate::Offset>) -> Result<jiff::tz::TimeZone, jiff::Error> {
+        let o_seconds = if let Some(o) = o {
+            match o {
+                Offset::Fixed {
+                    hours,
+                    minutes,
+                    critical: _,
+                } => hours * 3600 + minutes * 60,
+                Offset::LocalUnknown { critical: _ } => 0,
+            }
+        } else {
+            0
+        };
+
+        Ok(jiff::tz::TimeZone::fixed(jiff::tz::Offset::from_seconds(
+            o_seconds.try_into().unwrap(),
+        )?))
     }
 }
 
@@ -82,17 +102,22 @@ impl TryFrom<crate::DateTime> for jiff::Zoned {
 
     fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
         let naive_date = jiff::civil::Date::try_from(dt.date)?;
-        let naive_time = jiff::civil::Time::try_from(dt.time)?;
+        let naive_time = jiff::civil::Time::try_from(dt.time.clone())?;
         let naive_datetime = naive_date.to_datetime(naive_time);
 
-        let offset = jiff::tz::Offset::from_seconds(match dt.time.offset {
-            Some(o) => (o.offset_hours * 3600 + o.offset_minutes * 60)
-                .try_into()
-                .unwrap(),
-            None => 0,
-        })?;
+        let mut tz = crate::Time::jiff_fixed_tz(dt.time.offset)?;
 
-        let tz = jiff::tz::TimeZone::fixed(offset);
+        if let Some(z) = dt.time.time_zone {
+            match z {
+                crate::TimeZone::Named { zone } => {
+                    tz = jiff::tz::TimeZone::get(&zone.identifier)?;
+                }
+                crate::TimeZone::Fixed { offset } => {
+                    tz = crate::Time::jiff_fixed_tz(Some(offset))?;
+                }
+            }
+        }
+
         naive_datetime.to_zoned(tz)
     }
 }
@@ -130,6 +155,8 @@ impl TryFrom<crate::Duration> for jiff::Span {
 
 #[cfg(test)]
 mod date_and_time {
+    use crate::Offset;
+    use crate::TimeZone;
     use core::convert::TryFrom;
 
     #[test]
@@ -140,6 +167,8 @@ mod date_and_time {
             second: 0,
             millisecond: 0,
             offset: Default::default(),
+            time_zone: None,
+            calendar: None,
         };
         let time = jiff::civil::Time::try_from(iso).unwrap();
         assert_eq!(time.hour(), 23);
@@ -175,16 +204,134 @@ mod date_and_time {
                 second: 0,
                 millisecond: 0,
                 offset: Default::default(),
+                time_zone: None,
+                calendar: None,
             },
         };
 
-        let datetime = time::PrimitiveDateTime::try_from(dt).unwrap();
+        let datetime = jiff::Zoned::try_from(dt).unwrap();
         assert_eq!(datetime.year(), 2024);
         assert_eq!(datetime.month() as u8, 3);
         assert_eq!(datetime.day(), 9);
         assert_eq!(datetime.hour(), 23);
         assert_eq!(datetime.minute(), 40);
         assert_eq!(datetime.second(), 0);
+    }
+
+    #[test]
+    fn datetime_from_ymd_hms_with_offset() {
+        let dt = crate::DateTime {
+            date: crate::Date::YMD {
+                year: 2024,
+                month: 3,
+                day: 9,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                offset: Some(Offset::Fixed {
+                    hours: 2,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: None,
+                calendar: None,
+            },
+        };
+
+        let datetime = jiff::Zoned::try_from(dt).unwrap();
+        assert_eq!(datetime.year(), 2024);
+        assert_eq!(datetime.month() as u8, 3);
+        assert_eq!(datetime.day(), 9);
+        assert_eq!(datetime.hour(), 23);
+        assert_eq!(datetime.minute(), 40);
+        assert_eq!(datetime.second(), 0);
+        assert_eq!(
+            datetime.time_zone().to_fixed_offset().unwrap().seconds(),
+            2 * 3600
+        );
+    }
+
+    #[test]
+    fn datetime_from_ymd_hms_with_matching_offset() {
+        let dt = crate::DateTime {
+            date: crate::Date::YMD {
+                year: 2024,
+                month: 3,
+                day: 9,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                offset: Some(Offset::Fixed {
+                    hours: 2,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: Some(TimeZone::Fixed {
+                    offset: Offset::Fixed {
+                        hours: 3,
+                        minutes: 0,
+                        critical: false,
+                    },
+                }),
+                calendar: None,
+            },
+        };
+
+        let datetime = jiff::Zoned::try_from(dt).unwrap();
+        assert_eq!(datetime.year(), 2024);
+        assert_eq!(datetime.month() as u8, 3);
+        assert_eq!(datetime.day(), 9);
+        assert_eq!(datetime.hour(), 23);
+        assert_eq!(datetime.minute(), 40);
+        assert_eq!(datetime.second(), 0);
+        assert_eq!(
+            datetime.time_zone().to_fixed_offset().unwrap().seconds(),
+            3 * 3600
+        );
+    }
+
+    #[test]
+    fn datetime_from_ymd_hms_with_named_zone() {
+        let dt = crate::DateTime {
+            date: crate::Date::YMD {
+                year: 2024,
+                month: 3,
+                day: 9,
+            },
+            time: crate::Time {
+                hour: 23,
+                minute: 40,
+                second: 0,
+                millisecond: 0,
+                offset: Some(Offset::Fixed {
+                    hours: 2,
+                    minutes: 0,
+                    critical: false,
+                }),
+                time_zone: Some(TimeZone::Named {
+                    zone: crate::NamedTimeZone {
+                        identifier: "Europe/Berlin".to_string(),
+                        critical: false,
+                    },
+                }),
+                calendar: None,
+            },
+        };
+
+        let datetime = jiff::Zoned::try_from(dt).unwrap();
+        assert_eq!(datetime.year(), 2024);
+        assert_eq!(datetime.month() as u8, 3);
+        assert_eq!(datetime.day(), 9);
+        assert_eq!(datetime.hour(), 23);
+        assert_eq!(datetime.minute(), 40);
+        assert_eq!(datetime.second(), 0);
+        assert_eq!(datetime.time_zone().iana_name().unwrap(), "Europe/Berlin");
     }
 
     #[test]

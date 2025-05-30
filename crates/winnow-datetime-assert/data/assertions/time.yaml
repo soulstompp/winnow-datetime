@@ -286,6 +286,20 @@ assertions:
       minute: 42
       second: 55
       millisecond: 800
+  - format: "%h:%m:%,1s"
+    input: "07:42:55.8"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 800
+  - format: "%h:%m:%,2s"
+    input: "07:42:55.87"
+    expected:
+      hour: 7
+      minute: 42
+      second: 55
+      millisecond: 870
   - format: "%h:%m:%.2s"
     input: "07:42:55.87"
     expected:

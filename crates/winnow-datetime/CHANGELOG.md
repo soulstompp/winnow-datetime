@@ -1,3 +1,10 @@
+## 0.3.0 - 2015-05-30
+* Addition of TimeZone enum to support new information from RFC9557
+* Addition of Calendar struct to support new information from RFC9557
+* Changed Offset to not rely on Option, which caused problems with test suite YAML
+* Added critical value to Offset for RFC9557 support
+* Added support for setting named time zones for jiff exports
+
 ## 0.2.3 - 2015-05-14
 * Support for `Date::Ordinal` conversions to `jiff::civil::Date`
 
