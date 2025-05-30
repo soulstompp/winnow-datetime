@@ -3,7 +3,7 @@
 [![crates.io](https://img.shields.io/crates/v/winnow-rfc9557?style=flat-square)](https://crates.io/crates/winnow-rfc9557)
 [![docs.rs docs](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/winnow-rfc9557)
 
-[iso]: https://en.wikipedia.org/wiki/ISO_8601
+[iso]: https://datatracker.ietf.org/doc/html/rfc9557
 [winnow]: https://github.com/winnow-rs/winnow
 [winnow-datetime]: https://crates.io/crates/winnow-datetime
 
@@ -63,6 +63,16 @@ Some(DateTime {
     },
 });
 ```
+
+# Caveats
+## Timezone Suffixes
+The critical flag for suffixes are parsed according to the spec and saved in the AST but don't have an effect on
+exports to jiff (the only crate that currently handles timezones correctly). At the moment, if the offset or timezone
+was set in the suffix it simply takes precedence.
+
+### Calendar Suffixes
+Per the spec, multiple calendar suffixes are allowed, but only the first one is parsed and used. The rest are ignored
+even if the critical flag is set.
 
 # Contributors
 

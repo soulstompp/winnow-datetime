@@ -3,7 +3,7 @@
 [![crates.io](https://img.shields.io/crates/v/winnow-rfc3339?style=flat-square)](https://crates.io/crates/winnow-rfc3339)
 [![docs.rs docs](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/winnow-rfc3339)
 
-[iso]: https://en.wikipedia.org/wiki/ISO_8601
+[iso]: https://www.rfc-editor.org/rfc/rfc3339
 [winnow]: https://github.com/winnow-rs/winnow
 [winnow-datetime]: https://crates.io/crates/winnow-datetime
 

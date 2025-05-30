@@ -88,7 +88,10 @@ impl FormatCoverageBuilder<Time> for TimeCoverage {
                     );
                     let exception = match (t.exception.clone(), offset.exception.clone()) {
                         (Exception::Unspecified, Exception::Unspecified) => Exception::Unspecified,
-                        (Exception::Specific {value: mut t}, Exception::Specific { value: o }) => match o {
+                        (
+                            Exception::Specific { value: mut t },
+                            Exception::Specific { value: o },
+                        ) => match o {
                             Offset::Fixed {
                                 hours,
                                 minutes,
@@ -106,7 +109,9 @@ impl FormatCoverageBuilder<Time> for TimeCoverage {
                                 Exception::Specific { value: t }
                             }
                         },
-                        (Exception::Specific { value: t }, Exception::Unspecified) => Exception::Specific { value: t },
+                        (Exception::Specific { value: t }, Exception::Unspecified) => {
+                            Exception::Specific { value: t }
+                        }
                         (Exception::Unspecified, Exception::Specific { value: o }) => {
                             let mut default_t = assertions
                                 .get(&t.format)

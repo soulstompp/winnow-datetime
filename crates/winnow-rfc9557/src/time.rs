@@ -1,6 +1,8 @@
 use crate::offset::offset;
-use winnow::combinator::empty;
+use crate::suffix::suffix_calendar;
+use crate::suffix::suffix_time_zone;
 use winnow::combinator::preceded;
+use winnow::combinator::repeat;
 use winnow::combinator::trace;
 use winnow::combinator::{eof, opt, terminated};
 use winnow::error::{InputError, ParserError};
@@ -12,6 +14,7 @@ use winnow_datetime::parser::fraction_millisecond;
 use winnow_datetime::parser::time_hour;
 use winnow_datetime::parser::time_minute;
 use winnow_datetime::parser::time_second;
+use winnow_datetime::types::Calendar;
 use winnow_datetime::{time_seq, Time};
 
 /// Parses a time string.
@@ -49,9 +52,15 @@ where
             minute: preceded(literal(":"), time_minute), // MM
             second: preceded(literal(":"), time_second), // [SS]
             millisecond: opt(preceded(one_of(b",."), fraction_millisecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
-            offset: offset.map(|o| Some(o)), // [(Z|+...|-...)]
-            time_zone: empty.map(|_| None),
-            calendar: empty.map(|_| None),
+            offset: offset.map(|o| Some(o)),  // [(Z|+...|-...)]
+            time_zone: opt(suffix_time_zone), // [time zone]
+            calendar: opt(repeat(1.., suffix_calendar)).map(|c: Option<Vec<Calendar>>| {
+                if let Some(c) = c {
+                    Some(c[0].clone())
+                } else {
+                    None
+                }
+            }),
         })
         .parse_next(input)
     })
@@ -64,7 +73,8 @@ mod parsers {
     use winnow::error::InputError;
     use winnow::stream::AsBStr;
     use winnow_datetime::parser::{time_hour, time_minute, time_second};
-    use winnow_datetime::PartialInput;
+    use winnow_datetime::types::{Calendar, NamedTimeZone};
+    use winnow_datetime::{Offset, PartialInput, Time, TimeZone};
 
     #[test]
     fn test_time_hour() {
@@ -135,5 +145,38 @@ mod parsers {
     #[test]
     fn disallows_notallowed() {
         assert!(time::<_, InputError<_>>(&mut PartialInput::new(b"30:90:90")).is_err());
+    }
+
+    #[test]
+    fn test_time_zone_suffix() {
+        let mut expect = Time {
+            hour: 2,
+            minute: 4,
+            second: 28,
+            millisecond: 0,
+            offset: Some(Offset::LocalUnknown { critical: false }),
+            time_zone: Some(TimeZone::Named {
+                zone: NamedTimeZone {
+                    identifier: "Europe/Lisbon".to_string(),
+                    critical: false,
+                },
+            }),
+            calendar: None,
+        };
+
+        assert_eq!(
+            time::<_, InputError<_>>(&mut "02:04:28Z[Europe/Lisbon]").unwrap(),
+            expect
+        );
+
+        expect.calendar = Some(Calendar {
+            identifier: "gregory".to_string(),
+            critical: false,
+        });
+
+        assert_eq!(
+            time::<_, InputError<_>>(&mut "02:04:28Z[Europe/Lisbon][u-ca=gregory]").unwrap(),
+            expect
+        );
     }
 }

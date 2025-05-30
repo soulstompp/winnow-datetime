@@ -51,7 +51,7 @@ where
 {
     trace("time_zone", move |input: &mut Input| {
         offset
-            .map(|offset| TimeZone::Fixed{ offset })
+            .map(|offset| TimeZone::Fixed { offset })
             .parse_next(input)
     })
     .parse_next(input)
@@ -79,10 +79,12 @@ where
             name.push('/');
             name.push_str(&l);
 
-            TimeZone::Named{ zone: NamedTimeZone {
-                identifier: name,
-                critical: Default::default(),
-            }}
+            TimeZone::Named {
+                zone: NamedTimeZone {
+                    identifier: name,
+                    critical: Default::default(),
+                },
+            }
         })
         .parse_next(input)
     })

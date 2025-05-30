@@ -1,0 +1,11 @@
+assertions:
+  - format: "gregory"
+    input: "gregory"
+    expected:
+     identifier: "gregory"
+     critical: false
+  - format: "islamic-umalqura"
+    input: "islamic-umalqura"
+    expected:
+      identifier: "islamic-umalqura"
+      critical: false

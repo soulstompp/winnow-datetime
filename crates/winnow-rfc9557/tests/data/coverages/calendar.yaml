@@ -1,0 +1,7 @@
+coverage:
+  - format: "gregory"
+    exception: !Unspecified
+    complete: true
+  - format: "islamic-umalqura"
+    exception: !Unspecified
+    complete: true

@@ -22,8 +22,12 @@ pub use offset::{OffsetAssertion, OffsetCoverage};
 pub mod time;
 pub use time::{TimeAssertion, TimeCoverage};
 
+pub mod calendar;
 pub mod time_zone;
+
 pub use time_zone::{TimeZoneAssertion, TimeZoneCoverage};
+
+pub use calendar::{CalendarAssertion, CalendarCoverage};
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct FormatAssertion<T> {

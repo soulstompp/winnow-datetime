@@ -14,3 +14,6 @@ coverage:
   - format: "z"
     exception: !Unspecified
     complete: true
+  - format: "America/Los_Angeles"
+    exception: !Unspecified
+    complete: true

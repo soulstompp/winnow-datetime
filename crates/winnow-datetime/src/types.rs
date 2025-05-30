@@ -427,8 +427,8 @@ impl FractionalDuration {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub enum TimeZone {
-    Named{ zone: NamedTimeZone },
-    Fixed{ offset: Offset },
+    Named { zone: NamedTimeZone },
+    Fixed { offset: Offset },
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

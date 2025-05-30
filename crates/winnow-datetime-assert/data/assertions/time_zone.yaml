@@ -52,3 +52,10 @@ assertions:
             hours: -8
             minutes: 0
             critical: false
+  - format: "America/Los_Angeles"
+    input: "America/Los_Angeles"
+    expected:
+      !Named
+        zone:
+          identifier: "America/Los_Angeles"
+          critical: false

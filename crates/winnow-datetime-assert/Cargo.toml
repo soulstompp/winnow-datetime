@@ -1,8 +1,8 @@
 [package]
 name = "winnow_datetime_assert"
-version = "0.2.0"
+version = "0.3.0"
 description = "Testing/Benchmarking winnow-datetime parsers"
-keywords = [ "iso8601", "date-time", "parser", "winnow" ]
+keywords = [ "date-time", "parser", "winnow" ]
 categories = [ "parser-implementations", "date-and-time" ]
 
 repository = "https://github.com/soulstompp/winnow-datetime"
@@ -13,7 +13,7 @@ readme = "README.md"
 edition = "2021"
 
 [dependencies]
-winnow_datetime = { path = "../winnow-datetime", version = "0.2",  features = ["serde"] }
+winnow_datetime = { path = "../winnow-datetime", version = "0.3",  features = ["serde"] }
 libtest-mimic = "0.8.1"
 winnow = "0.7"
 serde = { version = "1.0", features = ["derive"] }
