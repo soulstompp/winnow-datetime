@@ -97,8 +97,9 @@ pub struct Time {
     pub minute: u32,
     /// a minute are 60 of these
     pub second: u32,
-    /// everything after a `.`
-    pub millisecond: u32,
+    /// Everything after the `.`, scaled to nanoseconds: `.5` is `500_000_000` and
+    /// `.000000001` is `1`. Digits past the ninth are truncated towards zero.
+    pub nanosecond: u32,
     /// Note, offset can't be partial, so a regular Offset is used
     pub offset: Option<Offset>,
     /// time zone, which is more reliable than offset
@@ -113,7 +114,7 @@ pub struct PartialTime {
     pub hour: Option<u32>,
     pub minute: Option<u32>,
     pub second: Option<u32>,
-    pub millisecond: Option<u32>,
+    pub nanosecond: Option<u32>,
     pub offset: Option<Offset>,
 }
 

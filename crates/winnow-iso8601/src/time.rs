@@ -4,7 +4,7 @@ use winnow::error::{InputError, ParserError};
 use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::{literal, one_of};
 use winnow::{seq, Parser, Result};
-use winnow_datetime::parser::{fraction_millisecond, time_hour, time_minute, time_second};
+use winnow_datetime::parser::{fraction_nanosecond, time_hour, time_minute, time_second};
 use winnow_datetime::Time;
 
 /// Parses a time string.
@@ -65,14 +65,14 @@ where
 
         let offset = opt(offset).parse_next(input)?;
 
-        let (minute, second, millisecond) = msms.unwrap_or((0, None, None));
+        let (minute, second, nanosecond) = msms.unwrap_or((0, None, None));
 
         Ok(Time {
-            hour,                                  // HH
-            minute,                                // MM
-            second: second.unwrap_or(0),           // [SS]
-            millisecond: millisecond.unwrap_or(0), // [.(m*)]
-            offset,                                // [(Z|+...|-...)]
+            hour,                                // HH
+            minute,                              // MM
+            second: second.unwrap_or(0),         // [SS]
+            nanosecond: nanosecond.unwrap_or(0), // [.(m*)]
+            offset,                              // [(Z|+...|-...)]
             time_zone: None,
             calendar: None,
         })
@@ -96,7 +96,7 @@ where
             seq!(
                 preceded(opt(literal(":")), time_minute),
                 opt(preceded(opt(literal(":")), time_second)),
-                opt(preceded(one_of(b",."), fraction_millisecond))
+                opt(preceded(one_of(b",."), fraction_nanosecond))
             )
             .parse_next(input)
         },

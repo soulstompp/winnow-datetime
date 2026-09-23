@@ -9,7 +9,7 @@ impl TryFrom<crate::Time> for jiff::civil::Time {
             t.hour.try_into().unwrap(),
             t.minute.try_into().unwrap(),
             t.second.try_into().unwrap(),
-            t.millisecond.try_into().unwrap(),
+            t.nanosecond.try_into().unwrap(),
         )
     }
 }
@@ -165,7 +165,7 @@ mod date_and_time {
             hour: 23,
             minute: 40,
             second: 0,
-            millisecond: 0,
+            nanosecond: 0,
             offset: Default::default(),
             time_zone: None,
             calendar: None,
@@ -174,6 +174,21 @@ mod date_and_time {
         assert_eq!(time.hour(), 23);
         assert_eq!(time.minute(), 40);
         assert_eq!(time.second(), 0);
+    }
+
+    #[test]
+    fn time_keeps_fraction() {
+        let iso = crate::Time {
+            hour: 23,
+            minute: 40,
+            second: 0,
+            nanosecond: 870_479_000,
+            offset: Default::default(),
+            time_zone: None,
+            calendar: None,
+        };
+        let time = jiff::civil::Time::try_from(iso).unwrap();
+        assert_eq!(time.subsec_nanosecond(), 870_479_000);
     }
 
     #[test]
@@ -202,7 +217,7 @@ mod date_and_time {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Default::default(),
                 time_zone: None,
                 calendar: None,
@@ -230,7 +245,7 @@ mod date_and_time {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 2,
                     minutes: 0,
@@ -266,7 +281,7 @@ mod date_and_time {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 2,
                     minutes: 0,
@@ -308,7 +323,7 @@ mod date_and_time {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 2,
                     minutes: 0,

@@ -116,7 +116,7 @@ mod test {
                 hour: 16,
                 minute: 43,
                 second: 16,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::LocalUnknown { critical: false }),
                 time_zone: Some(TimeZone::Named {
                     zone: NamedTimeZone {
@@ -138,7 +138,7 @@ mod test {
                 hour: 16,
                 minute: 43,
                 second: 16,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::LocalUnknown { critical: false }),
                 time_zone: Some(TimeZone::Named {
                     zone: NamedTimeZone {
@@ -166,7 +166,7 @@ mod test {
                 hour: 16,
                 minute: 43,
                 second: 16,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::LocalUnknown { critical: false }),
                 time_zone: Some(TimeZone::Named {
                     zone: NamedTimeZone {

@@ -89,7 +89,7 @@ mod test_date {
 impl TryFrom<crate::Time> for chrono::NaiveTime {
     type Error = ();
     fn try_from(t: crate::Time) -> Result<Self, Self::Error> {
-        chrono::NaiveTime::from_hms_opt(t.hour, t.minute, t.second).ok_or(())
+        chrono::NaiveTime::from_hms_nano_opt(t.hour, t.minute, t.second, t.nanosecond).ok_or(())
     }
 }
 
@@ -164,7 +164,7 @@ mod test_datetime {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(crate::Offset::Fixed {
                     hours: 1,
                     minutes: 23,
@@ -186,6 +186,21 @@ mod test_datetime {
     }
 
     #[test]
+    fn time_keeps_fraction() {
+        let iso = crate::Time {
+            hour: 23,
+            minute: 40,
+            second: 0,
+            nanosecond: 870_479_000,
+            offset: Default::default(),
+            time_zone: None,
+            calendar: None,
+        };
+        let time = chrono::NaiveTime::try_from(iso).unwrap();
+        assert_eq!(time.nanosecond(), 870_479_000);
+    }
+
+    #[test]
     fn datetime_from_iso_ymd_utc() {
         let dt = crate::DateTime {
             date: crate::Date::YMD {
@@ -197,7 +212,7 @@ mod test_datetime {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(crate::Offset::Fixed {
                     hours: 0,
                     minutes: 0,
@@ -230,7 +245,7 @@ mod test_datetime {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(crate::Offset::Fixed {
                     hours: 0,
                     minutes: 0,
@@ -263,7 +278,7 @@ mod test_datetime {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(crate::Offset::Fixed {
                     hours: 1,
                     minutes: 23,

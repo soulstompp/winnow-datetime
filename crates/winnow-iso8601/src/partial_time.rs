@@ -6,7 +6,7 @@ use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::literal;
 use winnow::token::one_of;
 use winnow::{seq, Parser, Result};
-use winnow_datetime::parser::fraction_millisecond;
+use winnow_datetime::parser::fraction_nanosecond;
 use winnow_datetime::parser::time_hour;
 use winnow_datetime::parser::time_minute;
 use winnow_datetime::parser::time_second;
@@ -51,9 +51,9 @@ where
             hour: time_hour.map(Some),                        // HH
             minute: opt(preceded(literal(":"), time_minute)), // MM
             second: opt(preceded(literal(":"), time_second)), // SS
-            millisecond: opt(preceded(
+            nanosecond: opt(preceded(
                 alt((literal("."), literal(","))),
-                fraction_millisecond
+                fraction_nanosecond
             )), // .mmm
             offset: opt(offset),                              // [(Z|+...|-...)]
         })
@@ -98,7 +98,7 @@ where
             start_time.hour.is_some(),
             start_time.minute.is_some(),
             start_time.second.is_some(),
-            start_time.millisecond.is_some(),
+            start_time.nanosecond.is_some(),
         ] {
             // Case 1: Full precision (%H:%M:%S.%ms)
             [true, true, true, true] => alt((
@@ -106,28 +106,28 @@ where
                     hour: time_hour.map(Some),
                     minute: preceded(literal(":"), time_minute).map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
-                    millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
+                    nanosecond: opt(preceded(one_of(['.', ',']), fraction_nanosecond)),
                     offset: opt(offset),
                 }),
                 partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: time_minute.map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
-                    millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
+                    nanosecond: opt(preceded(one_of(['.', ',']), fraction_nanosecond)),
                     offset: opt(offset),
                 }),
                 partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: opt(empty).map(|_| start_time.minute),
                     second: time_second.map(Some),
-                    millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
+                    nanosecond: opt(preceded(one_of(['.', ',']), fraction_nanosecond)),
                     offset: opt(offset),
                 }),
                 partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: opt(empty).map(|_| start_time.minute),
                     second: opt(empty).map(|_| start_time.second),
-                    millisecond: opt(preceded(one_of(['.', ',']), fraction_millisecond)),
+                    nanosecond: opt(preceded(one_of(['.', ',']), fraction_nanosecond)),
                     offset: opt(offset),
                 }),
             ))
@@ -138,21 +138,21 @@ where
                     hour: time_hour.map(Some),
                     minute: preceded(literal(":"), time_minute).map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
-                    millisecond: opt(empty).map(|_| None),
+                    nanosecond: opt(empty).map(|_| None),
                     offset: opt(offset),
                 }),
                 partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: time_minute.map(Some),
                     second: preceded(literal(":"), time_second).map(Some),
-                    millisecond: opt(empty).map(|_| None),
+                    nanosecond: opt(empty).map(|_| None),
                     offset: opt(offset),
                 }),
                 partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: opt(empty).map(|_| start_time.minute),
                     second: time_second.map(Some),
-                    millisecond: opt(empty).map(|_| None),
+                    nanosecond: opt(empty).map(|_| None),
                     offset: opt(offset),
                 }),
             ))
@@ -164,14 +164,14 @@ where
                     hour: time_hour.map(Some),
                     minute: preceded(literal(":"), time_minute).map(Some),
                     second: opt(empty).map(|_| None),
-                    millisecond: opt(empty).map(|_| None),
+                    nanosecond: opt(empty).map(|_| None),
                     offset: opt(offset),
                 }),
                 partial_time_seq!(PartialTime {
                     hour: opt(empty).map(|_| start_time.hour),
                     minute: time_minute.map(Some),
                     second: opt(empty).map(|_| None),
-                    millisecond: opt(empty).map(|_| None),
+                    nanosecond: opt(empty).map(|_| None),
                     offset: opt(offset),
                 }),
             ))
@@ -182,7 +182,7 @@ where
                 hour: time_hour.map(Some),
                 minute: opt(empty).map(|_| None),
                 second: opt(empty).map(|_| None),
-                millisecond: opt(empty).map(|_| None),
+                nanosecond: opt(empty).map(|_| None),
                 offset: opt(offset),
             })
             .parse_next(input),
@@ -209,7 +209,7 @@ mod parsers {
                 hour: Some(12),
                 minute: Some(1),
                 second: Some(30),
-                millisecond: None,
+                nanosecond: None,
                 offset: None,
             }
         );
@@ -219,7 +219,7 @@ mod parsers {
                 hour: Some(12),
                 minute: Some(1),
                 second: None,
-                millisecond: None,
+                nanosecond: None,
                 offset: None,
             }
         );
@@ -229,7 +229,7 @@ mod parsers {
                 hour: Some(12),
                 minute: Some(1),
                 second: Some(30),
-                millisecond: Some(123),
+                nanosecond: Some(123_000_000),
                 offset: None,
             }
         );
@@ -244,7 +244,7 @@ mod parsers {
                     hour: Some(12),
                     minute: Some(1),
                     second: Some(29),
-                    millisecond: None,
+                    nanosecond: None,
                     offset: None,
                 }
             )
@@ -253,7 +253,7 @@ mod parsers {
                 hour: Some(12),
                 minute: Some(1),
                 second: Some(30),
-                millisecond: None,
+                nanosecond: None,
                 offset: None,
             }
         );
@@ -264,7 +264,7 @@ mod parsers {
                     hour: Some(12),
                     minute: Some(0),
                     second: None,
-                    millisecond: None,
+                    nanosecond: None,
                     offset: None,
                 }
             )
@@ -273,7 +273,7 @@ mod parsers {
                 hour: Some(12),
                 minute: Some(1),
                 second: None,
-                millisecond: None,
+                nanosecond: None,
                 offset: None,
             }
         );
@@ -284,7 +284,7 @@ mod parsers {
                     hour: Some(12),
                     minute: Some(1),
                     second: Some(30),
-                    millisecond: Some(122),
+                    nanosecond: Some(122_000_000),
                     offset: None,
                 }
             )
@@ -293,7 +293,7 @@ mod parsers {
                 hour: Some(12),
                 minute: Some(1),
                 second: Some(30),
-                millisecond: Some(123),
+                nanosecond: Some(123_000_000),
                 offset: None,
             }
         );

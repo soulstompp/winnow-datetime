@@ -8,7 +8,7 @@ use winnow::stream::{AsBStr, AsChar, Compare, Stream, StreamIsPartial};
 use winnow::token::literal;
 use winnow::token::one_of;
 use winnow::{seq, Parser, Result};
-use winnow_datetime::parser::fraction_millisecond;
+use winnow_datetime::parser::fraction_nanosecond;
 use winnow_datetime::parser::time_hour;
 use winnow_datetime::parser::time_minute;
 use winnow_datetime::parser::time_second;
@@ -48,7 +48,7 @@ where
             hour: time_hour,                             // HH
             minute: preceded(literal(":"), time_minute), // MM
             second: preceded(literal(":"), time_second), // [SS]
-            millisecond: opt(preceded(one_of(b",."), fraction_millisecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
+            nanosecond: opt(preceded(one_of(b",."), fraction_nanosecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
             offset: offset.map(|o| Some(o)), // [(Z|+...|-...)]
             time_zone: empty.map(|_| None),
             calendar: empty.map(|_| None),

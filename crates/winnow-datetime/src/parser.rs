@@ -234,10 +234,14 @@ where
     .parse_next(input)
 }
 
-// Converts the fractional part if-any of a number of seconds to milliseconds
-// truncating towards zero if there are more than three digits.
-// e.g. "" -> 0, "1" -> 100, "12" -> 120, "123" -> 123, "1234" -> 123
-pub fn fraction_millisecond<'i, Input, Error>(input: &mut Input) -> Result<u32, Error>
+/// Converts the fractional part if-any of a number of seconds to nanoseconds, truncating
+/// towards zero if there are more than nine digits.
+///
+/// e.g. "1" -> 100_000_000, "12" -> 120_000_000, "123456" -> 123_456_000,
+/// "123456789" -> 123_456_789, "1234567891" -> 123_456_789
+///
+/// Truncating rather than rounding keeps the parsed instant at or before the one written.
+pub fn fraction_nanosecond<Input, Error>(input: &mut Input) -> Result<u32, Error>
 where
     Input: StreamIsPartial + Stream,
     <Input as Stream>::Slice: AsBStr,
@@ -245,23 +249,20 @@ where
 
     Error: ParserError<Input>,
 {
-    trace("fraction_millisecond", move |input: &mut Input| {
+    trace("fraction_nanosecond", move |input: &mut Input| {
         let d = digit1(input)?;
         let mut digits = d.as_bstr();
 
+        if digits.len() > 9 {
+            digits = digits.get(0..9).unwrap();
+        }
+
+        // `digit1` guarantees at least one digit, and nine digits is at most 999_999_999,
+        // which is inside u32.
+        let mut result: u32 = str::from_utf8(digits).unwrap().parse().unwrap();
+
         let mut l = digits.len();
-
-        if l > 3 {
-            digits = digits.get(0..3).unwrap();
-        }
-
-        let mut result = 0;
-
-        if l > 0 {
-            let digits = str::from_utf8(digits).unwrap(); // This can't panic, `digits` will only include digits.
-            result = digits.parse().unwrap();
-        }
-        while l < 3 {
+        while l < 9 {
             result *= 10;
             l += 1;
         }
@@ -269,4 +270,43 @@ where
         Ok(result)
     })
     .parse_next(input)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::fraction_nanosecond;
+    use winnow::error::InputError;
+    use winnow::Parser;
+
+    fn frac(s: &str) -> u32 {
+        fraction_nanosecond::<_, InputError<_>>
+            .parse(s)
+            .unwrap_or_else(|e| panic!("{s:?} did not parse: {e}"))
+    }
+
+    /// `.5` is half a second, not five nanoseconds.
+    #[test]
+    fn a_fraction_is_padded_to_nine_digits() {
+        assert_eq!(frac("5"), 500_000_000);
+        assert_eq!(frac("05"), 50_000_000);
+        assert_eq!(frac("123"), 123_000_000);
+        assert_eq!(frac("000000001"), 1);
+    }
+
+    /// Digits past the third were once discarded; e.g. MySQL slow logs write six.
+    #[test]
+    fn digits_past_the_third_survive() {
+        assert_eq!(frac("015898"), 15_898_000);
+        assert_eq!(frac("4321"), 432_100_000);
+        assert_eq!(frac("870479"), 870_479_000);
+        assert_eq!(frac("123456789"), 123_456_789);
+    }
+
+    /// Digits past the ninth are truncated towards zero, not rounded.
+    #[test]
+    fn past_nine_digits_is_truncated_not_rounded() {
+        assert_eq!(frac("1234567891"), 123_456_789);
+        assert_eq!(frac("9999999999"), 999_999_999, "truncated, not rounded up");
+        assert_eq!(frac("0000000009"), 0, "below the resolution, so zero");
+    }
 }
