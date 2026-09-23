@@ -29,7 +29,7 @@ pub fn parse_time(mut i: &str) -> Result<Time, InputError<&str>> {
 /// * `0735[00][.123][(Z|(+|-)0000)]`
 ///
 // HH:MM:[SS][.(m*)][(Z|+...|-...)]
-pub fn time<'i, Input, Error>(input: &mut Input) -> std::result::Result<Time, Error>
+pub fn time<'i, Input, Error>(input: &mut Input) -> core::result::Result<Time, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -51,7 +51,7 @@ where
 ///
 /// See [`time()`][`crate::time()`] for the supported formats.
 // HH:MM:[SS][.(m*)][(Z|+...|-...)]
-pub(crate) fn base_time<'i, Input, Error>(input: &mut Input) -> std::result::Result<Time, Error>
+pub(crate) fn base_time<'i, Input, Error>(input: &mut Input) -> core::result::Result<Time, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -83,7 +83,7 @@ where
 /// Parses secondary portion of a time string.
 pub(crate) fn time_minute_second_millisecond<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<(u32, Option<u32>, Option<u32>), Error>
+) -> core::result::Result<(u32, Option<u32>, Option<u32>), Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,

@@ -19,7 +19,7 @@ pub fn parse_fractional_duration(mut i: &str) -> Result<FractionalDuration, Inpu
 /// Parses a duration string with the format P%dY%dM%dDT%dH%dM%dS
 pub fn fractional_duration<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<FractionalDuration, Error>
+) -> core::result::Result<FractionalDuration, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,

@@ -24,7 +24,7 @@ pub fn parse_datetime(mut i: &str) -> Result<DateTime, InputError<&str>> {
 /// A datetime string is a combination of the valid formats for the date and time,
 /// separated by a literal `T`.
 // Full ISO8601 datetime
-pub fn datetime<'i, Input, Error>(input: &mut Input) -> std::result::Result<DateTime, Error>
+pub fn datetime<'i, Input, Error>(input: &mut Input) -> core::result::Result<DateTime, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
