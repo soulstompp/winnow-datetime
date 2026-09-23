@@ -4,6 +4,7 @@
 [winnow-datetime]: https://crates.io/crates/winnow-datetime
 [winnow-iso8601]: https://crates.io/crates/winnow-iso8601
 [winnow-rfc3339]: https://crates.io/crates/winnow-rfc3339
+[winnow-rfc9557]: https://crates.io/crates/winnow-rfc9557
 [winnow-datetime-assert]: https://crates.io/crates/winnow-datetime-assert
 
 ## About
@@ -22,6 +23,7 @@ to an equivalent object from the datetime library. Some formats accept values th
 process and the consumer will need to decide how to handle these cases, however, these should be fairly rare. 
 
 * [winnow-rfc3339] - parsers for RFC3339 dates and times, this is probably the one you are looking for.
+* [winnow-rfc9557] - parsers for RFC9557, which is RFC3339 with time zone and calendar suffixes.
 * [winnow-iso8601] - parsers for ISO8601 dates, times, durations, and intervals.
 
 ## Testing

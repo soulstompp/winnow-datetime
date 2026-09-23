@@ -17,51 +17,42 @@ This library contains parsers for parsing ISO8601 dates and their various compon
 #### Complete
 If you have all the data you need, you can just pass along the input directly.
 
-```rust,ignore
-let datetime = opt(datetime)
-    .parse_next(&mut "2015-06-26T16:43:23+0200"));
+```rust
+use winnow_datetime::{Date, DateTime, Offset, Time};
 
-// the above will give you:
-Some(DateTime {
-    date: Date::YMD {
-        year: 2015,
-        month: 6,
-        day: 26,
-    },
-    time: Time {
-        hour: 16,
-        minute: 43,
-        second: 23,
-        tz_offset_hours: 2,
-        tz_offset_minutes: 0,
-    },
-});
+let datetime = winnow_iso8601::parse_datetime("2015-06-26T16:43:23,870479+0200").unwrap();
+
+assert_eq!(
+    datetime,
+    DateTime {
+        date: Date::YMD { year: 2015, month: 6, day: 26 },
+        time: Time {
+            hour: 16,
+            minute: 43,
+            second: 23,
+            nanosecond: 870_479_000,
+            offset: Some(Offset::Fixed { hours: 2, minutes: 0, critical: false }),
+            time_zone: None,
+            calendar: None,
+        },
+    }
+);
 ```
 
 #### Partial
-For partial data the only difference is wrapping input in Partial and handling incomplete errors correctly,
+For partial data the only difference is wrapping input in `Partial` and handling incomplete errors correctly,
 which is documented in [winnow partial docs](https://docs.rs/winnow/latest/winnow/_topic/partial/index.html).
-```rust,ignore
-pub type Stream<'i> = Partial<&'i [u8]>;
 
-let datetime = opt(datetime)
-    .parse_next(&mut Stream::new("2015-06-26T16:43:23+0200").as_bytes()));
+```rust
+use winnow::error::{ErrMode, InputError};
+use winnow::{Parser, Partial};
+use winnow_iso8601::datetime::datetime;
 
-// the above will give you:
-Some(DateTime {
-    date: Date::YMD {
-        year: 2015,
-        month: 6,
-        day: 26,
-    },
-    time: Time {
-        hour: 16,
-        minute: 43,
-        second: 23,
-        tz_offset_hours: 2,
-        tz_offset_minutes: 0,
-    },
-});
+// the input stops part way through the time, so the parser asks for more rather than failing
+let mut input = Partial::new("2015-06-26T16:43".as_bytes());
+let result = datetime::<_, ErrMode<InputError<_>>>.parse_next(&mut input);
+
+assert!(matches!(result, Err(ErrMode::Incomplete(_))));
 ```
 
 # Contributors

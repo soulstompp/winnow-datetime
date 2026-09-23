@@ -12,6 +12,9 @@ readme = "README.md"
 
 edition = "2021"
 
+[package.metadata.docs.rs]
+all-features = true
+
 [dependencies]
 winnow = {  version = "1.0" }
 winnow_datetime = { path = "../winnow-datetime", version = "0.3" }

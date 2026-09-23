@@ -51,3 +51,7 @@ pub mod partial_time;
 pub use fractional_duration::parse_fractional_duration;
 
 pub use offset::parse_offset;
+
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+struct ReadmeDoctests;

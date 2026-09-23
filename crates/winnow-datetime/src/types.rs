@@ -3,19 +3,6 @@ use core::fmt;
 use serde::{Deserialize, Serialize};
 
 /// Compound struct, holds Date and Time.
-/// ```
-/// # use std::str::FromStr;
-/// use winnow_datetime::DateTime;
-/// /*
-/// assert_eq!(
-///     winnow_datetime::DateTime::from_str("2023-02-18T17:08:08.793Z"),
-///     Ok(winnow_datetime::DateTime {
-///         date: winnow_datetime::Date::YMD{ year: 2023, month: 2, day: 18},
-///         time: winnow_datetime::Time{ hour: 17, minute: 8, second: 8, millisecond: 793, offset: Offset { offset_hours: 0, offset_minutes: 00 }}
-///     })
-/// )
-/// */
-/// ```
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Debug, Clone, Default)]
 pub struct DateTime {
@@ -173,14 +160,14 @@ pub enum Offset {
 /// | Duration     | ABNF Description                                     |
 /// | ------------ | ---------------------------------------------------- |
 /// | `dur-second` | 1*DIGIT "S"                                          |
-/// | `dur-minute` | 1*DIGIT "M" [`dur-second`]                           |
-/// | `dur-hour`   | 1*DIGIT "H" [`dur-minute`]                           |
+/// | `dur-minute` | 1*DIGIT "M" \[`dur-second`\]                           |
+/// | `dur-hour`   | 1*DIGIT "H" \[`dur-minute`\]                           |
 /// | `dur-time`   | "T" (`dur-hour` / `dur-minute` / `dur-second`)       |
 /// | `dur-day`    | 1*DIGIT "D"                                          |
 /// | `dur-week`   | 1*DIGIT "W"                                          |
-/// | `dur-month`  | 1*DIGIT "M" [`dur-day`]                              |
-/// | `dur-year`   | 1*DIGIT "Y" [`dur-month`]                            |
-/// | `dur-date`   | (`dur-day` / `dur-month` / `dur-year`) [`dur-time`]  |
+/// | `dur-month`  | 1*DIGIT "M" \[`dur-day`\]                              |
+/// | `dur-year`   | 1*DIGIT "Y" \[`dur-month`\]                            |
+/// | `dur-date`   | (`dur-day` / `dur-month` / `dur-year`) \[`dur-time`\]  |
 /// | `duration`   | "P" (`dur-date` / `dur-time` / `dur-week`)           |
 ///
 /// ## Examples
@@ -319,14 +306,14 @@ impl Eq for DurationPart {}
 /// | FractionalDuration     | ABNF Description                                     |
 /// | ------------ | ---------------------------------------------------- |
 /// | `dur-second` | 1*DIGIT "S"                                          |
-/// | `dur-minute` | 1*DIGIT "M" [`dur-second`]                           |
-/// | `dur-hour`   | 1*DIGIT "H" [`dur-minute`]                           |
+/// | `dur-minute` | 1*DIGIT "M" \[`dur-second`\]                           |
+/// | `dur-hour`   | 1*DIGIT "H" \[`dur-minute`\]                           |
 /// | `dur-time`   | "T" (`dur-hour` / `dur-minute` / `dur-second`)       |
 /// | `dur-day`    | 1*DIGIT "D"                                          |
 /// | `dur-week`   | 1*DIGIT "W"                                          |
-/// | `dur-month`  | 1*DIGIT "M" [`dur-day`]                              |
-/// | `dur-year`   | 1*DIGIT "Y" [`dur-month`]                            |
-/// | `dur-date`   | (`dur-day` / `dur-month` / `dur-year`) [`dur-time`]  |
+/// | `dur-month`  | 1*DIGIT "M" \[`dur-day`\]                              |
+/// | `dur-year`   | 1*DIGIT "Y" \[`dur-month`\]                            |
+/// | `dur-date`   | (`dur-day` / `dur-month` / `dur-year`) \[`dur-time`\]  |
 /// | `duration`   | "P" (`dur-date` / `dur-time` / `dur-week`)           |
 ///
 /// ## Examples

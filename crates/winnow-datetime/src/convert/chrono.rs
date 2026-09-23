@@ -35,7 +35,7 @@ impl TryFrom<crate::Date> for chrono::NaiveDate {
 }
 
 impl crate::Date {
-    /// create a [`chrono::NativeDate`] if possible
+    /// create a [`chrono::NaiveDate`] if possible
     pub fn into_naive(&self) -> Option<chrono::NaiveDate> {
         chrono::NaiveDate::try_from(*self).ok()
     }
@@ -141,7 +141,7 @@ impl crate::DateTime {
         chrono::DateTime::<chrono::FixedOffset>::try_from(self).ok()
     }
 
-    /// create a [`chrono::NativeDateTime`] if possible
+    /// create a [`chrono::NaiveDateTime`] if possible
     pub fn into_naive(self) -> Option<chrono::NaiveDateTime> {
         self.into_fixed_offset().map(|fxed| fxed.naive_local())
     }

@@ -80,7 +80,7 @@ impl TryFrom<crate::Date> for jiff::civil::Date {
 }
 
 impl crate::Date {
-    /// create a [`jeff::civil::Date`] if possible
+    /// create a [`jiff::civil::Date`] if possible
     pub fn into_civil_date(self) -> Option<jiff::civil::Date> {
         jiff::civil::Date::try_from(self).ok()
     }

@@ -5,24 +5,19 @@ use winnow::token::literal;
 use winnow::{Parser, Result};
 use winnow_datetime::types::Calendar;
 
-/// Parses a calendar string
-///
-/// A calendar string which should follow
-///
-/// This will accept (Z|+...|-...) as offsets
+/// Parses a calendar identifier, such as `gregory`.
 ///
 /// ## Example
 ///
 /// ```rust
-/// let dt = winnow_rfc9557::parse_time_zone("America/Los_Angeles").unwrap();
+/// let calendar = winnow_rfc9557::calendar::parse_calendar("gregory").unwrap();
+/// assert_eq!(calendar.identifier, "gregory");
 /// ```
 pub fn parse_calendar(mut i: &str) -> Result<Calendar, InputError<&str>> {
     terminated(calendar, eof).parse_next(&mut i)
 }
 
-/// Parses a time zone string.
-///
-/// [A-Z]+/[]A-Z]+
+/// Parses one of the calendar identifiers listed in RFC 9557, such as `gregory` or `islamic-civil`.
 pub fn calendar<'a, Input, Error>(input: &mut Input) -> Result<Calendar, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'a str>,
