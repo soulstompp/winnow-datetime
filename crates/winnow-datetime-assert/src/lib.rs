@@ -42,7 +42,7 @@ pub trait FormatAssertionBuilder<T> {
         Self: Sized,
         for<'de> Self: Deserialize<'de>,
     {
-        serde_yaml::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
+        serde_norway::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
     }
 
     fn piece() -> &'static str;
@@ -92,7 +92,7 @@ pub trait FormatCoverageBuilder<T> {
         Self: Sized,
         for<'de> Self: Deserialize<'de>,
     {
-        serde_yaml::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
+        serde_norway::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
     }
 
     fn piece() -> &'static str;

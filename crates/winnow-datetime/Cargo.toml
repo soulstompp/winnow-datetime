@@ -17,14 +17,12 @@ winnow = "0.7"
 chrono = { version = "0.4", default-features = false, optional = true }
 jiff = {  version = "0.2.13", optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }
-num-traits = { version = "0.2", optional = true }
-paste = "1.0.15"
 serde = { version = "1.0", features = ["derive"], optional = true }
 
 [features]
 default = ["std"]
 std = ["winnow/std"]
-chrono = ["dep:chrono", "dep:num-traits"]
-jiff = ["dep:jiff", "dep:num-traits"]
-time = ["dep:time", "dep:num-traits"]
+chrono = ["dep:chrono"]
+jiff = ["dep:jiff"]
+time = ["dep:time"]
 serde = ["dep:serde"]

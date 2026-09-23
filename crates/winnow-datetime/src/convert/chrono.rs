@@ -1,7 +1,6 @@
 use crate::Offset;
 use chrono::TimeZone;
 use core::convert::TryFrom;
-use num_traits::FromPrimitive;
 
 // TODO: we already do validity checks on our own,
 // would be nice if we could use the unsafe versions of these conversions
@@ -14,8 +13,20 @@ impl TryFrom<crate::Date> for chrono::NaiveDate {
                 chrono::NaiveDate::from_ymd_opt(year, month, day)
             }
 
-            crate::Date::Week { year, week, day } => chrono::Weekday::from_u32(day)
-                .and_then(|d| chrono::NaiveDate::from_isoywd_opt(year, week, d)),
+            crate::Date::Week { year, week, day } => {
+                let wd = match day {
+                    1 => chrono::Weekday::Mon,
+                    2 => chrono::Weekday::Tue,
+                    3 => chrono::Weekday::Wed,
+                    4 => chrono::Weekday::Thu,
+                    5 => chrono::Weekday::Fri,
+                    6 => chrono::Weekday::Sat,
+                    7 => chrono::Weekday::Sun,
+                    _ => return Err(()),
+                };
+
+                chrono::NaiveDate::from_isoywd_opt(year, week, wd)
+            }
 
             crate::Date::Ordinal { year, day } => chrono::NaiveDate::from_yo_opt(year, day),
         };
@@ -59,7 +70,7 @@ mod test_date {
         let naive = chrono::NaiveDate::try_from(d).unwrap();
         assert_eq!(naive.year(), 2023);
         assert_eq!(naive.month(), 2);
-        assert_eq!(naive.day(), 8);
+        assert_eq!(naive.day(), 7);
     }
 
     #[test]
@@ -266,10 +277,21 @@ mod test_datetime {
 
         assert_eq!(datetime.year(), 2023);
         assert_eq!(datetime.month(), 2);
-        assert_eq!(datetime.day(), 8);
+        assert_eq!(datetime.day(), 7);
         assert_eq!(datetime.hour(), 23);
         assert_eq!(datetime.minute(), 40);
         assert_eq!(datetime.second(), 00);
         assert_eq!(datetime.offset().fix().local_minus_utc(), 3623);
+    }
+
+    #[test]
+    fn date_from_iso_ywd_sunday() {
+        let date = chrono::NaiveDate::try_from(crate::Date::Week {
+            year: 2023,
+            week: 6,
+            day: 7,
+        })
+        .unwrap();
+        assert_eq!(date, chrono::NaiveDate::from_ymd_opt(2023, 2, 12).unwrap());
     }
 }

@@ -17,6 +17,6 @@ winnow_datetime = { path = "../winnow-datetime", version = "0.3",  features = ["
 libtest-mimic = "0.8.1"
 winnow = "0.7"
 serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.9.34-deprecated"
+serde_norway = "0.9.42"
 
 [dev-dependencies]
