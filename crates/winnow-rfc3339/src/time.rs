@@ -49,7 +49,7 @@ where
             minute: preceded(literal(":"), time_minute), // MM
             second: preceded(literal(":"), time_second), // [SS]
             nanosecond: opt(preceded(one_of(b",."), fraction_nanosecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
-            offset: offset.map(|o| Some(o)), // [(Z|+...|-...)]
+            offset: offset.map(Some), // [(Z|+...|-...)]
             time_zone: empty.map(|_| None),
             calendar: empty.map(|_| None),
         })

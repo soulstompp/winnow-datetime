@@ -43,7 +43,7 @@ pub mod offset;
 /// interval mod
 pub mod interval;
 
-/// fractional_duration mod
+/// `fractional_duration` mod
 pub mod fractional_duration;
 pub mod partial_date;
 pub mod partial_datetime;

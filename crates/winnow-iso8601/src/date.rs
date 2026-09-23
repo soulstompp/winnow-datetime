@@ -101,9 +101,9 @@ where
         Some(day) => verify_fn(day),
     }
 }
-/// Verifies a day_of_week range (1-7)
+/// Verifies a `day_of_week` range (1-7)
 fn verify_day_of_week(day: u32) -> bool {
-    day >= 1 && day <= 7
+    (1..=7).contains(&day)
 }
 
 /// Parses 2 digit week of the year within range 01-7
@@ -159,7 +159,7 @@ where
 
         let year = digit_4(input)?;
 
-        if year >= 100 && year < 10000 {
+        if (100..10000).contains(&year) {
             Ok(sign * year as i32)
         } else {
             Err(ParserError::from_input(input))

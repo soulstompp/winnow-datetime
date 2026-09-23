@@ -40,37 +40,34 @@ where
     <Input as Stream>::Token: AsChar + Clone,
     Error: ParserError<Input>,
 {
-    trace(
-        "partial_end_datetime",
-        move |input: &mut Input| match start_datetime {
-            PartialDateTime {
-                date: start_date,
-                time: start_time,
-            } => {
-                let mut end_date = None;
-                let mut end_time = None;
+    trace("partial_end_datetime", move |input: &mut Input| {
+        let PartialDateTime {
+            date: start_date,
+            time: start_time,
+        } = start_datetime;
 
-                if start_date.is_none() && start_time.is_none() {
-                    return Err(ParserError::from_input(input));
-                }
+        let mut end_date = None;
+        let mut end_time = None;
 
-                if let Some(d) = start_date {
-                    end_date = partial_end_date(input, d).map(Some)?;
-                }
+        if start_date.is_none() && start_time.is_none() {
+            return Err(ParserError::from_input(input));
+        }
 
-                if let Some(t) = start_time {
-                    _ = literal(" ").parse_next(input)?;
+        if let Some(d) = start_date {
+            end_date = partial_end_date(input, d).map(Some)?;
+        }
 
-                    end_time = partial_end_base_time(input, t).map(Some)?;
-                }
+        if let Some(t) = start_time {
+            _ = literal(" ").parse_next(input)?;
 
-                Ok(PartialDateTime {
-                    date: end_date,
-                    time: end_time,
-                })
-            }
-        },
-    )
+            end_time = partial_end_base_time(input, t).map(Some)?;
+        }
+
+        Ok(PartialDateTime {
+            date: end_date,
+            time: end_time,
+        })
+    })
     .parse_next(input)
 }
 #[cfg(test)]

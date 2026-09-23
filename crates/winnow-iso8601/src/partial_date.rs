@@ -188,7 +188,7 @@ where
     .parse_next(input)
 }
 
-/// Sifts through portions of end_date parses for a Date::YDDD start_date
+/// Sifts through portions of `end_date` parses for a `Date::YDDD` `start_date`
 pub(crate) fn partial_end_date_yddd<'i, Input, Error>(
     input: &mut Input,
     start_date: &PartialDate,
@@ -233,7 +233,7 @@ where
     .parse_next(input)
 }
 
-/// Sifts through portions of end_date based on a Date::YMD start_date
+/// Sifts through portions of `end_date` based on a `Date::YMD` `start_date`
 fn partial_end_date_ymd<'i, Input, Error>(
     input: &mut Input,
     start_date: &PartialDate,
@@ -308,13 +308,13 @@ where
                     [_, _, _] => fail.parse_next(input),
                 }
             }
-            _ => return Err(ParserError::from_input(input)),
+            _ => Err(ParserError::from_input(input)),
         }
     })
     .parse_next(input)
 }
 
-/// Sifts through portions of end_date based on a Date::YMD start_date
+/// Sifts through portions of `end_date` based on a `Date::YMD` `start_date`
 pub(crate) fn partial_end_date_ywd<'i, Input, Error>(
     i: &mut Input,
     start_date: &PartialDate,

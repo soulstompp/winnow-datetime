@@ -52,15 +52,10 @@ where
             minute: preceded(literal(":"), time_minute), // MM
             second: preceded(literal(":"), time_second), // [SS]
             nanosecond: opt(preceded(one_of(b",."), fraction_nanosecond)).map(|d| d.unwrap_or(0)), // [.(m*)]
-            offset: offset.map(|o| Some(o)),  // [(Z|+...|-...)]
+            offset: offset.map(Some),         // [(Z|+...|-...)]
             time_zone: opt(suffix_time_zone), // [time zone]
-            calendar: opt(repeat(1.., suffix_calendar)).map(|c: Option<Vec<Calendar>>| {
-                if let Some(c) = c {
-                    Some(c[0].clone())
-                } else {
-                    None
-                }
-            }),
+            calendar: opt(repeat(1.., suffix_calendar))
+                .map(|c: Option<Vec<Calendar>>| { c.map(|c| c[0].clone()) }),
         })
         .parse_next(input)
     })

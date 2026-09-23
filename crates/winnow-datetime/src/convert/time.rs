@@ -33,7 +33,7 @@ impl TryFrom<crate::Date> for time::Date {
             ),
 
             crate::Date::Week { year, week, day } => {
-                let wd = time::Weekday::from(match day {
+                let wd = match day {
                     1 => time::Weekday::Monday,
                     2 => time::Weekday::Tuesday,
                     3 => time::Weekday::Wednesday,
@@ -42,7 +42,7 @@ impl TryFrom<crate::Date> for time::Date {
                     6 => time::Weekday::Saturday,
                     7 => time::Weekday::Sunday,
                     _ => panic!("Invalid day of week"),
-                });
+                };
 
                 time::Date::from_iso_week_date(year, week.try_into().unwrap(), wd)
             }

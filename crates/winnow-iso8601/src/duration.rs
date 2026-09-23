@@ -242,17 +242,17 @@ where
     .parse_next(input)
 }
 
+/// Hour, minute and second parts of a duration's time portion
+pub type DurationTimeParts = (
+    Option<DurationPart>,
+    Option<DurationPart>,
+    Option<DurationPart>,
+);
+
 /// Parses time portion of a duration
 pub fn duration_time<'i, Input, Error>(
     input: &mut Input,
-) -> core::result::Result<
-    (
-        Option<DurationPart>,
-        Option<DurationPart>,
-        Option<DurationPart>,
-    ),
-    Error,
->
+) -> core::result::Result<DurationTimeParts, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -267,14 +267,7 @@ where
 
 pub fn duration_base_time<'i, Input, Error>(
     input: &mut Input,
-) -> core::result::Result<
-    (
-        Option<DurationPart>,
-        Option<DurationPart>,
-        Option<DurationPart>,
-    ),
-    Error,
->
+) -> core::result::Result<DurationTimeParts, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,

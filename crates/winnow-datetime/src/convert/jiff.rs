@@ -35,7 +35,7 @@ impl crate::Time {
         };
 
         Ok(jiff::tz::TimeZone::fixed(jiff::tz::Offset::from_seconds(
-            o_seconds.try_into().unwrap(),
+            o_seconds,
         )?))
     }
 }

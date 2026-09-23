@@ -6,7 +6,7 @@ macro_rules! duration_part_seq {
         fraction: $fraction_parser:expr,
         end: $end_parser:expr
     }) => {
-        move |input: &mut _| {
+        (move |input: &mut _| {
             seq!((
                 $whole_parser,
                 opt(preceded($sep_parser, $fraction_parser.map(|n| {
@@ -17,7 +17,7 @@ macro_rules! duration_part_seq {
             ))
             .map(move |(whole, frac)| DurationPart{ whole, frac })
             .parse_next(input)
-        }
+        })
     };
 }
 
@@ -28,13 +28,13 @@ macro_rules! date_yddd_seq {
         year: $year_parser:expr,
         day: $day_parser:expr,
     }) => {
-        move |input: &mut _| {
+        (move |input: &mut _| {
             seq!($date_type::$variant {
                 year: $year_parser,
                 day: $day_parser,
             })
             .parse_next(input)
-        }
+        })
     };
 }
 
