@@ -50,7 +50,7 @@ where
                 let mut end_date = None;
                 let mut end_time = None;
 
-                if start_date.is_none() && start_date.is_none() {
+                if start_date.is_none() && start_time.is_none() {
                     return Err(ParserError::from_input(input));
                 }
 
