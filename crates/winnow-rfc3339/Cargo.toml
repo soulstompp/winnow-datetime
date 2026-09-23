@@ -1,6 +1,6 @@
 [package]
 name = "winnow_rfc3339"
-version = "0.3.0"
+version = "0.4.0"
 description = "Parsing RFC 3339 dates using winnow"
 keywords = [ "rfc3339", "rfc-3339", "date-time", "parser", "winnow" ]
 categories = [ "parser-implementations", "date-and-time" ]
@@ -17,10 +17,10 @@ all-features = true
 
 [dependencies]
 winnow = {  version = "1.0" }
-winnow_datetime = { path = "../winnow-datetime", version = "0.3" }
+winnow_datetime = { path = "../winnow-datetime", version = "0.4" }
 
 [dev-dependencies ]
-winnow_datetime_assert = { path = "../winnow-datetime-assert", version = "0.3" }
+winnow_datetime_assert = { path = "../winnow-datetime-assert", version = "0.4" }
 libtest-mimic = "0.8.1"
 
 [[test]]

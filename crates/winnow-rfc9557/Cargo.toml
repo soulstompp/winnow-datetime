@@ -1,6 +1,6 @@
 [package]
 name = "winnow_rfc9557"
-version = "0.1.0"
+version = "0.2.0"
 description = "Parsing RFC 9557 dates using winnow"
 keywords = [ "rfc9557", "rfc-9557", "date-time", "parser", "winnow" ]
 categories = [ "parser-implementations", "date-and-time" ]
@@ -17,10 +17,10 @@ all-features = true
 
 [dependencies]
 winnow = {  version = "1.0" }
-winnow_datetime = { path = "../winnow-datetime", version = "0.3" }
+winnow_datetime = { path = "../winnow-datetime", version = "0.4" }
 
 [dev-dependencies ]
-winnow_datetime_assert = { path = "../winnow-datetime-assert", version = "0.3" }
+winnow_datetime_assert = { path = "../winnow-datetime-assert", version = "0.4" }
 libtest-mimic = "0.8.1"
 
 [[test]]

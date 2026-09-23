@@ -1,4 +1,9 @@
-## 0.3.0 - 2015-05-14
+## 0.4.0 - 2026-09-23
+* Bumped winnow version to 1.0
+* Added support for winnow-datetime 0.4.0 objects, with time assertions in nanoseconds
+* Switched from the deprecated serde_yaml to serde_norway
+
+## 0.3.0 - 2025-05-14
 * Added support for winnow-datetime 0.3.0 objects
 * Added assersions for Calendar and TimeZone
 
