@@ -2,3 +2,8 @@ target
 Cargo.lock
 *.swp
 .idea
+
+CLAUDE.md
+**/AGENTS.md
+.claude/
+.docs/

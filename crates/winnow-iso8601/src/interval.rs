@@ -174,7 +174,7 @@ mod parsers {
                             hour: Some(12),
                             minute: Some(0),
                             second: Some(0),
-                            millisecond: None,
+                            nanosecond: None,
                             offset: Some(Offset::Fixed {
                                 hours: 0,
                                 minutes: 0,
@@ -192,7 +192,7 @@ mod parsers {
                             hour: Some(12),
                             minute: Some(0),
                             second: Some(0),
-                            millisecond: None,
+                            nanosecond: None,
                             offset: Some(Offset::Fixed {
                                 hours: 0,
                                 minutes: 0,

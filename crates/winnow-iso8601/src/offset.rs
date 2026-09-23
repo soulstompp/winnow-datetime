@@ -71,7 +71,7 @@ where
             time_hour,
             opt(preceded(opt(literal(":")), time_minute))
         ))
-        .verify(|(s, h, m)| !(*s == -1 && h * 1 == 0 && (m.is_none() || m.unwrap() * 1 == 0)))
+        .verify(|(s, h, m)| !(*s == -1 && *h == 0 && (m.is_none() || m.unwrap() == 0)))
         .map(|(s, h, m)| Offset::Fixed {
             hours: s * (h as i32),
             minutes: s * (m.unwrap_or(0) as i32),

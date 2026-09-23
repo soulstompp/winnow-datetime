@@ -4,10 +4,11 @@ impl TryFrom<crate::Time> for time::Time {
     type Error = ();
 
     fn try_from(t: crate::Time) -> Result<Self, Self::Error> {
-        time::Time::from_hms(
+        time::Time::from_hms_nano(
             t.hour.try_into().unwrap(),
             t.minute.try_into().unwrap(),
             t.second.try_into().unwrap(),
+            t.nanosecond,
         )
         .or(Err(()))
     }
@@ -32,7 +33,7 @@ impl TryFrom<crate::Date> for time::Date {
             ),
 
             crate::Date::Week { year, week, day } => {
-                let wd = time::Weekday::from(match day {
+                let wd = match day {
                     1 => time::Weekday::Monday,
                     2 => time::Weekday::Tuesday,
                     3 => time::Weekday::Wednesday,
@@ -41,7 +42,7 @@ impl TryFrom<crate::Date> for time::Date {
                     6 => time::Weekday::Saturday,
                     7 => time::Weekday::Sunday,
                     _ => panic!("Invalid day of week"),
-                });
+                };
 
                 time::Date::from_iso_week_date(year, week.try_into().unwrap(), wd)
             }
@@ -124,7 +125,7 @@ mod date_and_time {
             hour: 23,
             minute: 40,
             second: 0,
-            millisecond: 0,
+            nanosecond: 0,
             offset: Default::default(),
             time_zone: None,
             calendar: None,
@@ -133,6 +134,21 @@ mod date_and_time {
         assert_eq!(time.hour(), 23);
         assert_eq!(time.minute(), 40);
         assert_eq!(time.second(), 0);
+    }
+
+    #[test]
+    fn time_keeps_fraction() {
+        let iso = crate::Time {
+            hour: 23,
+            minute: 40,
+            second: 0,
+            nanosecond: 870_479_000,
+            offset: Default::default(),
+            time_zone: None,
+            calendar: None,
+        };
+        let time = time::Time::try_from(iso).unwrap();
+        assert_eq!(time.nanosecond(), 870_479_000);
     }
 
     #[test]
@@ -161,7 +177,7 @@ mod date_and_time {
                 hour: 23,
                 minute: 40,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Default::default(),
                 time_zone: None,
                 calendar: None,

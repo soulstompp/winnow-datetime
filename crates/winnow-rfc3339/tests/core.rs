@@ -22,12 +22,14 @@ fn test_millisecond() {
     let mut i = 0;
     while i < 1000 {
         //regression test for pull request 36.
+        // The input is three fractional digits, i.e. milliseconds, and a fraction is now
+        // scaled to nanoseconds -- `.001` is 1_000_000, not 1.
         assert_eq!(
             Ok(Time {
                 hour: 16,
                 minute: 43,
                 second: 0,
-                millisecond: i,
+                nanosecond: i * 1_000_000,
                 offset: Some(Offset::Fixed {
                     hours: 0,
                     minutes: 0,
@@ -46,7 +48,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 0,
-            millisecond: 100,
+            nanosecond: 100000000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -63,7 +65,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 0,
-            millisecond: 120,
+            nanosecond: 120000000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -80,7 +82,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 0,
-            millisecond: 123,
+            nanosecond: 123000000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -97,7 +99,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 0,
-            millisecond: 432,
+            nanosecond: 432100000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -114,7 +116,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 11,
-            millisecond: 432,
+            nanosecond: 432100000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -131,7 +133,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 0,
-            millisecond: 100,
+            nanosecond: 100000000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -148,7 +150,7 @@ fn test_millisecond() {
             hour: 4,
             minute: 5,
             second: 6,
-            millisecond: 123,
+            nanosecond: 123450000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -165,7 +167,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 16,
-            millisecond: 123,
+            nanosecond: 123000000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -182,7 +184,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 16,
-            millisecond: 123,
+            nanosecond: 123000000,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -199,7 +201,7 @@ fn test_millisecond() {
             hour: 16,
             minute: 43,
             second: 16,
-            millisecond: 123,
+            nanosecond: 123000000,
             offset: Some(Offset::Fixed {
                 hours: 5,
                 minutes: 0,
@@ -231,7 +233,7 @@ fn test_time_with_offset() {
             hour: 16,
             minute: 43,
             second: 16,
-            millisecond: 0,
+            nanosecond: 0,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -248,7 +250,7 @@ fn test_time_with_offset() {
             hour: 16,
             minute: 43,
             second: 16,
-            millisecond: 0,
+            nanosecond: 0,
             offset: Some(Offset::Fixed {
                 hours: 0,
                 minutes: 0,
@@ -265,7 +267,7 @@ fn test_time_with_offset() {
             hour: 16,
             minute: 43,
             second: 16,
-            millisecond: 0,
+            nanosecond: 0,
             offset: Some(Offset::Fixed {
                 hours: 5,
                 minutes: 0,
@@ -294,7 +296,7 @@ fn test_datetime_correct() {
                 hour: 12,
                 minute: 0,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 1,
                     minutes: 0,
@@ -318,7 +320,7 @@ fn test_datetime_correct() {
                 hour: 18,
                 minute: 30,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 2,
                     minutes: 0,
@@ -342,7 +344,7 @@ fn test_datetime_correct() {
                 hour: 16,
                 minute: 43,
                 second: 16,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 0,
                     minutes: 0,
@@ -366,7 +368,7 @@ fn test_datetime_correct() {
                 hour: 16,
                 minute: 43,
                 second: 16,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 0,
                     minutes: 0,
@@ -393,7 +395,7 @@ fn lower_case_separators() {
                 hour: 18,
                 minute: 30,
                 second: 0,
-                millisecond: 0,
+                nanosecond: 0,
                 offset: Some(Offset::Fixed {
                     hours: 0,
                     minutes: 0,

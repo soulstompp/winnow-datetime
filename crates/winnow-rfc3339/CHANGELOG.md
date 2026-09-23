@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 - 2026-09-23
+* Bumped winnow version to 1.0
+* Changes to support winnow-datetime 0.4.0 types, fractional seconds now parsed to nanoseconds
+* `chrono`, `jiff`, `serde` and `time` features now enable the matching winnow-datetime conversions
+
 ## 0.3.0 - 2025-05-30
 * Changes to support winnow-datetime 0.3.0 types
 

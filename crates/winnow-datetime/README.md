@@ -7,6 +7,7 @@
 [rfc3339]: https://en.wikipedia.org/wiki/RFC_3339
 [winnow-iso8601]: https://crates.io/crates/winnow-iso8601
 [winnow-rfc3339]: https://crates.io/crates/winnow-rfc3339
+[winnow-rfc9557]: https://crates.io/crates/winnow-rfc9557
 [winnow-datetime-assert]: https://crates.io/crates/winnow-datetime-assert
 
 ## About
@@ -23,6 +24,10 @@ your own parser.
 ### RFC3339
 [winnow-rfc3339] provides parsers for [RFC3339][rfc3339] dates and times. This
 is the most common format used on the internet.
+
+### RFC9557
+[winnow-rfc9557] provides parsers for [RFC9557](https://www.rfc-editor.org/rfc/rfc9557) dates and times,
+which extend RFC3339 with time zone and calendar suffixes such as `[Europe/Paris][u-ca=gregory]`.
 
 ### ISO8601
 [winnow-iso8601] provides parsers for [ISO8601](https://en.wikipedia.org/wiki/ISO_8601)

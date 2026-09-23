@@ -42,7 +42,7 @@ pub trait FormatAssertionBuilder<T> {
         Self: Sized,
         for<'de> Self: Deserialize<'de>,
     {
-        serde_yaml::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
+        serde_norway::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
     }
 
     fn piece() -> &'static str;
@@ -67,16 +67,13 @@ pub trait FormatAssertionBuilder<T> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Default)]
 pub enum Exception<T> {
-    Specific { value: T },
+    Specific {
+        value: T,
+    },
+    #[default]
     Unspecified,
-}
-
-impl<T> Default for Exception<T> {
-    fn default() -> Self {
-        Exception::Unspecified
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
@@ -92,7 +89,7 @@ pub trait FormatCoverageBuilder<T> {
         Self: Sized,
         for<'de> Self: Deserialize<'de>,
     {
-        serde_yaml::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
+        serde_norway::from_reader(std::fs::File::open(Self::path()).unwrap()).unwrap()
     }
 
     fn piece() -> &'static str;

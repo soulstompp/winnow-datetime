@@ -44,7 +44,7 @@ pub fn parse_duration(mut i: &str) -> Result<Duration, InputError<&str>> {
 /// * Hour 0 - 24
 /// * Minute 0 - 60
 /// * Second 0 - 60
-pub fn duration<'i, Input, Error>(input: &mut Input) -> std::result::Result<Duration, Error>
+pub fn duration<'i, Input, Error>(input: &mut Input) -> core::result::Result<Duration, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -90,7 +90,7 @@ where
 ///    dur-year          = 1*DIGIT "Y" [dur-month]
 pub(crate) fn duration_part_year<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<DurationPart, Error>
+) -> core::result::Result<DurationPart, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -112,7 +112,7 @@ where
 ///    dur-month         = 1*DIGIT "M" [dur-day]
 pub(crate) fn duration_part_month<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<DurationPart, Error>
+) -> core::result::Result<DurationPart, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -134,7 +134,7 @@ where
 ///    dur-week          = 1*DIGIT "W"
 pub(crate) fn duration_part_week<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<DurationPart, Error>
+) -> core::result::Result<DurationPart, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -156,7 +156,7 @@ where
 //    dur-day           = 1*DIGIT "D"
 pub(crate) fn duration_part_day<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<DurationPart, Error>
+) -> core::result::Result<DurationPart, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -179,7 +179,7 @@ where
 ///    dur-time          = "T" (dur-hour / dur-minute / dur-second)
 pub(crate) fn duration_part_hour<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<DurationPart, Error>
+) -> core::result::Result<DurationPart, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -201,7 +201,7 @@ where
 ///    dur-minute        = 1*DIGIT "M" [dur-second]
 pub(crate) fn duration_part_minute<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<DurationPart, Error>
+) -> core::result::Result<DurationPart, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -223,7 +223,7 @@ where
 ///    dur-second        = 1*DIGIT "S"
 pub(crate) fn duration_part_second<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<DurationPart, Error>
+) -> core::result::Result<DurationPart, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -242,17 +242,17 @@ where
     .parse_next(input)
 }
 
+/// Hour, minute and second parts of a duration's time portion
+pub type DurationTimeParts = (
+    Option<DurationPart>,
+    Option<DurationPart>,
+    Option<DurationPart>,
+);
+
 /// Parses time portion of a duration
 pub fn duration_time<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<
-    (
-        Option<DurationPart>,
-        Option<DurationPart>,
-        Option<DurationPart>,
-    ),
-    Error,
->
+) -> core::result::Result<DurationTimeParts, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,
@@ -267,14 +267,7 @@ where
 
 pub fn duration_base_time<'i, Input, Error>(
     input: &mut Input,
-) -> std::result::Result<
-    (
-        Option<DurationPart>,
-        Option<DurationPart>,
-        Option<DurationPart>,
-    ),
-    Error,
->
+) -> core::result::Result<DurationTimeParts, Error>
 where
     Input: StreamIsPartial + Stream + Compare<&'i str>,
     <Input as Stream>::Slice: AsBStr,

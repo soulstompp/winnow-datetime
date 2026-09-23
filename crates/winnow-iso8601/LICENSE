@@ -1,3 +1,9 @@
+winnow-iso8601 began as a fork of the `iso8601` crate
+(https://github.com/badboy/iso8601) and retains code from it. With thanks to
+Jan-Erik Rediger and Hendrik Sollich for the original work, and to the
+contributors who read the standard so the rest of us did not have to.
+
+Copyright (c) 2015 Jan-Erik Rediger, Hendrik Sollich
 Copyright (c) 2024 Kenny Flegal
 
 Permission is hereby granted, free of charge, to any person obtaining

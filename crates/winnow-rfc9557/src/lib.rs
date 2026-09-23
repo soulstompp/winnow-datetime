@@ -1,6 +1,6 @@
-//! ISO8601 is a parser library for the
-//! [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) format
-//! and partially RFC9557.
+//! Parsers for [RFC 9557](https://www.rfc-editor.org/rfc/rfc9557) timestamps, which are RFC 3339
+//! timestamps followed by optional suffixes such as `[Europe/Paris][u-ca=gregory]`, producing the
+//! types from [winnow-datetime](https://crates.io/crates/winnow-datetime).
 //!
 //! Validity of a given date is not guaranteed, this parser will happily parse
 //! `"2015-02-29"` as a valid date,
@@ -9,7 +9,7 @@
 //! # Example
 //!
 //! ```rust
-//! let datetime = winnow_rfc9557::parse_datetime("2015-06-26T16:43:23+02:00").unwrap();
+//! let datetime = winnow_rfc9557::parse_datetime("2015-06-26T16:43:23+02:00[Europe/Paris]").unwrap();
 //! ```
 
 #[cfg(any(feature = "std", test))]
@@ -39,3 +39,7 @@ pub mod offset;
 pub mod suffix;
 
 pub use offset::parse_offset;
+
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+struct ReadmeDoctests;

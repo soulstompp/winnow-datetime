@@ -32,12 +32,8 @@ impl FormatAssertionBuilder<Time> for TimeAssertion {
                 let format = format!("{}{}", t.format, o.format);
                 let input = format!("{}{}", t.input, o.input);
 
-                let expected = match (t.expected.clone(), o.expected.clone()) {
-                    (mut t, o) => {
-                        t.offset = Some(o);
-                        t
-                    }
-                };
+                let mut expected = t.expected.clone();
+                expected.offset = Some(o.expected);
 
                 acc.push(FormatAssertion {
                     format,
@@ -82,7 +78,7 @@ impl FormatCoverageBuilder<Time> for TimeCoverage {
                 for offset in offset_coverage.coverage.iter() {
                     let format = format!(
                         "{}{}{}",
-                        t.format.to_string(),
+                        t.format,
                         s.clone().unwrap_or("".into()),
                         offset.format
                     );
@@ -115,7 +111,7 @@ impl FormatCoverageBuilder<Time> for TimeCoverage {
                         (Exception::Unspecified, Exception::Specific { value: o }) => {
                             let mut default_t = assertions
                                 .get(&t.format)
-                                .expect(&format!("format not found: {}", &t.format))
+                                .unwrap_or_else(|| panic!("format not found: {}", t.format))
                                 .clone();
 
                             match o {

@@ -43,7 +43,7 @@ pub mod offset;
 /// interval mod
 pub mod interval;
 
-/// fractional_duration mod
+/// `fractional_duration` mod
 pub mod fractional_duration;
 pub mod partial_date;
 pub mod partial_datetime;
@@ -51,3 +51,7 @@ pub mod partial_time;
 pub use fractional_duration::parse_fractional_duration;
 
 pub use offset::parse_offset;
+
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+struct ReadmeDoctests;

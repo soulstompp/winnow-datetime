@@ -440,7 +440,7 @@ assertions:
             hour: 7
             minute: 42
             second: 55
-            millisecond: 870
+            nanosecond: 870000000
         duration:
           days: 1
           hours: 1
@@ -532,7 +532,7 @@ assertions:
             hour: 7
             minute: 42
             second: 55
-            millisecond: 870
+            nanosecond: 870000000
         duration:
           days: 1
           hours: 1
@@ -620,7 +620,7 @@ assertions:
             hour: 7
             minute: 42
             second: 55
-            millisecond: 870
+            nanosecond: 870000000
         duration:
           days: 1
           hours: 1
@@ -714,7 +714,7 @@ assertions:
             hour: 7
             minute: 42
             second: 55
-            millisecond: 870
+            nanosecond: 870000000
   - format: "P1DT1H/%Y-%M-%DT%h:%mZ"
     input: "P1DT1H/2024-12-22T15:42Z"
     expected:
@@ -806,7 +806,7 @@ assertions:
             hour: 7
             minute: 42
             second: 55
-            millisecond: 870
+            nanosecond: 870000000
   - format: "P1DT1H/%V-W%W-%wT%h:%mZ"
     input: "P1DT1H/2024-W51-7T15:42Z"
     expected:
@@ -894,7 +894,7 @@ assertions:
             hour: 7
             minute: 42
             second: 55
-            millisecond: 870
+            nanosecond: 870000000
   - format: "P1DT1H/%Y-%OT%h:%mZ"
     input: "P1DT1H/2024-357T15:42Z"
     expected:
