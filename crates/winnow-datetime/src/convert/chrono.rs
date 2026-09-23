@@ -106,18 +106,18 @@ impl TryFrom<crate::DateTime> for chrono::DateTime<chrono::FixedOffset> {
     fn try_from(dt: crate::DateTime) -> Result<Self, Self::Error> {
         match dt.time.offset {
             Some(o) => {
-                let offset_minutes = if let Offset::Fixed {
+                let offset_seconds = if let Offset::Fixed {
                     hours,
                     minutes,
                     critical: _,
                 } = o
                 {
-                    hours * 3600 + minutes
+                    hours * 3600 + minutes * 60
                 } else {
                     0
                 };
 
-                let offset = chrono::FixedOffset::east_opt(offset_minutes).ok_or(())?;
+                let offset = chrono::FixedOffset::east_opt(offset_seconds).ok_or(())?;
 
                 let naive_time = chrono::NaiveTime::try_from(dt.time)?;
                 let naive_date_time = chrono::NaiveDate::try_from(dt.date)?.and_time(naive_time);
@@ -182,7 +182,7 @@ mod test_datetime {
         assert_eq!(datetime.hour(), 23);
         assert_eq!(datetime.minute(), 40);
         assert_eq!(datetime.second(), 00);
-        assert_eq!(datetime.offset().fix().local_minus_utc(), 3623);
+        assert_eq!(datetime.offset().fix().local_minus_utc(), 4980);
     }
 
     #[test]
@@ -296,7 +296,7 @@ mod test_datetime {
         assert_eq!(datetime.hour(), 23);
         assert_eq!(datetime.minute(), 40);
         assert_eq!(datetime.second(), 00);
-        assert_eq!(datetime.offset().fix().local_minus_utc(), 3623);
+        assert_eq!(datetime.offset().fix().local_minus_utc(), 4980);
     }
 
     #[test]
