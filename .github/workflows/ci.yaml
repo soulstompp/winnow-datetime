@@ -4,42 +4,48 @@ on: [push, pull_request]
 
 env:
   RUSTFLAGS: -Dwarnings
+  RUSTDOCFLAGS: -Dwarnings
 
 jobs:
-  fmt_and_docs:
-    name: Check fmt & build docs
+  fmt_clippy_docs:
+    name: Check fmt, clippy & docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          components: rustfmt
-          override: true
+          components: rustfmt, clippy
       - name: rustfmt
         run: cargo fmt --all -- --check
+      - name: clippy
+        run: cargo clippy --workspace --all-features --all-targets
       - name: docs
-        run: cargo doc --no-deps
+        run: cargo doc --workspace --all-features --no-deps
 
   build_and_test:
     name: Build & Test
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v1
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Run tests
-        run: cargo test --all --verbose
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run tests (all features)
+        run: cargo test --workspace --all-features
 
-      - name: Run tests (chrono feature)
-        run: cargo test --lib chrono --features chrono
+      - name: Check without default features
+        run: cargo check --workspace --no-default-features
 
-      - name: Run tests (serde feature)
-        run: cargo test --lib serde --features serde
+      # each feature on its own, so a feature that only works alongside another is caught
+      - name: Run tests (each feature alone)
+        run: |
+          for feature in chrono jiff serde time; do
+            cargo test --workspace --lib --no-default-features --features "$feature"
+          done
+
+  fuzz:
+    name: Build fuzz targets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Check fuzz crate
+        run: cargo check --manifest-path fuzz/Cargo.toml

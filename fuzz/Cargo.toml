@@ -1,17 +1,17 @@
-
 [package]
-name = "iso8601-fuzz"
-version = "0.0.1"
-authors = ["Automatically generated"]
+name = "winnow-datetime-fuzz"
+version = "0.0.0"
 publish = false
+edition = "2021"
 
 [package.metadata]
 cargo-fuzz = true
 
-[dependencies.iso8601]
-path = ".."
-[dependencies.libfuzzer-sys]
-git = "https://github.com/rust-fuzz/libfuzzer-sys.git"
+[dependencies]
+libfuzzer-sys = "0.4"
+winnow_iso8601 = { path = "../crates/winnow-iso8601" }
+winnow_rfc3339 = { path = "../crates/winnow-rfc3339" }
+winnow_rfc9557 = { path = "../crates/winnow-rfc9557" }
 
 # Prevent this from interfering with workspaces
 [workspace]
@@ -20,7 +20,6 @@ members = ["."]
 [[bin]]
 name = "parse_dates"
 path = "fuzzers/parse_dates.rs"
-
-[[bin]]
-name = "parse_and_print_dates_roundtrip"
-path = "fuzzers/parse_and_print_dates_roundtrip.rs"
+test = false
+doc = false
+bench = false
