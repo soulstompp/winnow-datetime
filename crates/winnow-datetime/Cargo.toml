@@ -13,7 +13,7 @@ readme = "README.md"
 edition = "2021"
 
 [dependencies]
-winnow = "0.7"
+winnow = "1.0"
 chrono = { version = "0.4", default-features = false, optional = true }
 jiff = {  version = "0.2.13", optional = true }
 time = { version = "0.3.37", default-features = false, optional = true }

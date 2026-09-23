@@ -353,3 +353,37 @@ fn lower_case_separators() {
         })
     );
 }
+
+/// `islamic` used to match the start of `islamicc`, so `islamicc` could never be parsed.
+#[test]
+fn test_calendar_prefix_order() {
+    use winnow_rfc9557::calendar::parse_calendar;
+
+    // the shadowed identifier, and the one that shadowed it
+    assert_eq!("islamicc", parse_calendar("islamicc").unwrap().identifier);
+    assert_eq!("islamic", parse_calendar("islamic").unwrap().identifier);
+
+    // every other identifier round-trips to itself, so a future regrouping that breaks
+    // the prefix rule fails here rather than in whatever embeds this parser
+    for id in [
+        "buddhist",
+        "chinese",
+        "coptic",
+        "dangi",
+        "ethioaa",
+        "ethiopic",
+        "gregory",
+        "hebrew",
+        "indian",
+        "islamic-umalqura",
+        "islamic-tbla",
+        "islamic-civil",
+        "islamic-rgsa",
+        "iso8601",
+        "japanese",
+        "persian",
+        "roc",
+    ] {
+        assert_eq!(id, parse_calendar(id).unwrap().identifier, "calendar {id}");
+    }
+}

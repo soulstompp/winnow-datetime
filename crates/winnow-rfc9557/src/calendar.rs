@@ -31,26 +31,35 @@ where
     Error: ParserError<Input>,
 {
     trace("calendar", move |input: &mut Input| {
+        // `alt` takes the first match, so an identifier must come before any that is a prefix
+        // of it (`islamicc` before `islamic`). Grouped because winnow 1.0 limits `alt` to 9
+        // alternatives.
         alt((
-            literal("buddhist"),
-            literal("chinese"),
-            literal("coptic"),
-            literal("dangi"),
-            literal("ethioaa"),
-            literal("ethiopic"),
-            literal("gregory"),
-            literal("hebrew"),
-            literal("indian"),
-            literal("islamic-umalqura"),
-            literal("islamic-tbla"),
-            literal("islamic-civil"),
-            literal("islamic-rgsa"),
-            literal("islamic"),
-            literal("iso8601"),
-            literal("japanese"),
-            literal("persian"),
-            literal("roc"),
-            literal("islamicc"),
+            alt((
+                literal("buddhist"),
+                literal("chinese"),
+                literal("coptic"),
+                literal("dangi"),
+                literal("ethioaa"),
+                literal("ethiopic"),
+                literal("gregory"),
+                literal("hebrew"),
+                literal("indian"),
+            )),
+            alt((
+                literal("islamic-umalqura"),
+                literal("islamic-tbla"),
+                literal("islamic-civil"),
+                literal("islamic-rgsa"),
+                literal("islamicc"),
+                literal("islamic"),
+            )),
+            alt((
+                literal("iso8601"),
+                literal("japanese"),
+                literal("persian"),
+                literal("roc"),
+            )),
         ))
         .map(|identifier: <Input as Stream>::Slice| Calendar {
             identifier: String::from_utf8_lossy(identifier.as_bstr()).into(),
